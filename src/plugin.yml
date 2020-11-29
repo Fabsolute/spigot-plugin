@@ -1,0 +1,19 @@
+name: gronia
+version: 0.1
+main: org.gronia.plugin.Gronia
+website: https://gronia.org
+
+api-version: 1.16
+commands:
+  storage:
+    description: Quick Storage System For Minecraft
+    usage: /storage open [ItemName] | open | list | take [ItemName]
+  chunk:
+    description: Chunk Loader System For Minecraft
+    usage: /chunk list | tp [Name] | add [Name] | remove [Name]
+  craft:
+    description: Auto Craft System For Minecraft
+    usage: /craft
+  repair:
+    description: Auto Craft System For Minecraft
+    usage: /repair
