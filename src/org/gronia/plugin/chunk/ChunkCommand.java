@@ -156,7 +156,11 @@ public class ChunkCommand extends SubCommandExecutor<ChunkPlugin> {
 
         List<Integer> list = config.getIntegerList(name);
 
-        player.teleport(new Location(player.getWorld(), list.get(0) << 4, player.getLocation().getY(), list.get(1) << 4), PlayerTeleportEvent.TeleportCause.COMMAND);
+        int x = list.get(0) << 4;
+        int z = list.get(1) << 4;
+        int y = player.getWorld().getHighestBlockAt(x, z).getY() + 1;
+
+        player.teleport(new Location(player.getWorld(), x, y, z), PlayerTeleportEvent.TeleportCause.COMMAND);
         return true;
     }
 
