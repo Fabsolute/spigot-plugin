@@ -17,3 +17,6 @@ commands:
   repair:
     description: Auto Craft System For Minecraft
     usage: /repair
+  griefing:
+    description: Selectable griefing System For Minecraft
+    usage: /griefing
