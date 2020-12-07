@@ -4,6 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.plugin.chunk.ChunkPlugin;
 import org.gronia.plugin.craft.Craft;
 import org.gronia.plugin.griefing.GriefingPlugin;
+import org.gronia.plugin.ptp.PerfectTPPlugin;
 import org.gronia.plugin.repair.RepairPlugin;
 import org.gronia.plugin.storage.StoragePlugin;
 
@@ -13,7 +14,8 @@ public class Gronia extends JavaPlugin {
             new ChunkPlugin(this),
             new Craft(this),
             new RepairPlugin(this),
-            new GriefingPlugin(this)
+            new GriefingPlugin(this),
+            new PerfectTPPlugin(this)
     };
 
     @Override

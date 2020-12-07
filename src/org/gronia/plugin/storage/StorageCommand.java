@@ -172,19 +172,11 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
     }
 
     public void takeItem(final HumanEntity ent, String materialName, Material material, int count) {
-        addItemToPlayer(ent, count, material);
+        this.getPlugin().getAPI().addItemToPlayer(ent, count, material);
 
         Map<String, Integer> changes = new HashMap<>();
         changes.put(materialName, -count);
 
         this.getPlugin().getAPI().applyStackable(ent.getName(), changes);
-    }
-
-    private void addItemToPlayer(HumanEntity player, int count, Material mat) {
-        ItemStack stack = new ItemStack(mat, count);
-        HashMap<Integer, ItemStack> drops = player.getInventory().addItem(stack);
-        for (ItemStack item : drops.values()) {
-            player.getWorld().dropItemNaturally(player.getLocation(), item);
-        }
     }
 }

@@ -1,8 +1,10 @@
 package org.gronia.plugin.storage;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +74,19 @@ public class StorageAPI {
         return output;
     }
 
-    public List<String> getSerializableItemList(){
+    public List<String> getSerializableItemList() {
         return this.plugin.getSerializableItemList();
+    }
+
+    public void addItemToPlayer(HumanEntity player, int count, Material mat) {
+        ItemStack stack = new ItemStack(mat, count);
+        this.addItemToPlayer(player, stack);
+    }
+
+    public void addItemToPlayer(HumanEntity player, ItemStack stack) {
+        HashMap<Integer, ItemStack> drops = player.getInventory().addItem(stack);
+        for (ItemStack item : drops.values()) {
+            player.getWorld().dropItemNaturally(player.getLocation(), item).setOwner(player.getUniqueId());
+        }
     }
 }

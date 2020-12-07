@@ -20,3 +20,6 @@ commands:
   griefing:
     description: Selectable griefing System For Minecraft
     usage: /griefing
+  ptp:
+    description: Perfect Teleportation System For Minecraft
+    usage: /ptp
