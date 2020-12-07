@@ -40,10 +40,10 @@ public class StorageAPI {
                     if (totalLength <= 0) {
                         this.plugin.getServer().broadcastMessage("[Storage] " + name + " owed " + ChatColor.RED + "" + count + " " + materialName + ChatColor.WHITE + ".");
                     } else {
-                        this.plugin.getServer().broadcastMessage("[Storage] " + name + " taked " + ChatColor.GREEN + "" + totalLength + " " + materialName + ChatColor.WHITE + " and owed " + ChatColor.RED + (count - totalLength) + ChatColor.WHITE + ".");
+                        this.plugin.getServer().broadcastMessage("[Storage] " + name + " took " + ChatColor.GREEN + "" + totalLength + " " + materialName + ChatColor.WHITE + " and owed " + ChatColor.RED + (count - totalLength) + ChatColor.WHITE + ".");
                     }
                 } else {
-                    this.plugin.getServer().broadcastMessage("[Storage] " + name + " taked " + ChatColor.GREEN + "" + count + " " + materialName + ChatColor.WHITE + ".");
+                    this.plugin.getServer().broadcastMessage("[Storage] " + name + " took " + ChatColor.GREEN + "" + count + " " + materialName + ChatColor.WHITE + ".");
                 }
             } else {
                 this.plugin.getServer().broadcastMessage("[Storage] " + name + " stored " + ChatColor.GREEN + "" + -count + " " + materialName + ChatColor.WHITE + " and new count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".");

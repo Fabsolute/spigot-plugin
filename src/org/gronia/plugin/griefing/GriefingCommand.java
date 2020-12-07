@@ -71,7 +71,10 @@ public class GriefingCommand extends SubCommandExecutor<GriefingPlugin> {
             return true;
         }
 
-        // todo check name
+        if(!this.getPlugin().entityTypeSettingLookup.containsValue(name)){
+            player.sendMessage("[Grief] " + ChatColor.RED + "This grief setting is not available.");
+            return true;
+        }
 
         allowed.add(name);
 
@@ -91,8 +94,6 @@ public class GriefingCommand extends SubCommandExecutor<GriefingPlugin> {
             player.sendMessage("[Grief] " + ChatColor.RED + "There is no grief setting to remove.");
             return true;
         }
-
-        // todo check name
 
         allowed.remove(name);
 

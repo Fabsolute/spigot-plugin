@@ -240,12 +240,12 @@ public class StorageListener extends SubListener<StoragePlugin> {
             if (count > 0) {
                 this.getPlugin().getServer().broadcastMessage("[Storage] " + name + " stored " + ChatColor.GREEN + "" + count + " " + load.getKey() + ChatColor.WHITE + " and new count is " + ChatColor.GOLD + newCounts.get(load.getKey()) + ChatColor.WHITE + ".");
             } else {
-                this.getPlugin().getServer().broadcastMessage("[Storage] " + name + " taked " + ChatColor.GREEN + "" + -count + " " + load.getKey() + ChatColor.WHITE + ".");
+                this.getPlugin().getServer().broadcastMessage("[Storage] " + name + " took " + ChatColor.GREEN + "" + -count + " " + load.getKey() + ChatColor.WHITE + ".");
             }
         }
 
         for (Map.Entry<String, Integer> count : counts.entrySet()) {
-            this.getPlugin().getServer().broadcastMessage("[Storage] " + name + " taked " + ChatColor.GREEN + "" + count.getValue() + " " + count.getKey() + ChatColor.WHITE + ".");
+            this.getPlugin().getServer().broadcastMessage("[Storage] " + name + " took " + ChatColor.GREEN + "" + count.getValue() + " " + count.getKey() + ChatColor.WHITE + ".");
         }
 
         this.getPlugin().tempCounts.remove(inventory);
@@ -325,7 +325,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
 
         barrel.getInventory().setContents(newContents);
 
-        this.getPlugin().getServer().broadcastMessage("[Storage] " + name.replace("[", "").replace("]", "") + " taked " + ChatColor.GREEN + "" + totalCount + " " + materialName + ChatColor.WHITE + ".");
+        this.getPlugin().getServer().broadcastMessage("[Storage] " + name.replace("[", "").replace("]", "") + " took " + ChatColor.GREEN + "" + totalCount + " " + materialName + ChatColor.WHITE + ".");
 
         stackableConfig.set(materialName, count == 0 ? null : count);
 

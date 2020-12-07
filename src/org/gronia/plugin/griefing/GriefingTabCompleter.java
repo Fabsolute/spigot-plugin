@@ -6,7 +6,9 @@ import org.bukkit.entity.Player;
 import org.gronia.plugin.SubTabCompleter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GriefingTabCompleter extends SubTabCompleter<GriefingPlugin> {
     private final List<String> output = new ArrayList<>();
@@ -31,7 +33,7 @@ public class GriefingTabCompleter extends SubTabCompleter<GriefingPlugin> {
         if (args.length == 2) {
             String command = args[0];
             if (command.equalsIgnoreCase("add")) {
-                List<String> allowable = new ArrayList<>(); // todo add list
+                Set<String> allowable = new HashSet<>(this.getPlugin().entityTypeSettingLookup.values());
 
                 List<String> allowed = this.getPlugin().getConfig().getStringList("allowed");
 
