@@ -71,7 +71,7 @@ public class GriefingCommand extends SubCommandExecutor<GriefingPlugin> {
             return true;
         }
 
-        if(!this.getPlugin().entityTypeSettingLookup.containsValue(name)){
+        if (!this.getPlugin().entityTypeSettingLookup.containsValue(name) && !name.equals("farmland")) {
             player.sendMessage("[Grief] " + ChatColor.RED + "This grief setting is not available.");
             return true;
         }

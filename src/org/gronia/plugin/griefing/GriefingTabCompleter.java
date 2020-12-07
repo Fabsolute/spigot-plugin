@@ -34,6 +34,7 @@ public class GriefingTabCompleter extends SubTabCompleter<GriefingPlugin> {
             String command = args[0];
             if (command.equalsIgnoreCase("add")) {
                 Set<String> allowable = new HashSet<>(this.getPlugin().entityTypeSettingLookup.values());
+                allowable.add("farmland");
 
                 List<String> allowed = this.getPlugin().getConfig().getStringList("allowed");
 
