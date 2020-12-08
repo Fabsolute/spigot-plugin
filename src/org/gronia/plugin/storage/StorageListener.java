@@ -291,9 +291,6 @@ public class StorageListener extends SubListener<StoragePlugin> {
         int count = stackableConfig.getInt(materialName, 0);
         int totalCount = 0;
 
-
-        this.getPlugin().getLogger().log(Level.INFO, name + " " + count);
-
         for (ItemStack stack : barrel.getInventory()) {
             if (stack != null) {
                 continue;

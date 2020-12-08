@@ -32,7 +32,6 @@ public class CraftCommand extends SubCommandExecutor<Craft> {
         }
 
         Player player = (Player) sender;
-        this.getPlugin().getLogger().log(Level.INFO, "L" + args.length);
 
         if (args.length == 0) {
             return this.warnUser(player);
@@ -99,8 +98,6 @@ public class CraftCommand extends SubCommandExecutor<Craft> {
             }
 
             plugin.getAPI().applyStackable(player.getName(), changes);
-
-            this.getPlugin().getLogger().log(Level.INFO, changes.toString());
 
             return true;
         }

@@ -62,7 +62,6 @@ public class Craft extends SubPlugin<Craft> {
 
     public void applyRecipe(ShapedRecipe shapedRecipe, String materialName, int count, NumberMap<String> changes, Predicate<NumberMap<String>> predicate) {
         int multiplier = (int) Math.ceil(count / (double) shapedRecipe.getResult().getAmount());
-        this.getPlugin().getLogger().log(Level.INFO, "multiplier " + multiplier);
         String[] shapes = shapedRecipe.getShape();
 
         NumberMap<String> newChanges = new NumberMap<>();

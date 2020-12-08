@@ -23,3 +23,6 @@ commands:
   ptp:
     description: Perfect Teleportation System For Minecraft
     usage: /ptp
+  dancer:
+    description: Dancer System For Minecraft
+    usage: /dancer
