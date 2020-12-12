@@ -26,3 +26,6 @@ commands:
   dancer:
     description: Dancer System For Minecraft
     usage: /dancer
+  planter:
+    description: Planter System For Minecraft
+    usage: /planter

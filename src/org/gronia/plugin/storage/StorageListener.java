@@ -29,7 +29,8 @@ public class StorageListener extends SubListener<StoragePlugin> {
     @EventHandler
     public void onInventoryPickupItem(final InventoryMoveItemEvent e) {
         if (e.getSource().getHolder() instanceof Barrel) {
-            this.handlePuller(e);
+            Barrel barrel = (Barrel) e.getSource().getHolder();
+            this.getPlugin().getAPI().handlePuller(barrel, barrel.getCustomName());
             return;
         }
 
@@ -258,74 +259,5 @@ public class StorageListener extends SubListener<StoragePlugin> {
             entity.getWorld().dropItemNaturally(entity.getLocation(), stack);
             inventory.remove(stack);
         }
-    }
-
-    private void handlePuller(final InventoryMoveItemEvent e) {
-        Barrel barrel = (Barrel) e.getSource().getHolder();
-        assert barrel != null;
-
-        String name = barrel.getCustomName();
-
-        if (name == null || !name.startsWith("[Puller]")) {
-            return;
-        }
-        if (e.getSource().getItem(e.getSource().getSize() - 1) != null) {
-            return;
-        }
-
-        String materialName = name.replace("[Puller] ", "").toLowerCase();
-        Material material;
-        try {
-            material = Material.valueOf(materialName.toUpperCase());
-        } catch (Exception ignored) {
-            return;
-        }
-
-        List<String> serializableItemList = this.getPlugin().getSerializableItemList();
-        if (serializableItemList.contains(materialName)) {
-            return;
-        }
-
-        ConfigurationSection stackableConfig = this.getPlugin().getStackableConfig();
-
-        int count = stackableConfig.getInt(materialName, 0);
-        int totalCount = 0;
-
-        for (ItemStack stack : barrel.getInventory()) {
-            if (stack != null) {
-                continue;
-            }
-
-            int min = Math.min(material.getMaxStackSize(), count);
-
-            if (min > 0) {
-                stack = new ItemStack(material, min);
-                count -= min;
-                barrel.getInventory().addItem(stack);
-                totalCount += min;
-            }
-        }
-
-        if (totalCount == 0) {
-            return;
-        }
-
-        int size = barrel.getInventory().getSize();
-
-        ItemStack[] oldContents = barrel.getInventory().getContents();
-        ItemStack[] newContents = new ItemStack[size];
-        int j = size;
-        for (int i = 0; i < size; i++) {
-            newContents[j - 1] = oldContents[i];
-            j = j - 1;
-        }
-
-        barrel.getInventory().setContents(newContents);
-
-        this.getPlugin().getServer().broadcastMessage("[Storage] " + name.replace("[", "").replace("]", "") + " took " + ChatColor.GREEN + "" + totalCount + " " + materialName + ChatColor.WHITE + ".");
-
-        stackableConfig.set(materialName, count == 0 ? null : count);
-
-        this.getPlugin().saveConfig();
     }
 }
