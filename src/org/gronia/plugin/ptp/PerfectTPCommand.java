@@ -55,7 +55,45 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
             return this.handleTake(player, args[1].toLowerCase());
         }
 
+        if (args.length < 3) {
+            return this.warnUser(player);
+        }
+
+        if (command.equalsIgnoreCase("icon")) {
+            return this.handleIcon(player, args[1].toLowerCase(), args[2].toLowerCase());
+        }
+
         return this.warnUser(player);
+    }
+
+    public boolean handleIcon(Player player, String name, String iconName) {
+        ConfigurationSection config = this.getPlugin().getConfig();
+        boolean found = false;
+
+        if (config != null) {
+            if (config.get(name, null) != null) {
+                found = true;
+            }
+        }
+
+        if (!found) {
+            player.sendMessage("[Perfect TP] " + ChatColor.RED + "There is no named tp point.");
+            return true;
+        }
+
+        try {
+            Material.valueOf(iconName.toUpperCase());
+        } catch (Exception ignored) {
+            return this.warnUser(player);
+        }
+
+        ConfigurationSection section = config.getConfigurationSection(name);
+        assert section != null;
+        section.set("icon", iconName);
+
+        this.save();
+
+        return false;
     }
 
     public boolean handleList(Player player) {
@@ -67,7 +105,7 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
 
         Set<String> keys = config.getKeys(false);
         for (String name : keys) {
-            Location detail = config.getLocation(name);
+            Location detail = config.getConfigurationSection(name).getLocation("location");
             assert detail != null;
 
             player.sendMessage("[Perfect TP] " + ChatColor.GREEN + "[" + detail.getWorld().getName() + "] " + name + ChatColor.AQUA + " [" + detail.getX() + ", " + detail.getY() + ", " + "]");
@@ -83,7 +121,9 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
             return true;
         }
 
-        config.set(name, player.getLocation());
+        MemoryConfiguration configuration = new MemoryConfiguration();
+        configuration.set("location", player.getLocation());
+        config.set(name, configuration);
 
         player.sendMessage("[Perfect TP] " + ChatColor.GREEN + "Named TP point is activated.");
         this.save();
