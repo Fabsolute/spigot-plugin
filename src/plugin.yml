@@ -29,3 +29,6 @@ commands:
   planter:
     description: Planter System For Minecraft
     usage: /planter
+  swap:
+    description: Swap System For Minecraft
+    usage: /swap

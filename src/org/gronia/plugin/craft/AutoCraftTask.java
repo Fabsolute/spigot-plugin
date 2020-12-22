@@ -12,13 +12,12 @@ import org.gronia.plugin.storage.StoragePlugin;
 
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.logging.Level;
 
 public class AutoCraftTask extends BukkitRunnable {
 
-    private final Craft plugin;
+    private final CraftPlugin plugin;
 
-    public AutoCraftTask(Craft plugin) {
+    public AutoCraftTask(CraftPlugin plugin) {
         this.plugin = plugin;
     }
 

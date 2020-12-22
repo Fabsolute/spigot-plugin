@@ -17,11 +17,10 @@ import org.gronia.plugin.storage.StoragePlugin;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 
-public class CraftCommand extends SubCommandExecutor<Craft> {
-    public CraftCommand(Craft plugin) {
+public class CraftCommand extends SubCommandExecutor<CraftPlugin> {
+    public CraftCommand(CraftPlugin plugin) {
         super(plugin);
     }
 

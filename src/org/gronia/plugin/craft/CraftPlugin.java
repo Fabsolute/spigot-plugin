@@ -11,10 +11,9 @@ import org.gronia.plugin.storage.StoragePlugin;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.logging.Level;
 
-public class Craft extends SubPlugin<Craft> {
-    public Craft(JavaPlugin plugin) {
+public class CraftPlugin extends SubPlugin<CraftPlugin> {
+    public CraftPlugin(JavaPlugin plugin) {
         super(plugin);
     }
 
@@ -42,17 +41,17 @@ public class Craft extends SubPlugin<Craft> {
     }
 
     @Override
-    public SubListener<Craft> getListener() {
+    public SubListener<CraftPlugin> getListener() {
         return null;
     }
 
     @Override
-    public SubCommandExecutor<Craft> getExecutor() {
+    public SubCommandExecutor<CraftPlugin> getExecutor() {
         return new CraftCommand(this);
     }
 
     @Override
-    public SubTabCompleter<Craft> getTabCompleter() {
+    public SubTabCompleter<CraftPlugin> getTabCompleter() {
         return null;
     }
 
