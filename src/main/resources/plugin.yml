@@ -1,0 +1,16 @@
+name: gronia
+version: 0.1
+main: org.gronia.plugin.Gronia
+website: https://gronia.org
+
+api-version: 1.17
+commands:
+  pouch:
+    description: Pouch
+    usage: /pouch
+  ptp:
+    description: Perfect TP
+    usage: /ptp
+  storage:
+    description: Storage
+    usage: /storage

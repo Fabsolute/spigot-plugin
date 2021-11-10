@@ -39,6 +39,10 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
             return this.handleList(player);
         }
 
+        if (command.equalsIgnoreCase("take")) {
+            return this.handleTake(player);
+        }
+
         if (args.length < 2) {
             return this.warnUser(player);
         }
@@ -49,10 +53,6 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
 
         if (command.equalsIgnoreCase("add")) {
             return this.handleAdd(player, args[1].toLowerCase());
-        }
-
-        if (command.equalsIgnoreCase("take")) {
-            return this.handleTake(player, args[1].toLowerCase());
         }
 
         if (args.length < 3) {
@@ -154,23 +154,7 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
         return true;
     }
 
-    public boolean handleTake(Player player, String name) {
-        ConfigurationSection config = this.getPlugin().getConfig();
-
-        Player otherPlayer = this.getPlugin().getServer().getPlayer(name);
-        boolean found = otherPlayer != null;
-
-        if (config != null) {
-            if (config.get(name, null) != null) {
-                found = true;
-            }
-        }
-
-        if (!found) {
-            player.sendMessage("[Perfect TP] " + ChatColor.RED + "There is no named tp point for take.");
-            return true;
-        }
-
+    public boolean handleTake(Player player) {
         if (player.getLevel() < 1) {
             player.sendMessage("[Perfect TP] " + ChatColor.RED + "You should have at least one level.");
             return true;
@@ -178,7 +162,7 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
 
         ItemStack stack = new ItemStack(Material.CHORUS_FRUIT, 64);
         ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName("[TP] " + name);
+        meta.setDisplayName("[TP]");
         stack.setItemMeta(meta);
 
         StorageAPI api = this.getPlugin().getSubPlugin(StoragePlugin.class).getAPI();
