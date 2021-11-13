@@ -183,6 +183,7 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
     }
 
     private void save() {
+        this.getPlugin().getConfig().setDirty();
         this.getPlugin().saveConfig();
     }
 }

@@ -13,6 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.gronia.plugin.SubListener;
+import org.gronia.utils.GroniaMysqlConfiguration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,30 +27,30 @@ public class StorageListener extends SubListener<StoragePlugin> {
         super(plugin);
     }
 
-    @EventHandler
-    public void onInventoryPickupItem(final InventoryMoveItemEvent e) {
-        if (e.getSource().getHolder() instanceof Barrel) {
-            Barrel barrel = (Barrel) e.getSource().getHolder();
-            this.getPlugin().getAPI().handlePuller(barrel, barrel.getCustomName());
-            return;
-        }
-
-        if (!(e.getDestination().getHolder() instanceof Barrel)) {
-            return;
-        }
-
-        Barrel barrel = (Barrel) e.getDestination().getHolder();
-        String name = barrel.getCustomName();
-        if (name == null || !name.startsWith("[Flusher]")) {
-            return;
-        }
-
-        if (e.getDestination().getItem(e.getDestination().getSize() - 1) == null) {
-            return;
-        }
-
-        this.flushInventory(e.getDestination(), null, name);
-    }
+//    @EventHandler
+//    public void onInventoryPickupItem(final InventoryMoveItemEvent e) {
+//        if (e.getSource().getHolder() instanceof Barrel) {
+//            Barrel barrel = (Barrel) e.getSource().getHolder();
+//            this.getPlugin().getAPI().handlePuller(barrel, barrel.getCustomName());
+//            return;
+//        }
+//
+//        if (!(e.getDestination().getHolder() instanceof Barrel)) {
+//            return;
+//        }
+//
+//        Barrel barrel = (Barrel) e.getDestination().getHolder();
+//        String name = barrel.getCustomName();
+//        if (name == null || !name.startsWith("[Flusher]")) {
+//            return;
+//        }
+//
+//        if (e.getDestination().getItem(e.getDestination().getSize() - 1) == null) {
+//            return;
+//        }
+//
+//        this.flushInventory(e.getDestination(), null, name);
+//    }
 
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
@@ -111,7 +112,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
 
         List<String> serializableList = this.getPlugin().getSerializableItemList();
         if (serializableList.contains(title)) {
-            ConfigurationSection config = this.getPlugin().getSerializableConfig();
+            GroniaMysqlConfiguration config = this.getPlugin().getSerializableConfig();
             List<ItemStack> items = (List<ItemStack>) config.get(title, null);
             if (items == null) {
                 return;
@@ -129,9 +130,9 @@ public class StorageListener extends SubListener<StoragePlugin> {
             }
 
             config.set(title, remain);
-            this.getPlugin().saveConfig();
+            config.setDirty();
         } else {
-            ConfigurationSection config = this.getPlugin().getStackableConfig();
+            GroniaMysqlConfiguration config = this.getPlugin().getStackableConfig();
             int oldCount = config.getInt(title, 0);
             if (oldCount > 0) {
                 int count = oldCount;
@@ -151,7 +152,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
 
                 int newCount = oldCount - count;
                 config.set(title, newCount > 0 ? newCount : null);
-                this.getPlugin().saveConfig();
+                config.setDirty();
             }
 
             this.getPlugin().tempCounts.put(e.getInventory(), counts);
@@ -185,8 +186,8 @@ public class StorageListener extends SubListener<StoragePlugin> {
             return;
         }
 
-        ConfigurationSection stackableConfig = this.getPlugin().getStackableConfig();
-        ConfigurationSection serializableConfig = this.getPlugin().getSerializableConfig();
+        GroniaMysqlConfiguration stackableConfig = this.getPlugin().getStackableConfig();
+        GroniaMysqlConfiguration serializableConfig = this.getPlugin().getSerializableConfig();
         Map<String, Integer> loads = new HashMap<>();
         Map<String, Integer> newCounts = new HashMap<>();
         for (ItemStack stack : contents) {
@@ -201,6 +202,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
                 List<ItemStack> stacks = (List<ItemStack>) serializableConfig.get(key, new ArrayList<ItemStack>());
                 stacks.add(stack);
                 serializableConfig.set(key, stacks);
+                serializableConfig.setDirty();
             } else {
                 ItemMeta meta = stack.getItemMeta();
                 if (meta != null) {
@@ -213,6 +215,8 @@ public class StorageListener extends SubListener<StoragePlugin> {
                 int count = stackableConfig.getInt(key, 0);
                 count += stack.getAmount();
                 stackableConfig.set(key, count == 0 ? null : count);
+
+                stackableConfig.setDirty();
 
                 inventory.remove(stack);
                 loads.put(key, loads.getOrDefault(key, 0) + stack.getAmount());
@@ -250,8 +254,6 @@ public class StorageListener extends SubListener<StoragePlugin> {
         }
 
         this.getPlugin().tempCounts.remove(inventory);
-
-        this.getPlugin().saveConfig();
     }
 
     private void drop(HumanEntity entity, Inventory inventory, ItemStack stack) {

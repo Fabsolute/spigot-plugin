@@ -70,7 +70,7 @@ public abstract class SubPlugin<T extends SubPlugin<T>> {
 
     public void saveConfig() {
         try {
-            this.configuration.save();
+            this.getConfig().save();
         } catch (SQLException ignored) {
         }
     }

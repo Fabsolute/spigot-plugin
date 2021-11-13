@@ -72,14 +72,21 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
     }
 
     @Override
-    public void saveConfig() {
-        super.getConfig().setDirty();
-        this.getStackableConfig().setDirty();
-        this.getSerializableConfig().setDirty();
+    public void onEnable() {
+        super.onEnable();
+        this.getServer().getScheduler().runTaskTimerAsynchronously(this.getPlugin(), this::saveConfig, 1200, 1200);
+    }
 
+    @Override
+    public void saveConfig() {
         try {
-            this.storageStackable.save();
-            this.storageSerializable.save();
+            if (this.storageSerializable != null) {
+                this.storageSerializable.save();
+            }
+
+            if (this.storageStackable != null) {
+                this.storageStackable.save();
+            }
         } catch (SQLException ignored) {
         }
 

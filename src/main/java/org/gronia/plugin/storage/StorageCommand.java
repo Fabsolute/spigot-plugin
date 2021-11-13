@@ -1,5 +1,8 @@
 package org.gronia.plugin.storage;
 
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -10,6 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.gronia.plugin.SubCommandExecutor;
+import org.gronia.plugin.uei.UltraEnchantedItemPlugin;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,7 +82,7 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
 
             serializableList.remove(materialName);
             this.getPlugin().getConfig().set("serializable_items", serializableList);
-            this.getPlugin().saveConfig();
+            this.getPlugin().getConfig().setDirty();
             return true;
         }
 
@@ -90,7 +94,7 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
 
             serializableList.add(materialName);
             this.getPlugin().getConfig().set("serializable_items", serializableList);
-            this.getPlugin().saveConfig();
+            this.getPlugin().getConfig().setDirty();
             return true;
         }
 
@@ -166,12 +170,26 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
         ent.openInventory(inv);
     }
 
-    public boolean warnUser(Player player) {
+    public boolean warnUser(HumanEntity player) {
         player.sendMessage("[Storage] " + ChatColor.WHITE + "Type " + ChatColor.GREEN + "/help storage" + ChatColor.WHITE + " for help");
         return true;
     }
 
+    public boolean warnUser(HumanEntity player, String msg,String command) {
+        TextComponent textComponent = new TextComponent("[Storage] " + ChatColor.RED +msg);
+        ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
+        textComponent.setClickEvent(clickEvent);
+
+        player.spigot().sendMessage(textComponent);
+        return true;
+    }
+
     public void takeItem(final HumanEntity ent, String materialName, Material material, int count) {
+        if (this.getPlugin().getSubPlugin(UltraEnchantedItemPlugin.class).enchantConfigs.containsKey(material)) {
+            this.warnUser(ent,"You cannot take enchantable items. Use " + ChatColor.GREEN +"/storage open " + materialName + " " +ChatColor.DARK_PURPLE +ChatColor.MAGIC + "A" + ChatColor.RESET + ChatColor.GOLD +ChatColor.BOLD + "CLICK" + ChatColor.DARK_PURPLE +ChatColor.MAGIC + "A","/storage open " + materialName);
+            return;
+        }
+
         this.getPlugin().getAPI().addItemToPlayer(ent, count, material);
 
         Map<String, Integer> changes = new HashMap<>();

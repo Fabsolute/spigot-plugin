@@ -9,17 +9,53 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 public class GroniaMysqlConfiguration extends MemoryConfiguration {
     private boolean isDirty = false;
     private String name;
     private static Connection connection;
+    private static Supplier<Connection> creator;
 
-    public static void initialize(Connection connection) {
-        GroniaMysqlConfiguration.connection = connection;
+    public static void initialize(Supplier<Connection> creator) {
+        GroniaMysqlConfiguration.creator = creator;
+    }
+
+    private static Connection getConnection() {
+        while (GroniaMysqlConfiguration.connection == null) {
+            GroniaMysqlConfiguration.connection = creator.get();
+            if (GroniaMysqlConfiguration.connection == null) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return GroniaMysqlConfiguration.connection;
+    }
+
+    private static PreparedStatement prepareStatement(String sql) throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            connection = null;
+        }
+
+        return getConnection().prepareStatement(sql);
+    }
+
+    private static Statement createStatement() throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            connection = null;
+        }
+
+        return getConnection().createStatement();
     }
 
     public static GroniaMysqlConfiguration loadConfiguration(String name) {
@@ -39,7 +75,7 @@ public class GroniaMysqlConfiguration extends MemoryConfiguration {
     public void load() throws SQLException {
         this.createTable();
 
-        var stmt = connection.createStatement();
+        var stmt = createStatement();
         var rs = stmt.executeQuery("SELECT `key`, `value` FROM " + this.name);
         Map<String, Object> input = new HashMap<>();
         Gson gson = new Gson();
@@ -59,7 +95,7 @@ public class GroniaMysqlConfiguration extends MemoryConfiguration {
         Gson gson = new Gson();
 
         String upsert = "INSERT INTO " + name + " (`key`,`value`) VALUES(?,?) ON DUPLICATE KEY UPDATE `value` = ?";
-        var st = connection.prepareStatement(upsert);
+        var st = prepareStatement(upsert);
 
         for (var kv : this.getValues(false).entrySet()) {
             var key = kv.getKey();
@@ -93,7 +129,7 @@ public class GroniaMysqlConfiguration extends MemoryConfiguration {
     }
 
     protected void createTable() throws SQLException {
-        var stmt = connection.createStatement();
+        var stmt = createStatement();
         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `" + name + "` (\n" +
                 "  `key` varchar(256) NOT NULL,\n" +
                 "  `value` mediumtext NOT NULL,\n" +

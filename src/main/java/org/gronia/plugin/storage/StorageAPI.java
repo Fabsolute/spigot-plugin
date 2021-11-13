@@ -58,7 +58,7 @@ public class StorageAPI {
             stackableConfig.set(materialName, newCount == 0 ? null : newCount);
         }
 
-        this.plugin.saveConfig();
+        this.plugin.getStackableConfig().setDirty();
 
         return output;
     }
