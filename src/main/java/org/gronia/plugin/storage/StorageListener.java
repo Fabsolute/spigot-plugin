@@ -1,17 +1,15 @@
 package org.gronia.plugin.storage;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.block.Barrel;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.gronia.plugin.ItemUtils;
 import org.gronia.plugin.SubListener;
 import org.gronia.utils.GroniaMysqlConfiguration;
 
@@ -19,38 +17,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 
 public class StorageListener extends SubListener<StoragePlugin> {
     public StorageListener(StoragePlugin plugin) {
         super(plugin);
     }
-
-//    @EventHandler
-//    public void onInventoryPickupItem(final InventoryMoveItemEvent e) {
-//        if (e.getSource().getHolder() instanceof Barrel) {
-//            Barrel barrel = (Barrel) e.getSource().getHolder();
-//            this.getPlugin().getAPI().handlePuller(barrel, barrel.getCustomName());
-//            return;
-//        }
-//
-//        if (!(e.getDestination().getHolder() instanceof Barrel)) {
-//            return;
-//        }
-//
-//        Barrel barrel = (Barrel) e.getDestination().getHolder();
-//        String name = barrel.getCustomName();
-//        if (name == null || !name.startsWith("[Flusher]")) {
-//            return;
-//        }
-//
-//        if (e.getDestination().getItem(e.getDestination().getSize() - 1) == null) {
-//            return;
-//        }
-//
-//        this.flushInventory(e.getDestination(), null, name);
-//    }
 
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent e) {
@@ -98,18 +70,6 @@ public class StorageListener extends SubListener<StoragePlugin> {
             return;
         }
 
-        Material material;
-        try {
-            material = Material.valueOf(title.toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            Player player = this.getPlugin().getServer().getPlayer(title);
-            if (player != null && player != e.getPlayer()) {
-                e.getPlayer().sendMessage(ChatColor.RED + "You dont have any access to open this chest.");
-                e.setCancelled(true);
-            }
-            return;
-        }
-
         List<String> serializableList = this.getPlugin().getSerializableItemList();
         if (serializableList.contains(title)) {
             GroniaMysqlConfiguration config = this.getPlugin().getSerializableConfig();
@@ -137,6 +97,8 @@ public class StorageListener extends SubListener<StoragePlugin> {
             if (oldCount > 0) {
                 int count = oldCount;
 
+                var material = ItemUtils.getMaterialFor(title);
+
                 int maxCount = material.getMaxStackSize() * e.getInventory().getSize();
                 count = Math.min(count, maxCount);
 
@@ -146,7 +108,8 @@ public class StorageListener extends SubListener<StoragePlugin> {
                 int diff = stackCount * material.getMaxStackSize() - count;
 
                 for (int i = 0; i < stackCount; i++) {
-                    ItemStack stack = new ItemStack(material, material.getMaxStackSize() - (i == stackCount - 1 ? diff : 0));
+                    ItemStack stack = ItemUtils.createItem(title);
+                    stack.setAmount(material.getMaxStackSize() - (i == stackCount - 1 ? diff : 0));
                     e.getInventory().addItem(stack);
                 }
 
@@ -195,7 +158,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
                 continue;
             }
 
-            String key = stack.getType().name().toLowerCase();
+            String key = ItemUtils.getInternalName(stack);
 
             List<String> serializableList = this.getPlugin().getSerializableItemList();
             if (serializableList.contains(key)) {
@@ -204,14 +167,6 @@ public class StorageListener extends SubListener<StoragePlugin> {
                 serializableConfig.set(key, stacks);
                 serializableConfig.setDirty();
             } else {
-                ItemMeta meta = stack.getItemMeta();
-                if (meta != null) {
-                    if (meta.hasDisplayName()) {
-                        this.drop(entity, inventory, stack);
-                        continue;
-                    }
-                }
-
                 int count = stackableConfig.getInt(key, 0);
                 count += stack.getAmount();
                 stackableConfig.set(key, count == 0 ? null : count);
@@ -254,12 +209,5 @@ public class StorageListener extends SubListener<StoragePlugin> {
         }
 
         this.getPlugin().tempCounts.remove(inventory);
-    }
-
-    private void drop(HumanEntity entity, Inventory inventory, ItemStack stack) {
-        if (entity != null) {
-            entity.getWorld().dropItemNaturally(entity.getLocation(), stack);
-            inventory.remove(stack);
-        }
     }
 }

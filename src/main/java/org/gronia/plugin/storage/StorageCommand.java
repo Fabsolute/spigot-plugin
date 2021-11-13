@@ -1,7 +1,6 @@
 package org.gronia.plugin.storage;
 
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.command.Command;
@@ -12,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.gronia.plugin.ItemUtils;
 import org.gronia.plugin.SubCommandExecutor;
 import org.gronia.plugin.uei.UltraEnchantedItemPlugin;
 
@@ -19,30 +19,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
-    private final StorageUtil utils;
-
     public StorageCommand(StoragePlugin plugin) {
         super(plugin);
-        this.utils = new StorageUtil(plugin);
     }
 
     @Override
     public boolean onSubCommand(CommandSender sender, Command cmd, String s, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             return true;
         }
-
-        Player player = (Player) sender;
 
         if (args.length == 0) {
             return this.warnUser(player);
         }
 
         String command = args[0];
-
-        if (utils.handleCommand(sender, args)) {
-            return true;
-        }
 
         if (command.equalsIgnoreCase("list")) {
             if (args.length == 1) {
@@ -67,10 +58,8 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
         }
 
         String materialName = args[1].toLowerCase();
-        Material material;
-        try {
-            material = Material.valueOf(materialName.toUpperCase());
-        } catch (IllegalArgumentException e) {
+
+        if(!ItemUtils.isValidMaterialName(materialName)){
             return this.warnUser(player);
         }
 
@@ -111,7 +100,7 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
 
             if (args.length == 3) {
                 int count = Integer.parseInt(args[2]);
-                this.takeItem(player, materialName, material, count);
+                this.takeItem(player, materialName, count);
             } else {
                 return this.warnUser(player);
             }
@@ -146,9 +135,9 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
             items.put(key, section.getInt(key));
         }
 
-        List<Map.Entry<String, Integer>> list = items.entrySet().stream().sorted(Map.Entry.comparingByValue()).skip(page * 54).limit(54).collect(Collectors.toList());
+        List<Map.Entry<String, Integer>> list = items.entrySet().stream().sorted(Map.Entry.comparingByValue()).skip(page * 54L).limit(54).collect(Collectors.toList());
         for (Map.Entry<String, Integer> e : list) {
-            ItemStack stack = new ItemStack(Material.valueOf(e.getKey().toUpperCase()));
+            ItemStack stack = ItemUtils.createItem(e.getKey());
             List<String> lore = new ArrayList<>();
             int count = e.getValue();
             if (count > 0) {
@@ -157,6 +146,7 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
                 lore.add(ChatColor.RED + "Count: " + count);
             }
             ItemMeta meta = stack.getItemMeta();
+            assert meta != null;
             meta.setLore(lore);
             stack.setItemMeta(meta);
             inv.addItem(stack);
@@ -175,8 +165,9 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
         return true;
     }
 
-    public boolean warnUser(HumanEntity player, String msg,String command) {
-        TextComponent textComponent = new TextComponent("[Storage] " + ChatColor.RED +msg);
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean warnUser(HumanEntity player, String msg, String command) {
+        TextComponent textComponent = new TextComponent("[Storage] " + ChatColor.RED + msg);
         ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
         textComponent.setClickEvent(clickEvent);
 
@@ -184,13 +175,14 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
         return true;
     }
 
-    public void takeItem(final HumanEntity ent, String materialName, Material material, int count) {
-        if (this.getPlugin().getSubPlugin(UltraEnchantedItemPlugin.class).enchantConfigs.containsKey(material)) {
-            this.warnUser(ent,"You cannot take enchantable items. Use " + ChatColor.GREEN +"/storage open " + materialName + " " +ChatColor.DARK_PURPLE +ChatColor.MAGIC + "A" + ChatColor.RESET + ChatColor.GOLD +ChatColor.BOLD + "CLICK" + ChatColor.DARK_PURPLE +ChatColor.MAGIC + "A","/storage open " + materialName);
+    public void takeItem(final HumanEntity ent, String materialName, int count) {
+        if (this.getPlugin().getSubPlugin(UltraEnchantedItemPlugin.class).enchantConfigs.containsKey(materialName)) {
+            // todo disabled items
+            this.warnUser(ent, "You cannot take enchantable items. Use " + ChatColor.GREEN + "/storage open " + materialName + " " + ChatColor.DARK_PURPLE + ChatColor.MAGIC + "A" + ChatColor.RESET + ChatColor.GOLD + ChatColor.BOLD + "CLICK" + ChatColor.DARK_PURPLE + ChatColor.MAGIC + "A", "/storage open " + materialName);
             return;
         }
 
-        this.getPlugin().getAPI().addItemToPlayer(ent, count, material);
+        this.getPlugin().getAPI().addItemToPlayer(ent, count, materialName);
 
         Map<String, Integer> changes = new HashMap<>();
         changes.put(materialName, -count);

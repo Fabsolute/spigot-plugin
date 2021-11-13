@@ -75,7 +75,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
             return;
         }
 
-        if (this.getPlugin().enchantConfigs.containsKey(type)) {
+        if (this.getPlugin().enchantConfigs.containsKey(type.name())) {
             onEnchantItem(event);
             return;
         }
@@ -187,7 +187,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         var item = event.getItem();
         assert item != null;
 
-        if (!this.getPlugin().enchantConfigs.containsKey(item.getType())) {
+        if (!this.getPlugin().enchantConfigs.containsKey(item.getType().name())) {
             return;
         }
 
@@ -204,12 +204,12 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
 
         int level = rawLevel + 1;
 
-        var current = this.getPlugin().enchantConfigs.get(item.getType()).get(level);
+        var current = this.getPlugin().enchantConfigs.get(item.getType().name()).get(level);
         if (current == null) {
             return;
         }
 
-        var old = this.getPlugin().enchantConfigs.get(item.getType()).get(level - 1);
+        var old = this.getPlugin().enchantConfigs.get(item.getType().name()).get(level - 1);
 
         int count = current.p2();
         var all = event.getPlayer().isSneaking();

@@ -1,6 +1,5 @@
 package org.gronia.plugin.uei;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,36 +10,28 @@ import java.util.List;
 import java.util.Map;
 
 public class UltraEnchantedItemPlugin extends SubPlugin<UltraEnchantedItemPlugin> {
-    public final Map<Material, List<Pair<String, Integer>>> enchantConfigs = Map.of(
-            Material.COBBLESTONE,
+    public final Map<String, List<Pair.Pair2<String, Integer>>> enchantConfigs = Map.of(
+            Material.COBBLESTONE.name(),
             List.of(
-                    Pair.of("cobblestone", 1),
-                    Pair.of("enchanted_cobblestone", 8),
-                    Pair.of("extra_enchanted_cobblestone", 8),
-                    Pair.of("ultra_enchanted_cobblestone", 8),
-                    Pair.of("super_enchanted_cobblestone", 8)
+                    Pair.Pair2.of("cobblestone", 1),
+                    Pair.Pair2.of("enchanted_cobblestone", 4),
+                    Pair.Pair2.of("extra_enchanted_cobblestone", 4),
+                    Pair.Pair2.of("ultra_enchanted_cobblestone", 4),
+                    Pair.Pair2.of("super_enchanted_cobblestone", 8)
             ),
-            Material.CARROT,
+            Material.CARROT.name(),
             List.of(
-                    Pair.of("carrot", 1),
-                    Pair.of("enchanted_carrot", 4),
-                    Pair.of("extra_enchanted_carrot", 4),
-                    Pair.of("ultra_enchanted_carrot", 4),
-                    Pair.of("super_enchanted_carrot", 8)
+                    Pair.Pair2.of("carrot", 1),
+                    Pair.Pair2.of("enchanted_carrot", 4),
+                    Pair.Pair2.of("extra_enchanted_carrot", 4),
+                    Pair.Pair2.of("ultra_enchanted_carrot", 4),
+                    Pair.Pair2.of("super_enchanted_carrot", 8)
             ),
-            Material.BAKED_POTATO,
+            Material.BAKED_POTATO.name(),
             List.of(
-                    Pair.of("baked_potato", 1),
-                    Pair.of("enchanted_baked_potato", 4)
+                    Pair.Pair2.of("baked_potato", 1),
+                    Pair.Pair2.of("enchanted_baked_potato", 4)
             )
-    );
-
-    public static final List<ChatColor> enchantColors = List.of(
-            ChatColor.WHITE,
-            ChatColor.GREEN,
-            ChatColor.BLUE,
-            ChatColor.LIGHT_PURPLE,
-            ChatColor.GOLD
     );
 
     private final NamespacedKey hoeKey;

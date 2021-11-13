@@ -1,9 +1,9 @@
 package org.gronia.plugin.storage;
 
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.gronia.plugin.ItemUtils;
 import org.gronia.plugin.SubTabCompleter;
 
 import java.util.ArrayList;
@@ -39,9 +39,7 @@ public class StorageTabCompleter extends SubTabCompleter<StoragePlugin> {
         if (args.length == 2) {
             if (command.equalsIgnoreCase("take") || command.equalsIgnoreCase("open")) {
                 String filter = args[1];
-                for (Material m : Material.values()) {
-                    String material = m.name().toLowerCase();
-
+                for (String material : ItemUtils.getItemNames()) {
                     if (!filter.equals("")) {
                         if (!material.contains(filter)) {
                             continue;
@@ -54,10 +52,9 @@ public class StorageTabCompleter extends SubTabCompleter<StoragePlugin> {
         } else if (args.length == 3) {
             if (command.equalsIgnoreCase("take")) {
                 String item = args[1];
-                try {
-                    Material material = Material.valueOf(item.toUpperCase());
+                var material = ItemUtils.getMaterialFor(item);
+                if (material != null) {
                     output.add("" + material.getMaxStackSize());
-                } catch (IllegalArgumentException ignored) {
                 }
             }
         }

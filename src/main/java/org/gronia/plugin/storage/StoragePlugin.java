@@ -1,7 +1,5 @@
 package org.gronia.plugin.storage;
 
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.plugin.SubCommandExecutor;
@@ -16,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class StoragePlugin extends SubPlugin<StoragePlugin> {
-    public final Map<Material, Boolean> materials = new HashMap<>();
     public final Map<Inventory, Map<String, Integer>> tempCounts = new HashMap<>();
     private final StorageAPI api;
     private GroniaMysqlConfiguration storageStackable;
