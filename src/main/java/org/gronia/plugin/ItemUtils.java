@@ -27,6 +27,11 @@ public class ItemUtils {
             put("hyper_furnace", Pair.of(Material.FURNACE, 3, "Hyper Furnace", ItemUtils::createHyperFurnace));
             put("super_hoe", Pair.of(Material.GOLDEN_HOE, 4, "Super Hoe", ItemUtils::createSuperHoe));
 
+            put("nice_pickaxe", Pair.of(Material.GOLDEN_PICKAXE, 1, "Nice Pickaxe", ItemUtils::createNicePickaxe));
+            put("ultra_pickaxe", Pair.of(Material.GOLDEN_PICKAXE, 2, "Ultra Pickaxe", ItemUtils::createUltraPickaxe));
+            put("hyper_pickaxe", Pair.of(Material.GOLDEN_PICKAXE, 3, "Hyper Pickaxe", ItemUtils::createHyperPickaxe));
+            put("super_pickaxe", Pair.of(Material.NETHERITE_PICKAXE, 4, "Super Pickaxe", ItemUtils::createSuperPickaxe));
+
             put("enchanted_baked_potato", Pair.of(Material.BAKED_POTATO, 1, "Enchanted Baked Potato", ItemUtils::createEnchantedBakedPotato));
 
             put("enchanted_cobblestone", Pair.of(Material.COBBLESTONE, 1, "Enchanted Cobblestone", ItemUtils::createEnchantedCobblestone));
@@ -38,6 +43,11 @@ public class ItemUtils {
             put("extra_enchanted_carrot", Pair.of(Material.CARROT, 2, "Extra Enchanted Carrot", ItemUtils::createExtraEnchantedCarrot));
             put("ultra_enchanted_carrot", Pair.of(Material.CARROT, 3, "Ultra Enchanted Carrot", ItemUtils::createUltraEnchantedCarrot));
             put("super_enchanted_carrot", Pair.of(Material.CARROT, 4, "Super Enchanted Carrot", ItemUtils::createSuperEnchantedCarrot));
+
+            put("enchanted_obsidian", Pair.of(Material.OBSIDIAN, 1, "Enchanted Obsidian", ItemUtils::createEnchantedObsidian));
+            put("extra_enchanted_obsidian", Pair.of(Material.OBSIDIAN, 2, "Extra Enchanted Obsidian", ItemUtils::createExtraEnchantedObsidian));
+            put("ultra_enchanted_obsidian", Pair.of(Material.OBSIDIAN, 3, "Ultra Enchanted Obsidian", ItemUtils::createUltraEnchantedObsidian));
+            put("super_enchanted_obsidian", Pair.of(Material.OBSIDIAN, 4, "Super Enchanted Obsidian", ItemUtils::createSuperEnchantedObsidian));
         }
     };
 
@@ -57,6 +67,35 @@ public class ItemUtils {
         return createTierItem("enchanted_baked_potato");
     }
 
+    public static ItemStack createNicePickaxe() {
+        return createTierItem("nice_pickaxe", meta -> meta.setUnbreakable(true));
+    }
+
+    public static ItemStack createUltraPickaxe() {
+        return createTierItem("ultra_pickaxe", meta -> {
+            meta.addEnchant(Enchantment.DIG_SPEED,1,true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            meta.setUnbreakable(true);
+        });
+    }
+
+    public static ItemStack createHyperPickaxe() {
+        return createTierItem("hyper_pickaxe", meta -> {
+            meta.addEnchant(Enchantment.DIG_SPEED,4,true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            meta.setUnbreakable(true);
+        });
+    }
+
+    public static ItemStack createSuperPickaxe() {
+        return createTierItem("super_pickaxe", meta -> {
+            // todo mode
+            meta.addEnchant(Enchantment.DIG_SPEED,6,true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            meta.setUnbreakable(true);
+        });
+    }
+
     public static ItemStack createEnchantedCobblestone() {
         return createTierItem("enchanted_cobblestone", meta -> meta.getPersistentDataContainer().set(Gronia.getInstance().getKey("not_placeable"), PersistentDataType.INTEGER, 1));
     }
@@ -71,6 +110,22 @@ public class ItemUtils {
 
     public static ItemStack createSuperEnchantedCobblestone() {
         return createTierItem("super_enchanted_cobblestone", meta -> meta.getPersistentDataContainer().set(Gronia.getInstance().getKey("not_placeable"), PersistentDataType.INTEGER, 1));
+    }
+
+    public static ItemStack createEnchantedObsidian() {
+        return createTierItem("enchanted_obsidian", meta -> meta.getPersistentDataContainer().set(Gronia.getInstance().getKey("not_placeable"), PersistentDataType.INTEGER, 1));
+    }
+
+    public static ItemStack createExtraEnchantedObsidian() {
+        return createTierItem("extra_enchanted_obsidian", meta -> meta.getPersistentDataContainer().set(Gronia.getInstance().getKey("not_placeable"), PersistentDataType.INTEGER, 1));
+    }
+
+    public static ItemStack createUltraEnchantedObsidian() {
+        return createTierItem("ultra_enchanted_obsidian", meta -> meta.getPersistentDataContainer().set(Gronia.getInstance().getKey("not_placeable"), PersistentDataType.INTEGER, 1));
+    }
+
+    public static ItemStack createSuperEnchantedObsidian() {
+        return createTierItem("super_enchanted_obsidian", meta -> meta.getPersistentDataContainer().set(Gronia.getInstance().getKey("not_placeable"), PersistentDataType.INTEGER, 1));
     }
 
     public static ItemStack createEnchantedCarrot() {

@@ -14,3 +14,9 @@ commands:
   storage:
     description: Storage
     usage: /storage
+  repair:
+    description: Repair
+    usage: /repair <unsafe>
+  griefing:
+    description: Griefing
+    usage: /griefing add|remove|list

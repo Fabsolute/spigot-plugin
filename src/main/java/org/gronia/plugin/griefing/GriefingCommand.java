@@ -16,11 +16,9 @@ public class GriefingCommand extends SubCommandExecutor<GriefingPlugin> {
 
     @Override
     public boolean onSubCommand(CommandSender sender, Command cmd, String s, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             return true;
         }
-
-        Player player = (Player) sender;
 
         if (args.length == 0) {
             return this.warnUser(player);
@@ -111,6 +109,7 @@ public class GriefingCommand extends SubCommandExecutor<GriefingPlugin> {
     }
 
     private void save() {
+        this.getPlugin().getConfig().setDirty();
         this.getPlugin().saveConfig();
     }
 }

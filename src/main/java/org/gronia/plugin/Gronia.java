@@ -5,9 +5,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.gronia.plugin.griefing.GriefingPlugin;
 import org.gronia.plugin.hf.HyperFurnacePlugin;
 import org.gronia.plugin.pouch.PouchPlugin;
 import org.gronia.plugin.ptp.PerfectTPPlugin;
+import org.gronia.plugin.repair.RepairPlugin;
 import org.gronia.plugin.storage.StoragePlugin;
 import org.gronia.plugin.uei.UltraEnchantedItemPlugin;
 import org.gronia.plugin.ti.TeleportItemPlugin;
@@ -23,7 +25,7 @@ public class Gronia extends JavaPlugin {
     private final Map<String, Recipe> recipeMap = new HashMap<>();
     public final NamespacedKey recipeKey = this.getKey("recipe_name");
 
-    public final Map<String,ItemStack> customItems = new HashMap<>();
+    public final Map<String, ItemStack> customItems = new HashMap<>();
 
     private final SubPlugin<?>[] plugins = new SubPlugin[]{
             new HyperFurnacePlugin(this),
@@ -31,12 +33,14 @@ public class Gronia extends JavaPlugin {
             new PouchPlugin(this),
             new UltraEnchantedItemPlugin(this),
             new PerfectTPPlugin(this),
-            new StoragePlugin(this)
+            new StoragePlugin(this),
+            new RepairPlugin(this),
+            new GriefingPlugin(this)
     };
 
     private static Gronia instance;
 
-    public Gronia(){
+    public Gronia() {
         instance = this;
     }
 
@@ -62,6 +66,8 @@ public class Gronia extends JavaPlugin {
         for (SubPlugin<?> plugin : this.plugins) {
             plugin.onEnable();
         }
+
+        RecipeUtils.registerAll();
     }
 
     @Override
@@ -69,6 +75,8 @@ public class Gronia extends JavaPlugin {
         for (SubPlugin<?> plugin : this.plugins) {
             plugin.onDisable();
         }
+
+        RecipeUtils.deregisterAll();
     }
 
     public <T extends SubPlugin<T>> T getSubPlugin(Class<T> clazz) {

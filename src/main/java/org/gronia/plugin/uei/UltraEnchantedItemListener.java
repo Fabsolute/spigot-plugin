@@ -16,7 +16,6 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
@@ -43,13 +42,9 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
             Material.BEETROOT
     );
 
-    private final ItemStack superHoe;
-    private final ItemStack enchantedBakedPotato;
 
     public UltraEnchantedItemListener(UltraEnchantedItemPlugin plugin) {
         super(plugin);
-        this.superHoe = ItemUtils.createSuperHoe();
-        this.enchantedBakedPotato = ItemUtils.createEnchantedBakedPotato();
     }
 
     @EventHandler
@@ -105,7 +100,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
             return;
         }
 
-        if (event.getItem().isSimilar(enchantedBakedPotato)) {
+        if (ItemUtils.getInternalName(event.getItem()).equalsIgnoreCase("enchanted_baked_potato")) {
             event.setCancelled(true);
         }
     }
@@ -152,7 +147,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         }
 
         ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
-        if (item.isSimilar(superHoe)) {
+        if (!ItemUtils.getInternalName(item).equalsIgnoreCase("super_hoe")) {
             return;
         }
 
@@ -199,26 +194,20 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         var meta = item.getItemMeta();
         assert meta != null;
 
-        var tierKey = this.getPlugin().<Gronia>getPlugin().getKey("tier");
-        assert tierKey != null;
-
-        var rawLevel = meta.getPersistentDataContainer().get(tierKey, PersistentDataType.INTEGER);
-        if (rawLevel == null) {
-            rawLevel = 0;
+        var material = meta.getPersistentDataContainer().get(this.getPlugin().<Gronia>getPlugin().recipeKey, PersistentDataType.STRING);
+        if (material == null) {
+            material = item.getType().name().toLowerCase();
         }
 
-        int level = rawLevel + 1;
-
-        var current = this.getPlugin().enchantConfigs.get(item.getType().name()).get(level);
-        if (current == null) {
+        String finalMaterial = material;
+        var current = this.getPlugin().enchantConfigs.get(item.getType().name()).stream().filter(i -> i.p2().equalsIgnoreCase(finalMaterial)).findFirst();
+        if (current.isEmpty()) {
             return;
         }
 
-        var old = this.getPlugin().enchantConfigs.get(item.getType().name()).get(level - 1);
-
-        int count = current.p2();
+        int count = current.get().p3();
         var all = event.getPlayer().isSneaking();
-        var required = ItemUtils.createItem(old.p1());
+        var required = ItemUtils.createItem(current.get().p2());
         var inventory = event.getPlayer().getInventory();
         var inventoryCount = getCount(inventory, required);
 
@@ -234,7 +223,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         required.setAmount(count * applyCount);
         event.getPlayer().getInventory().removeItem(required);
 
-        var stack = ItemUtils.createItem(current.p1());
+        var stack = ItemUtils.createItem(current.get().p1());
         stack.setAmount(applyCount);
         this.getPlugin().getSubPlugin(PouchPlugin.class).getUtils().pickItem(event.getPlayer(), stack);
 
@@ -314,9 +303,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
     }
 
     private void onBakedPotatoEat(PlayerItemConsumeEvent event) {
-        ItemMeta meta = event.getItem().getItemMeta();
-        assert meta != null;
-        if (!meta.hasEnchant(Enchantment.LURE)) {
+        if (!ItemUtils.getInternalName(event.getItem()).equalsIgnoreCase("enchanted_baked_potato")) {
             return;
         }
 

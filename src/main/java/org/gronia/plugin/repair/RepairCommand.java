@@ -17,11 +17,10 @@ public class RepairCommand extends SubCommandExecutor<RepairPlugin> {
 
     @Override
     public boolean onSubCommand(CommandSender sender, Command cmd, String s, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             return true;
         }
 
-        Player player = (Player) sender;
         boolean unsafe = false;
         if (args.length > 0) {
             String command = args[0];
@@ -39,24 +38,23 @@ public class RepairCommand extends SubCommandExecutor<RepairPlugin> {
 
             if (type.getMaxDurability() > 0) {
                 ItemMeta meta = stack.getItemMeta();
-                if (meta instanceof Damageable) {
-                    int multiplier = 1;
+                if (meta instanceof Damageable damageable) {
+                    int multiplier = 2;
                     if (!meta.hasEnchant(Enchantment.MENDING)) {
                         if (!unsafe) {
                             continue;
                         }
                     } else {
-                        multiplier = 2;
+                        multiplier = 64;
                     }
 
-                    Damageable damageable = (Damageable) meta;
                     int damage = damageable.getDamage();
                     int xp = Math.min(this.getTotalExperience(player), damage / multiplier);
 
                     player.giveExp(-xp);
                     damageable.setDamage(damage - (xp * multiplier));
 
-                    stack.setItemMeta((ItemMeta) damageable);
+                    stack.setItemMeta(damageable);
                 }
             }
         }

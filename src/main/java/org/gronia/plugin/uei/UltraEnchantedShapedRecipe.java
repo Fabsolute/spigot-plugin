@@ -1,22 +1,25 @@
 package org.gronia.plugin.uei;
 
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
+import org.gronia.plugin.ItemUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class UltraEnchantedShapedRecipe extends ShapedRecipe {
-    private final Map<Character, ItemStack> ingredients = new HashMap<>();
+    private final Map<Character, String> ingredients = new HashMap<>();
 
     public UltraEnchantedShapedRecipe(NamespacedKey key, ItemStack result) {
         super(key, result);
     }
 
-    public UltraEnchantedShapedRecipe setIngredient(char key, ItemStack ingredient) {
-        super.setIngredient(key, ingredient.getType());
+    public UltraEnchantedShapedRecipe setIngredient(char key, String ingredient) {
+        super.setIngredient(key, Objects.requireNonNull(ItemUtils.getMaterialFor(ingredient)));
         this.ingredients.put(key, ingredient);
         return this;
     }
@@ -29,7 +32,7 @@ public class UltraEnchantedShapedRecipe extends ShapedRecipe {
             for (var c : line.toCharArray()) {
                 var item = matrix[i * 3 + j];
                 if (this.ingredients.containsKey(c)){
-                    if (!item.isSimilar(this.ingredients.get(c))) {
+                    if (!ItemUtils.getInternalName(item).equalsIgnoreCase(this.ingredients.get(c))) {
                         return false;
                     }
                 }
