@@ -5,6 +5,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
@@ -81,6 +82,7 @@ public class GroniaMysqlConfiguration extends MemoryConfiguration {
         Gson gson = new Gson();
         while (rs.next()) {
             var value = gson.fromJson(rs.getString("value"), Map.class);
+            Bukkit.getLogger().log(Level.WARNING, "WTH" + value.get("value").getClass().getName());
             input.put(rs.getString("key"), value.get("value"));
         }
 
@@ -121,6 +123,10 @@ public class GroniaMysqlConfiguration extends MemoryConfiguration {
             String key = entry.getKey().toString();
             Object value = entry.getValue();
             if (value instanceof Map) {
+                if (((Map<?, ?>) value).containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
+                    section.set(key, ConfigurationSerialization.deserializeObject((Map<String, ?>) value));
+                    continue;
+                }
                 this.convertMapsToSections((Map<?, ?>) value, section.createSection(key));
             } else {
                 section.set(key, value);

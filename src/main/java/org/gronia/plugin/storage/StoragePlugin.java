@@ -64,6 +64,10 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
         return this.getConfig().getStringList("serializable_items");
     }
 
+    public List<String> getNotTakableItemList() {
+        return this.getConfig().getStringList("not_takable_list");
+    }
+
     public StorageAPI getAPI() {
         return this.api;
     }

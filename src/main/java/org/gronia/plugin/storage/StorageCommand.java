@@ -48,7 +48,7 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
             return true;
         }
 
-        if (!command.equalsIgnoreCase("open") && !command.equalsIgnoreCase("take") && !command.equalsIgnoreCase("stackable") && !command.equalsIgnoreCase("serializable")) {
+        if (!command.equalsIgnoreCase("open") && !command.equalsIgnoreCase("take") && !command.equalsIgnoreCase("stackable") && !command.equalsIgnoreCase("serializable") && !command.equalsIgnoreCase("takable") && !command.equalsIgnoreCase("not_takable")) {
             return this.warnUser(player);
         }
 
@@ -59,7 +59,7 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
 
         String materialName = args[1].toLowerCase();
 
-        if(!ItemUtils.isValidMaterialName(materialName)){
+        if (!ItemUtils.isValidMaterialName(materialName)) {
             return this.warnUser(player);
         }
 
@@ -87,15 +87,44 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
             return true;
         }
 
+        if (command.equalsIgnoreCase("takable")) {
+            List<String> notTakableList = this.getPlugin().getNotTakableItemList();
+            if (!notTakableList.contains(materialName)) {
+                return this.warnUser(player);
+            }
+
+            notTakableList.remove(materialName);
+            this.getPlugin().getConfig().set("not_takable_list", notTakableList);
+            this.getPlugin().getConfig().setDirty();
+            return true;
+        }
+
+        if (command.equalsIgnoreCase("not_takable")) {
+            List<String> notTakableList = this.getPlugin().getNotTakableItemList();
+            if (notTakableList.contains(materialName)) {
+                return this.warnUser(player);
+            }
+
+            notTakableList.add(materialName);
+            this.getPlugin().getConfig().set("not_takable_list", notTakableList);
+            this.getPlugin().getConfig().setDirty();
+            return true;
+        }
+
         if (command.equalsIgnoreCase("open")) {
             this.openInventory(player, materialName);
             return true;
         }
 
         if (command.equalsIgnoreCase("take")) {
-            List<String> serializableList = this.getPlugin().getSerializableItemList();
+            var serializableList = this.getPlugin().getSerializableItemList();
             if (serializableList.contains(materialName)) {
                 return this.warnUser(player);
+            }
+
+            var notTakableList = this.getPlugin().getNotTakableItemList();
+            if (notTakableList.contains(materialName)) {
+                return this.warnUser(player, "You cannot take this items. Use " + ChatColor.GREEN + "/storage open " + materialName + " " + ChatColor.DARK_PURPLE + ChatColor.MAGIC + "A" + ChatColor.RESET + ChatColor.GOLD + ChatColor.BOLD + "CLICK" + ChatColor.DARK_PURPLE + ChatColor.MAGIC + "A", "/storage open " + materialName);
             }
 
             if (args.length == 3) {
@@ -176,12 +205,6 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
     }
 
     public void takeItem(final HumanEntity ent, String materialName, int count) {
-        if (this.getPlugin().getSubPlugin(UltraEnchantedItemPlugin.class).enchantConfigs.containsKey(materialName)) {
-            // todo disabled items
-            this.warnUser(ent, "You cannot take enchantable items. Use " + ChatColor.GREEN + "/storage open " + materialName + " " + ChatColor.DARK_PURPLE + ChatColor.MAGIC + "A" + ChatColor.RESET + ChatColor.GOLD + ChatColor.BOLD + "CLICK" + ChatColor.DARK_PURPLE + ChatColor.MAGIC + "A", "/storage open " + materialName);
-            return;
-        }
-
         this.getPlugin().getAPI().addItemToPlayer(ent, count, materialName);
 
         Map<String, Integer> changes = new HashMap<>();

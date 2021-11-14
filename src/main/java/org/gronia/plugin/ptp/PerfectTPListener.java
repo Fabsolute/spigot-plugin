@@ -1,5 +1,6 @@
 package org.gronia.plugin.ptp;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,6 +15,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.gronia.plugin.SubListener;
+
+import java.util.logging.Level;
 
 public class PerfectTPListener extends SubListener<PerfectTPPlugin> {
     public PerfectTPListener(PerfectTPPlugin plugin) {
@@ -40,7 +43,10 @@ public class PerfectTPListener extends SubListener<PerfectTPPlugin> {
         if (otherPlayer != null) {
             location = otherPlayer.getLocation();
         } else {
-            location = this.getPlugin().getConfig().getConfigurationSection(tpName).getLocation("location", null);
+            var configuration = this.getPlugin().getConfig().getConfigurationSection(tpName);
+            Bukkit.getLogger().log(Level.WARNING,"config " + configuration.getKeys(true));
+            location = configuration.getLocation("location");
+            Bukkit.getLogger().log(Level.WARNING,"location " + location);
         }
 
         if (location != null) {

@@ -9,7 +9,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.gronia.utils.Pair;
 
-import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;

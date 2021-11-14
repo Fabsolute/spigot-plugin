@@ -147,7 +147,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
     public void onBreakBlock(BlockBreakEvent event) {
         var block = event.getBlock();
         final BlockData blockData = block.getBlockData();
-        if (!(blockData instanceof Ageable)) {
+        if (!(blockData instanceof Ageable ageable)) {
             return;
         }
 
@@ -159,6 +159,11 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         final Material material = block.getType();
         final Player player = event.getPlayer();
         if (!this.cropList.containsKey(material)) {
+            return;
+        }
+
+        if (ageable.getAge() != ageable.getMaximumAge()) {
+            event.setCancelled(true);
             return;
         }
 
@@ -349,7 +354,6 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
 
         return count;
     }
-
 
     private UltraEnchantedShapedRecipe getRecipe(Recipe recipe) {
         if (recipe == null) {
