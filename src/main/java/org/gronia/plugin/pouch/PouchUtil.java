@@ -184,7 +184,6 @@ public class PouchUtil extends SubUtil<PouchPlugin> {
         this.getPlugin().getConfig().setDirty();
     }
 
-
     public List<String> getLore(HumanEntity player, Material material) {
         var lore = new ArrayList<String>();
 

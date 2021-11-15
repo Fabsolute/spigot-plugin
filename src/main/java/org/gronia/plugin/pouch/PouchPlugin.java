@@ -76,7 +76,7 @@ public class PouchPlugin extends SubUtilPlugin<PouchPlugin, PouchUtil> {
 
     @Override
     public SubListener<PouchPlugin> getListener() {
-        return new PouchListener(this);
+        return null;
     }
 
     @Override

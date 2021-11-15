@@ -8,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.utils.GroniaMysqlConfiguration;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
@@ -31,7 +30,7 @@ public abstract class SubPlugin<T extends SubPlugin<T>> {
 
     public GroniaMysqlConfiguration getConfig() {
         if (this.configuration == null) {
-            this.configuration = GroniaMysqlConfiguration.loadConfiguration(GroniaMysqlConfiguration.JSON.class,this.getName());
+            this.configuration = GroniaMysqlConfiguration.loadConfiguration(GroniaMysqlConfiguration.YAML.class, this.getName());
         }
 
         return this.configuration;
@@ -58,10 +57,13 @@ public abstract class SubPlugin<T extends SubPlugin<T>> {
     }
 
     public void onDisable() {
+        if (this.configuration != null) {
+            this.saveConfig();
+        }
     }
 
     public <K extends JavaPlugin> K getPlugin() {
-        return (K)this.plugin;
+        return (K) this.plugin;
     }
 
     public Server getServer() {

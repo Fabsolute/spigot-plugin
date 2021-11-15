@@ -1,7 +1,9 @@
 package org.gronia.plugin.items;
 
 public class ItemNames {
+    public static final String SUPER_PICKAXE = "super_pickaxe";
     public static final String SUPER_HOE = "super_hoe";
+    public static final String SHULKER_SACK = "shulker_sack";
     public static final String HYPER_FURNACE = "hyper_furnace";
     public static final String TELEPORTER = "teleporter";
 

@@ -40,5 +40,6 @@ public class NPCPlugin extends SubPlugin<NPCPlugin> {
         super.onEnable();
 
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(BlacksmithTrait.class).withName("Blacksmith"));
+        CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(StorageWorkerTrait.class).withName("StorageWorker"));
     }
 }

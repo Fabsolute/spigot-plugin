@@ -54,7 +54,7 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
 
     public GroniaMysqlConfiguration getSerializableConfig() {
         if (storageSerializable == null) {
-            this.storageSerializable = GroniaMysqlConfiguration.loadConfiguration(GroniaMysqlConfiguration.JSON.class, "storage_serializable");
+            this.storageSerializable = GroniaMysqlConfiguration.loadConfiguration(GroniaMysqlConfiguration.YAML.class, "storage_serializable");
         }
 
         return this.storageSerializable;

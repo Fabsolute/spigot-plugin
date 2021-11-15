@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -26,11 +27,13 @@ public class SuperHoe extends CustomItem implements TierableItem, CraftableItem<
             Material.CARROTS,
             Material.CARROT,
             Material.BEETROOTS,
-            Material.BEETROOT
+            Material.BEETROOT,
+            Material.SWEET_BERRY_BUSH,
+            Material.SWEET_BERRIES
     );
 
     public SuperHoe() {
-        super(Material.GOLDEN_HOE, ItemNames.SUPER_HOE, "Super Hoe");
+        super(Material.NETHERITE_HOE, ItemNames.SUPER_HOE, "Super Hoe");
     }
 
     @Override
@@ -53,7 +56,7 @@ public class SuperHoe extends CustomItem implements TierableItem, CraftableItem<
     @Override
     public void onMetaCreate(ItemMeta meta) {
         super.onMetaCreate(meta);
-        meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.DURABILITY, 4, true);
     }
 
     @Override

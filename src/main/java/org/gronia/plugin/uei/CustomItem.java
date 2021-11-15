@@ -69,6 +69,9 @@ public abstract class CustomItem {
         }
     }
 
+    public void beforeCreate(ItemStack stack) {
+    }
+
     public ItemStack create() {
         var tier = 0;
         if (this instanceof TierableItem tierableItem) {
@@ -77,6 +80,7 @@ public abstract class CustomItem {
 
         var type = this.getBaseType();
         var stack = new ItemStack(type);
+        beforeCreate(stack);
         var meta = stack.getItemMeta();
 
         assert meta != null;

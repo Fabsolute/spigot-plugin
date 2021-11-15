@@ -24,6 +24,10 @@ public class BlacksmithTrait extends Trait {
 
     @EventHandler
     public void click(NPCRightClickEvent event) {
+        if (!event.getNPC().hasTrait(BlacksmithTrait.class)) {
+            return;
+        }
+
         var inventory = Bukkit.createInventory(null, 9, plugin.BLACKSMITH_TITLE);
 
         for (int i = 0; i < 9; i++) {

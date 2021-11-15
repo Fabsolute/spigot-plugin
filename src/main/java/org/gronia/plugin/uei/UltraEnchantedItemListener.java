@@ -36,27 +36,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (!event.getAction().equals(Action.RIGHT_CLICK_AIR) && !event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            return;
-        }
-
-        if (!event.hasItem()) {
-            return;
-        }
-
-        var item = event.getItem();
-        assert item != null;
-        var type = item.getType();
-        if (type == Material.FIREWORK_ROCKET) {
-            onFireworkRocketFired(event);
-            return;
-        }
-
-        if (type == Material.NETHERITE_PICKAXE) {
-            onSuperPickaxeRightClick(event);
-            return;
-        }
-
+        ItemRegistry.fireEvent(event);
         onEnchantItem(event);
     }
 
@@ -119,6 +99,8 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
 
     @EventHandler
     public void onPlaceBlock(BlockPlaceEvent event) {
+        ItemRegistry.fireEvent(event);
+
         if (!isNotPlaceable(event.getItemInHand())) {
             return;
         }
@@ -143,7 +125,9 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         }
 
         var item = event.getItem();
-        assert item != null;
+        if (item == null) {
+            return;
+        }
 
         var recipe = this.getPlugin().<Gronia>getPlugin().getCustomShapelessRecipe(item);
         if (recipe == null) {
@@ -173,78 +157,6 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         this.getPlugin().getSubPlugin(PouchPlugin.class).getUtils().pickItem(event.getPlayer(), stack);
 
         event.setCancelled(true);
-    }
-
-    private void onFireworkRocketFired(PlayerInteractEvent event) {
-        if (event.hasBlock()) {
-            event.setCancelled(true);
-            return;
-        }
-
-        var item = event.getItem();
-        assert item != null;
-
-        if (item.getType() != Material.FIREWORK_ROCKET) {
-            return;
-        }
-
-        ItemMeta meta = item.getItemMeta();
-        assert meta != null;
-        if (!meta.hasEnchant(Enchantment.LURE)) {
-            return;
-        }
-
-        var player = event.getPlayer();
-        if (player.isGliding() || event.hasBlock()) {
-            if (item.getAmount() == 1) {
-                item.setAmount(2);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(this.getPlugin().getPlugin(), () -> {
-                    if (item.getAmount() != 1) {
-                        item.setAmount(1);
-                    }
-                }, 2);
-                return;
-            }
-
-            player.sendMessage("§cYou can not use more than one enchanted firework at once!");
-        }
-
-        event.setCancelled(true);
-    }
-
-    private void onSuperPickaxeRightClick(PlayerInteractEvent event) {
-        if (event.hasBlock()) {
-            return;
-        }
-
-        var item = event.getItem();
-        assert item != null;
-
-        ItemMeta meta = item.getItemMeta();
-        assert meta != null;
-        if (!meta.hasEnchant(Enchantment.LURE)) {
-            return;
-        }
-
-        var isSilkTouch = false;
-
-        if (meta.hasEnchant(Enchantment.LOOT_BONUS_BLOCKS)) {
-            meta.removeEnchant(Enchantment.LOOT_BONUS_BLOCKS);
-            meta.addEnchant(Enchantment.SILK_TOUCH, 1, true);
-            isSilkTouch = true;
-        } else {
-            meta.removeEnchant(Enchantment.SILK_TOUCH);
-            meta.addEnchant(Enchantment.LOOT_BONUS_BLOCKS, 4, true);
-        }
-
-        meta.setLore(this.getLore(isSilkTouch));
-        item.setItemMeta(meta);
-
-        event.getPlayer().sendTitle(ChatColor.GREEN + (isSilkTouch ? "SILK TOUCH" : "FORTUNE"), ChatColor.GOLD + (isSilkTouch ? "Silk Touch" : "Fortune") + " activated.", 1, 20, 1);
-    }
-
-    private List<String> getLore(boolean isSilkTouch) {
-        return List.of("", "§dMode: §c " + (isSilkTouch ? "Silk Touch" : "Fortune"));
     }
 
     private int getCount(PlayerInventory inventory, ItemStack stack) {

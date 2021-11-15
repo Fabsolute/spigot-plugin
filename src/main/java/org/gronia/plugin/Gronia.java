@@ -47,6 +47,8 @@ public class Gronia extends JavaPlugin {
             add(new SuperHoe());
             add(new HyperFurnace());
             add(new Teleporter());
+            add(new ShulkerSack());
+            add(new SuperPickaxe());
         }
     };
 

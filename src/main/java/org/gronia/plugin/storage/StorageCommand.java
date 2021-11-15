@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
-    public static final boolean DISABLED = true;
+    public static final boolean DISABLED = false;
 
     public StorageCommand(StoragePlugin plugin) {
         super(plugin);

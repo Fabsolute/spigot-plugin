@@ -1,12 +1,18 @@
 package org.gronia.utils;
 
-import com.google.gson.Gson;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfigurationOptions;
+import org.bukkit.configuration.file.YamlConstructor;
+import org.bukkit.configuration.file.YamlRepresenter;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.sql.*;
 import java.util.*;
@@ -130,17 +136,25 @@ public abstract class GroniaMysqlConfiguration extends MemoryConfiguration {
         return super.getConfigurationSection(path);
     }
 
-    public static class JSON extends GroniaMysqlConfiguration {
-        private final Gson gson;
+    public static class YAML extends GroniaMysqlConfiguration {
+        private final LoaderOptions loaderOptions = new LoaderOptions();
+        private final Yaml yaml;
 
-        public JSON() {
-            this.gson = new Gson();
+        public YAML() {
+            DumperOptions yamlOptions = new DumperOptions();
+            Representer yamlRepresenter = new YamlRepresenter();
+            this.yaml = new Yaml(new YamlConstructor(), yamlRepresenter, yamlOptions, this.loaderOptions);
         }
 
         @Override
         public void serialize(PreparedStatement st, Map.Entry<String, Object> kv) throws SQLException {
             var key = kv.getKey();
-            var value = gson.toJson(Map.of("value", serializeComplex(kv.getValue())));
+
+            var value = yaml.dump(Map.of("value", kv.getValue()));
+            if (value.equals("{}\n")) {
+                value = "";
+            }
+
             st.setString(1, key);
             st.setString(2, value);
             st.setString(3, value);
@@ -160,10 +174,11 @@ public abstract class GroniaMysqlConfiguration extends MemoryConfiguration {
 
         @Override
         protected void loadFromResultSet(ResultSet rs) throws SQLException {
-            Map<String, Object> input = new HashMap<>();
+            this.loaderOptions.setMaxAliasesForCollections(2147483647);
+
+            Map<Object, Object> input = new HashMap<>();
             while (rs.next()) {
-                var value = gson.fromJson(rs.getString("value"), Map.class).get("value");
-                input.put(rs.getString("key"), value);
+                input.put(rs.getString("key"), ((Map)this.yaml.load(rs.getString("value"))).get("value"));
             }
 
             this.convertMapsToSections(input, this);
@@ -173,61 +188,12 @@ public abstract class GroniaMysqlConfiguration extends MemoryConfiguration {
             for (var entry : input.entrySet()) {
                 String key = entry.getKey().toString();
                 Object value = entry.getValue();
-                if (value instanceof Map) {
-                    if (((Map<?, ?>) value).containsKey(ConfigurationSerialization.SERIALIZED_TYPE_KEY)) {
-                        section.set(key, ConfigurationSerialization.deserializeObject((Map<String, ?>) value));
-                        continue;
-                    }
-                    this.convertMapsToSections((Map<?, ?>) value, section.createSection(key));
+                if (value instanceof Map map) {
+                    this.convertMapsToSections(map, section.createSection(key));
                 } else {
                     section.set(key, value);
                 }
             }
-        }
-
-        private static Object serializeComplex(Object value) {
-            if (value instanceof Object[]) {
-                value = Arrays.asList((Object[]) value);
-            }
-
-            if (value instanceof ConfigurationSection) {
-                return buildMap(((ConfigurationSection) value).getValues(false));
-            } else if (value instanceof Map mapValue) {
-                return buildMap(mapValue);
-            } else if (value instanceof List listValue) {
-                return buildList(listValue);
-            } else if (value instanceof ConfigurationSerializable serializable) {
-                Map<String, Object> values = new LinkedHashMap<>();
-                values.put(ConfigurationSerialization.SERIALIZED_TYPE_KEY, ConfigurationSerialization.getAlias(serializable.getClass()));
-                values.putAll(serializable.serialize());
-                return buildMap(values);
-            } else {
-                return value;
-            }
-        }
-
-        private static Map<String, Object> buildMap(final Map<?, ?> map) {
-            final Map<String, Object> result = new LinkedHashMap<>(map.size());
-            try {
-                for (final Map.Entry<?, ?> entry : map.entrySet()) {
-                    result.put(entry.getKey().toString(), serializeComplex(entry.getValue()));
-                }
-            } catch (final Exception e) {
-                Bukkit.getLogger().log(Level.WARNING, "Error while building configuration map.", e);
-            }
-            return result;
-        }
-
-        private static List<Object> buildList(final Collection<?> collection) {
-            final List<Object> result = new ArrayList<Object>(collection.size());
-            try {
-                for (Object o : collection) {
-                    result.add(serializeComplex(o));
-                }
-            } catch (Exception e) {
-                Bukkit.getLogger().log(Level.WARNING, "Error while building configuration list.", e);
-            }
-            return result;
         }
     }
 

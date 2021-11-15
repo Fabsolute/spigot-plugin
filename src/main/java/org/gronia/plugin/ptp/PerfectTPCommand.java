@@ -155,11 +155,6 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
     }
 
     public boolean handleTake(Player player) {
-        if (player.getLevel() < 1) {
-            player.sendMessage("[Perfect TP] " + ChatColor.RED + "You should have at least one level.");
-            return true;
-        }
-
         StorageAPI api = this.getPlugin().getSubPlugin(StoragePlugin.class).getAPI();
 
         var stack = ItemRegistry.createItem(ItemNames.TELEPORTER);
@@ -169,8 +164,6 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
         Map<String, Integer> changes = new HashMap<>();
         changes.put(ItemNames.TELEPORTER, -64);
         api.applyStackable(player.getName(), changes);
-
-        player.setLevel(player.getLevel() - 1);
 
         return true;
     }
