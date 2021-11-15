@@ -2,40 +2,52 @@ package org.gronia.plugin;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.plugin.griefing.GriefingPlugin;
-import org.gronia.plugin.hf.HyperFurnacePlugin;
+import org.gronia.plugin.items.*;
+import org.gronia.plugin.npc.NPCPlugin;
 import org.gronia.plugin.pouch.PouchPlugin;
 import org.gronia.plugin.ptp.PerfectTPPlugin;
 import org.gronia.plugin.repair.RepairPlugin;
 import org.gronia.plugin.storage.StoragePlugin;
-import org.gronia.plugin.uei.UltraEnchantedItemPlugin;
+import org.gronia.plugin.uei.*;
 import org.gronia.plugin.ti.TeleportItemPlugin;
 import org.gronia.utils.GroniaMysqlConfiguration;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Gronia extends JavaPlugin {
     private final Map<String, NamespacedKey> keys = new HashMap<>();
-    private final Map<String, Recipe> recipeMap = new HashMap<>();
+    private final Map<String, CustomShapedRecipe> shapedRecipeMap = new HashMap<>();
+    private final Map<String, CustomShapelessRecipe> shapelessRecipeMap = new HashMap<>();
     public final NamespacedKey recipeKey = this.getKey("recipe_name");
 
-    public final Map<String, ItemStack> customItems = new HashMap<>();
-
     private final SubPlugin<?>[] plugins = new SubPlugin[]{
-            new HyperFurnacePlugin(this),
             new TeleportItemPlugin(this),
             new PouchPlugin(this),
             new UltraEnchantedItemPlugin(this),
             new PerfectTPPlugin(this),
             new StoragePlugin(this),
             new RepairPlugin(this),
-            new GriefingPlugin(this)
+            new GriefingPlugin(this),
+            new NPCPlugin(this)
+    };
+
+    private final List<CustomItem> customItems = new ArrayList<>() {
+        {
+            addAll(BakedPotato.getAll());
+            addAll(Carrot.getAll());
+            addAll(Cobblestone.getAll());
+            addAll(Obsidian.getAll());
+            add(new SuperHoe());
+            add(new HyperFurnace());
+            add(new Teleporter());
+        }
     };
 
     private static Gronia instance;
@@ -67,7 +79,9 @@ public class Gronia extends JavaPlugin {
             plugin.onEnable();
         }
 
-        RecipeUtils.registerAll();
+        for (CustomItem item : this.customItems) {
+            ItemRegistry.register(item);
+        }
     }
 
     @Override
@@ -76,7 +90,7 @@ public class Gronia extends JavaPlugin {
             plugin.onDisable();
         }
 
-        RecipeUtils.deregisterAll();
+        ItemRegistry.deregisterAll();
     }
 
     public <T extends SubPlugin<T>> T getSubPlugin(Class<T> clazz) {
@@ -97,16 +111,32 @@ public class Gronia extends JavaPlugin {
         return keys.get(name);
     }
 
-    public boolean addRecipe(Recipe recipe) {
-        var item = recipe.getResult();
-        var meta = item.getItemMeta();
-        assert meta != null;
+    public boolean addRecipe(String internalName, CustomRecipe recipe, boolean isShaped) {
+        if (isShaped) {
+            this.shapedRecipeMap.put(internalName, (CustomShapedRecipe) recipe);
+            return this.getServer().addRecipe((CustomShapedRecipe) recipe);
+        }
 
-        this.recipeMap.put(meta.getPersistentDataContainer().get(recipeKey, PersistentDataType.STRING), recipe);
-        return this.getServer().addRecipe(recipe);
+        this.shapelessRecipeMap.put(internalName, (CustomShapelessRecipe) recipe);
+
+        return true;
     }
 
-    public <T extends Recipe> T getOriginalRecipe(String name) {
-        return (T) this.recipeMap.get(name);
+    public CustomShapedRecipe getCustomShapedRecipe(String name) {
+        return this.shapedRecipeMap.get(name);
+    }
+
+    public CustomShapelessRecipe getCustomShapelessRecipe(ItemStack stack) {
+        return getCustomShapelessRecipe(ItemRegistry.getInternalName(stack));
+    }
+
+    public CustomShapelessRecipe getCustomShapelessRecipe(String name) {
+        for (var recipeEntry : this.shapelessRecipeMap.entrySet()) {
+            if (recipeEntry.getValue().getIngredient().equalsIgnoreCase(name)) {
+                return recipeEntry.getValue();
+            }
+        }
+
+        return null;
     }
 }

@@ -18,7 +18,7 @@ public class PerfectTPPlugin extends SubPlugin<PerfectTPPlugin> {
 
     @Override
     public SubListener<PerfectTPPlugin> getListener() {
-        return new PerfectTPListener(this);
+        return null;
     }
 
     @Override

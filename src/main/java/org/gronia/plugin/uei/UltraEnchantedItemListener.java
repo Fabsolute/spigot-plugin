@@ -3,46 +3,33 @@ package org.gronia.plugin.uei;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.block.data.Ageable;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.FurnaceStartSmeltEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.gronia.plugin.Gronia;
-import org.gronia.plugin.ItemUtils;
+import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubListener;
 import org.gronia.plugin.pouch.PouchPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPlugin> {
-    private final Map<Material, Material> cropList = Map.of(
-            Material.WHEAT,
-            Material.WHEAT_SEEDS,
-            Material.POTATOES,
-            Material.POTATO,
-            Material.CARROTS,
-            Material.CARROT,
-            Material.BEETROOTS,
-            Material.BEETROOT
-    );
-
-
     public UltraEnchantedItemListener(UltraEnchantedItemPlugin plugin) {
         super(plugin);
     }
@@ -70,39 +57,40 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
             return;
         }
 
-        if (this.getPlugin().enchantConfigs.containsKey(type.name())) {
-            onEnchantItem(event);
-            return;
-        }
+        onEnchantItem(event);
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        ItemRegistry.fireEvent(event);
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        ItemRegistry.fireEvent(event);
+    }
+
+    @EventHandler
+    public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        ItemRegistry.fireEvent(event);
+    }
+
+    @EventHandler
+    public void onFurnaceStartSmelt(FurnaceStartSmeltEvent event) {
+        ItemRegistry.fireEvent(event);
     }
 
     @EventHandler
     public void onEnchantedItemConsume(PlayerItemConsumeEvent event) {
-        var type = event.getItem().getType();
-
-        if (type == Material.BAKED_POTATO) {
-            onBakedPotatoEat(event);
-            return;
-        }
-
+        ItemRegistry.fireEvent(event);
         if (isNotConsumable(event.getItem())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler
-    public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-
-        if (event.getItem() == null) {
-            return;
-        }
-
-        if (ItemUtils.getInternalName(event.getItem()).equalsIgnoreCase("enchanted_baked_potato")) {
-            event.setCancelled(true);
-        }
+    public void onBreakBlock(BlockBreakEvent event) {
+        ItemRegistry.fireEvent(event);
     }
 
     @EventHandler
@@ -138,36 +126,6 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         event.setCancelled(true);
     }
 
-    @EventHandler
-    public void onBreakBlock(BlockBreakEvent event) {
-        var block = event.getBlock();
-        final BlockData blockData = block.getBlockData();
-        if (!(blockData instanceof Ageable ageable)) {
-            return;
-        }
-
-        ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
-        if (!ItemUtils.getInternalName(item).equalsIgnoreCase("super_hoe")) {
-            return;
-        }
-
-        final Material material = block.getType();
-        final Player player = event.getPlayer();
-        if (!this.cropList.containsKey(material)) {
-            return;
-        }
-
-        if (ageable.getAge() != ageable.getMaximumAge()) {
-            event.setCancelled(true);
-            return;
-        }
-
-        Bukkit.getScheduler().runTaskLater(this.getPlugin().getPlugin(), () -> {
-            block.setType(material);
-            player.getInventory().removeItem(new ItemStack(this.cropList.get(material)));
-        }, 1L);
-    }
-
     public String getUltraEnchantedRecipeName(ItemStack result) {
         var meta = result.getItemMeta();
         assert meta != null;
@@ -187,27 +145,14 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         var item = event.getItem();
         assert item != null;
 
-        if (!this.getPlugin().enchantConfigs.containsKey(item.getType().name())) {
+        var recipe = this.getPlugin().<Gronia>getPlugin().getCustomShapelessRecipe(item);
+        if (recipe == null) {
             return;
         }
 
-        var meta = item.getItemMeta();
-        assert meta != null;
-
-        var material = meta.getPersistentDataContainer().get(this.getPlugin().<Gronia>getPlugin().recipeKey, PersistentDataType.STRING);
-        if (material == null) {
-            material = item.getType().name().toLowerCase();
-        }
-
-        String finalMaterial = material;
-        var current = this.getPlugin().enchantConfigs.get(item.getType().name()).stream().filter(i -> i.p2().equalsIgnoreCase(finalMaterial)).findFirst();
-        if (current.isEmpty()) {
-            return;
-        }
-
-        int count = current.get().p3();
+        int count = recipe.getCount();
         var all = event.getPlayer().isSneaking();
-        var required = ItemUtils.createItem(current.get().p2());
+        var required = ItemRegistry.createItem(recipe.getIngredient());
         var inventory = event.getPlayer().getInventory();
         var inventoryCount = getCount(inventory, required);
 
@@ -223,7 +168,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         required.setAmount(count * applyCount);
         event.getPlayer().getInventory().removeItem(required);
 
-        var stack = ItemUtils.createItem(current.get().p1());
+        var stack = ItemRegistry.createItem(recipe.getResult());
         stack.setAmount(applyCount);
         this.getPlugin().getSubPlugin(PouchPlugin.class).getUtils().pickItem(event.getPlayer(), stack);
 
@@ -302,25 +247,6 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         return List.of("", "§dMode: §c " + (isSilkTouch ? "Silk Touch" : "Fortune"));
     }
 
-    private void onBakedPotatoEat(PlayerItemConsumeEvent event) {
-        if (!ItemUtils.getInternalName(event.getItem()).equalsIgnoreCase("enchanted_baked_potato")) {
-            return;
-        }
-
-        Player player = event.getPlayer();
-        player.setFoodLevel(this.clamp(player.getFoodLevel() + 10, 0, 20));
-        player.setSaturation(this.clamp(player.getSaturation() + 12, 0f, (float) player.getFoodLevel()));
-        player.setHealth(this.clamp((int) player.getHealth() + 2, 0, 20));
-    }
-
-    private float clamp(float value, float min, float max) {
-        return Math.max(Math.min(value, max), min);
-    }
-
-    private int clamp(int value, int min, int max) {
-        return (int) this.clamp((float) value, min, max);
-    }
-
     private int getCount(PlayerInventory inventory, ItemStack stack) {
         int count = 0;
 
@@ -342,7 +268,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         return count;
     }
 
-    private UltraEnchantedShapedRecipe getRecipe(Recipe recipe) {
+    private CustomShapedRecipe getRecipe(Recipe recipe) {
         if (recipe == null) {
             return null;
         }
@@ -352,13 +278,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
             return null;
         }
 
-        var originalRecipe = this.getPlugin().<Gronia>getPlugin().getOriginalRecipe(recipeName);
-
-        if (!(originalRecipe instanceof UltraEnchantedShapedRecipe shapedRecipe)) {
-            return null;
-        }
-
-        return shapedRecipe;
+        return this.getPlugin().<Gronia>getPlugin().getCustomShapedRecipe(recipeName);
     }
 
     private boolean isNotConsumable(ItemStack item) {

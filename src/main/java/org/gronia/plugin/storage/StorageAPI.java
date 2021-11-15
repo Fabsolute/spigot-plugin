@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.ItemStack;
-import org.gronia.plugin.ItemUtils;
+import org.gronia.plugin.ItemRegistry;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,7 +51,7 @@ public class StorageAPI {
                 this.plugin.getServer().broadcastMessage("[Storage] " + name + " stored " + ChatColor.GREEN + "" + -count + " " + materialName + ChatColor.WHITE + " and new count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".");
             }
 
-            stackableConfig.set(materialName, newCount == 0 ? null : newCount);
+            stackableConfig.set(materialName, newCount);
         }
 
         this.plugin.getStackableConfig().setDirty();
@@ -79,7 +79,7 @@ public class StorageAPI {
     }
 
     public void addItemToPlayer(HumanEntity player, int count, String materialName) {
-        var stack = ItemUtils.createItem(materialName);
+        var stack = ItemRegistry.createItem(materialName);
         stack.setAmount(count);
         this.addItemToPlayer(player, stack);
     }

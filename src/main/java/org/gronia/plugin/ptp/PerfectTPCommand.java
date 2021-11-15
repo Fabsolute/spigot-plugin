@@ -9,8 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.NumberMap;
 import org.gronia.plugin.SubCommandExecutor;
+import org.gronia.plugin.items.ItemNames;
 import org.gronia.plugin.storage.StorageAPI;
 import org.gronia.plugin.storage.StoragePlugin;
 
@@ -23,11 +25,9 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
 
     @Override
     public boolean onSubCommand(CommandSender sender, Command cmd, String s, String[] args) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             return true;
         }
-
-        Player player = (Player) sender;
 
         if (args.length == 0) {
             return this.warnUser(player);
@@ -160,16 +160,14 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
             return true;
         }
 
-        ItemStack stack = new ItemStack(Material.CHORUS_FRUIT, 64);
-        ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName("[TP]");
-        stack.setItemMeta(meta);
-
         StorageAPI api = this.getPlugin().getSubPlugin(StoragePlugin.class).getAPI();
+
+        var stack = ItemRegistry.createItem(ItemNames.TELEPORTER);
+        stack.setAmount(64);
 
         api.addItemToPlayer(player, stack);
         Map<String, Integer> changes = new HashMap<>();
-        changes.put("chorus_fruit", -64);
+        changes.put(ItemNames.TELEPORTER, -64);
         api.applyStackable(player.getName(), changes);
 
         player.setLevel(player.getLevel() - 1);

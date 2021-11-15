@@ -46,7 +46,7 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
 
     public GroniaMysqlConfiguration getStackableConfig() {
         if (storageStackable == null) {
-            this.storageStackable = GroniaMysqlConfiguration.loadConfiguration("storage_stackable");
+            this.storageStackable = GroniaMysqlConfiguration.loadConfiguration(GroniaMysqlConfiguration.Integer.class, "storage_stackable");
         }
 
         return this.storageStackable;
@@ -54,7 +54,7 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
 
     public GroniaMysqlConfiguration getSerializableConfig() {
         if (storageSerializable == null) {
-            this.storageSerializable = GroniaMysqlConfiguration.loadConfiguration("storage_serializable");
+            this.storageSerializable = GroniaMysqlConfiguration.loadConfiguration(GroniaMysqlConfiguration.JSON.class, "storage_serializable");
         }
 
         return this.storageSerializable;

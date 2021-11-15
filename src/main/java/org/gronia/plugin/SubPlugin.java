@@ -31,7 +31,7 @@ public abstract class SubPlugin<T extends SubPlugin<T>> {
 
     public GroniaMysqlConfiguration getConfig() {
         if (this.configuration == null) {
-            this.configuration = GroniaMysqlConfiguration.loadConfiguration(this.getName());
+            this.configuration = GroniaMysqlConfiguration.loadConfiguration(GroniaMysqlConfiguration.JSON.class,this.getName());
         }
 
         return this.configuration;

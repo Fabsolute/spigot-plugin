@@ -11,14 +11,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.gronia.plugin.ItemUtils;
+import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubCommandExecutor;
-import org.gronia.plugin.uei.UltraEnchantedItemPlugin;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
+    public static final boolean DISABLED = true;
+
     public StorageCommand(StoragePlugin plugin) {
         super(plugin);
     }
@@ -26,6 +27,11 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
     @Override
     public boolean onSubCommand(CommandSender sender, Command cmd, String s, String[] args) {
         if (!(sender instanceof Player player)) {
+            return true;
+        }
+
+        if (DISABLED && !player.getName().equalsIgnoreCase("fabsolutely")) {
+            player.sendTitle(ChatColor.RED + "STORAGE CLOSED", ChatColor.GOLD + "Geçici olarak kullanıma kapalıdır.", 20, 20, 20);
             return true;
         }
 
@@ -59,7 +65,7 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
 
         String materialName = args[1].toLowerCase();
 
-        if (!ItemUtils.isValidMaterialName(materialName)) {
+        if (!ItemRegistry.isValidMaterialName(materialName)) {
             return this.warnUser(player);
         }
 
@@ -164,9 +170,9 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
             items.put(key, section.getInt(key));
         }
 
-        List<Map.Entry<String, Integer>> list = items.entrySet().stream().sorted(Map.Entry.comparingByValue()).skip(page * 54L).limit(54).collect(Collectors.toList());
+        List<Map.Entry<String, Integer>> list = items.entrySet().stream().filter(i -> i.getValue() != 0).sorted(Map.Entry.comparingByValue()).skip(page * 54L).limit(54).collect(Collectors.toList());
         for (Map.Entry<String, Integer> e : list) {
-            ItemStack stack = ItemUtils.createItem(e.getKey());
+            ItemStack stack = ItemRegistry.createItem(e.getKey());
             List<String> lore = new ArrayList<>();
             int count = e.getValue();
             if (count > 0) {

@@ -35,7 +35,7 @@ public class PerfectTPTabCompleter extends SubTabCompleter<PerfectTPPlugin> {
 
         if (args.length == 2) {
             String command = args[0];
-            if (command.equalsIgnoreCase("take") || command.equalsIgnoreCase("remove") || command.equalsIgnoreCase("icon")) {
+            if (command.equalsIgnoreCase("remove") || command.equalsIgnoreCase("icon")) {
                 ConfigurationSection config = this.getPlugin().getConfig();
                 Set<String> keys = config.getKeys(false);
                 this.output.addAll(keys);

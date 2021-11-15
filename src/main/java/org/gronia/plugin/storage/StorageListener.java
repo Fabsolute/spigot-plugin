@@ -9,7 +9,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.gronia.plugin.ItemUtils;
+import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubListener;
 import org.gronia.utils.GroniaMysqlConfiguration;
 
@@ -56,6 +56,10 @@ public class StorageListener extends SubListener<StoragePlugin> {
             return;
         }
 
+        if (StorageCommand.DISABLED && !e.getPlayer().getName().equalsIgnoreCase("fabsolutely")) {
+            return;
+        }
+
         for (ItemStack stack : e.getInventory().getContents()) {
             if (stack == null) {
                 continue;
@@ -97,7 +101,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
             if (oldCount > 0) {
                 int count = oldCount;
 
-                var material = ItemUtils.getMaterialFor(title);
+                var material = ItemRegistry.getMaterialFor(title);
 
                 int maxCount = material.getMaxStackSize() * e.getInventory().getSize();
                 count = Math.min(count, maxCount);
@@ -108,13 +112,13 @@ public class StorageListener extends SubListener<StoragePlugin> {
                 int diff = stackCount * material.getMaxStackSize() - count;
 
                 for (int i = 0; i < stackCount; i++) {
-                    ItemStack stack = ItemUtils.createItem(title);
+                    ItemStack stack = ItemRegistry.createItem(title);
                     stack.setAmount(material.getMaxStackSize() - (i == stackCount - 1 ? diff : 0));
                     e.getInventory().addItem(stack);
                 }
 
                 int newCount = oldCount - count;
-                config.set(title, newCount > 0 ? newCount : null);
+                config.set(title, newCount);
                 config.setDirty();
             }
 
@@ -131,6 +135,10 @@ public class StorageListener extends SubListener<StoragePlugin> {
 
         title = title.replace("[Storage] ", "").replace("[S] ", "");
         if (title.equalsIgnoreCase("View")) {
+            return;
+        }
+
+        if (StorageCommand.DISABLED && !e.getPlayer().getName().equalsIgnoreCase("fabsolutely")) {
             return;
         }
 
@@ -158,7 +166,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
                 continue;
             }
 
-            String key = ItemUtils.getInternalName(stack);
+            String key = ItemRegistry.getInternalName(stack);
 
             List<String> serializableList = this.getPlugin().getSerializableItemList();
             if (serializableList.contains(key)) {
@@ -169,7 +177,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
             } else {
                 int count = stackableConfig.getInt(key, 0);
                 count += stack.getAmount();
-                stackableConfig.set(key, count == 0 ? null : count);
+                stackableConfig.set(key, count);
 
                 stackableConfig.setDirty();
 
