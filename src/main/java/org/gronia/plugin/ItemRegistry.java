@@ -33,6 +33,8 @@ public class ItemRegistry {
         }
 
         customItems.put(customItem.getInternalName(), customItem);
+
+        customItem.onEnable();
     }
 
     private static void registerRecipe(CustomItem item) {

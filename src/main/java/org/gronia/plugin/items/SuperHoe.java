@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
@@ -67,20 +68,15 @@ public class SuperHoe extends CustomItem implements TierableItem, CraftableItem<
     }
 
     public void onBlockBreak(BlockBreakEvent event) {
-        var block = event.getBlock();
-        final BlockData blockData = block.getBlockData();
-        if (!(blockData instanceof Ageable ageable)) {
-            return;
-        }
-
         ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
         if (ItemRegistry.getCustomItem(item) != this) {
             return;
         }
 
-        final Material material = block.getType();
-        final Player player = event.getPlayer();
-        if (!this.cropList.containsKey(material)) {
+        var block = event.getBlock();
+        final BlockData blockData = block.getBlockData();
+        if (!(blockData instanceof Ageable ageable)) {
+            event.setCancelled(true);
             return;
         }
 
@@ -89,6 +85,21 @@ public class SuperHoe extends CustomItem implements TierableItem, CraftableItem<
             return;
         }
 
+        final Material material = block.getType();
+        if (!this.cropList.containsKey(material)) {
+            event.setCancelled(true);
+            return;
+        }
+
+        boolean shouldDamage = (Math.random() < (1f / (item.getEnchantmentLevel(Enchantment.DURABILITY) * 2 + 1)));
+        if (shouldDamage) {
+            var meta = (Damageable) item.getItemMeta();
+            assert meta != null;
+            meta.setDamage(meta.getDamage() + 1);
+            item.setItemMeta(meta);
+        }
+
+        final Player player = event.getPlayer();
         Bukkit.getScheduler().runTaskLater(Gronia.getInstance(), () -> {
             block.setType(material);
             player.getInventory().removeItem(new ItemStack(this.cropList.get(material)));

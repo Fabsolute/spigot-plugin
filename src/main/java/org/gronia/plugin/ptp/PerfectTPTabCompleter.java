@@ -28,6 +28,7 @@ public class PerfectTPTabCompleter extends SubTabCompleter<PerfectTPPlugin> {
         if (args.length == 1) {
             output.add("list");
             output.add("take");
+            output.add("home");
             output.add("add");
             output.add("remove");
             output.add("icon");
@@ -38,10 +39,7 @@ public class PerfectTPTabCompleter extends SubTabCompleter<PerfectTPPlugin> {
             if (command.equalsIgnoreCase("remove") || command.equalsIgnoreCase("icon")) {
                 ConfigurationSection config = this.getPlugin().getConfig();
                 Set<String> keys = config.getKeys(false);
-                this.output.addAll(keys);
-                for (Player player : this.getPlugin().getServer().getOnlinePlayers()) {
-                    this.output.add(player.getName());
-                }
+                this.output.addAll(keys.stream().filter(k -> !k.startsWith("custom_home_")).toList());
             }
         }
 

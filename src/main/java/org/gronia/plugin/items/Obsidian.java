@@ -55,7 +55,7 @@ public class Obsidian extends CustomItem implements TierableItem {
 
         @Override
         public void fillRecipe(CustomShapelessRecipe recipe) {
-            recipe.addIngredient(4, ItemNames.ENCHANTED_OBSIDIAN);
+            recipe.addIngredient(2, ItemNames.ENCHANTED_OBSIDIAN);
         }
     }
 
@@ -66,7 +66,7 @@ public class Obsidian extends CustomItem implements TierableItem {
 
         @Override
         public void fillRecipe(CustomShapelessRecipe recipe) {
-            recipe.addIngredient(4, ItemNames.EXTRA_ENCHANTED_OBSIDIAN);
+            recipe.addIngredient(2, ItemNames.EXTRA_ENCHANTED_OBSIDIAN);
         }
     }
 

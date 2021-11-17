@@ -12,7 +12,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubUtil;
+import org.gronia.plugin.items.ShulkerSack;
 
 import java.util.*;
 
@@ -27,17 +29,12 @@ public class PouchUtil extends SubUtil<PouchPlugin> {
         if (PouchPlugin.pouchableItems.contains(stack.getType())) {
             var playerHeads = playerInventory.all(Material.PLAYER_HEAD);
             for (var head : playerHeads.values()) {
-                var meta = head.getItemMeta();
-                assert meta != null;
-                if (!meta.hasEnchant(Enchantment.LURE)) {
+                if (!(ItemRegistry.getCustomItem(head) instanceof ShulkerSack)) {
                     continue;
                 }
 
-                var name = meta.getDisplayName();
-                if (name.contains("Pouch")) {
-                    pickItemToHead(player, stack, true);
-                    return;
-                }
+                pickItemToHead(player, stack, true);
+                return;
             }
         }
 
@@ -78,8 +75,7 @@ public class PouchUtil extends SubUtil<PouchPlugin> {
         return output;
     }
 
-    public void openPouch(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 54, this.getPlugin().INVENTORY_TITLE);
+    public void openPouch(Player player, Inventory inventory) {
 
         for (int j = 0; j < 6; j++) {
             for (int i = 0; i < 9; i++) {

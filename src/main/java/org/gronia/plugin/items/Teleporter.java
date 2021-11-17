@@ -1,5 +1,6 @@
 package org.gronia.plugin.items;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -18,11 +19,20 @@ import org.gronia.plugin.ptp.PerfectTPPlugin;
 import org.gronia.plugin.uei.*;
 import org.gronia.utils.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Teleporter extends CustomItem implements TierableItem, EventListenerItem, CraftableItem<CustomShapelessRecipe> {
+    private Inventory inventory;
+
     public Teleporter() {
         super(Material.CHORUS_FRUIT, ItemNames.TELEPORTER, "Teleporter");
+    }
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
+        inventory = Gronia.getInstance().getServer().createInventory(null, 54, "Select Teleport Location");
     }
 
     @Override
@@ -36,6 +46,7 @@ public class Teleporter extends CustomItem implements TierableItem, EventListene
     }
 
     private void onEat(PlayerItemConsumeEvent event) {
+        List<ItemStack> output = new ArrayList<>();
         ItemStack item = event.getItem();
         if (ItemRegistry.getCustomItem(item) != this) {
             if (item.getType() == Material.CHORUS_FRUIT) {
@@ -45,22 +56,33 @@ public class Teleporter extends CustomItem implements TierableItem, EventListene
             return;
         }
 
-        Inventory inventory = Gronia.getInstance().getServer().createInventory(null, 54, "[Teleport]");
+        var home = new ItemStack(Material.PLAYER_HEAD);
+        var homeMeta = home.getItemMeta();
+        assert homeMeta != null;
+        homeMeta.setDisplayName(ChatColor.GOLD + "Home");
+        home.setItemMeta(homeMeta);
+        output.add(home);
+
         var players = Gronia.getInstance().getServer().getOnlinePlayers();
         for (Player player : players) {
             if (player == event.getPlayer()) {
                 continue;
             }
+
             ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD);
             SkullMeta playerHeadMeta = (SkullMeta) playerHead.getItemMeta();
             assert playerHeadMeta != null;
             playerHeadMeta.setOwningPlayer(player);
             playerHeadMeta.setDisplayName(player.getName());
             playerHead.setItemMeta(playerHeadMeta);
-            inventory.addItem(playerHead);
+            output.add(playerHead);
         }
 
         for (String locationName : Gronia.getInstance().getSubPlugin(PerfectTPPlugin.class).getConfig().getKeys(false)) {
+            if (locationName.startsWith("custom_home_")) {
+                continue;
+            }
+
             ConfigurationSection section = Gronia.getInstance().getSubPlugin(PerfectTPPlugin.class).getConfig().getConfigurationSection(locationName);
             assert section != null;
             String itemName = section.getString("icon", "compass");
@@ -70,9 +92,10 @@ public class Teleporter extends CustomItem implements TierableItem, EventListene
             assert locationMeta != null;
             locationMeta.setDisplayName(locationName);
             locationStack.setItemMeta(locationMeta);
-            inventory.addItem(locationStack);
+            output.add(locationStack);
         }
 
+        inventory.setContents(output.toArray(new ItemStack[0]));
         event.getPlayer().openInventory(inventory);
     }
 
@@ -83,7 +106,7 @@ public class Teleporter extends CustomItem implements TierableItem, EventListene
     }
 
     private void onItemClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().equals("[Teleport]")) {
+        if (event.getInventory() != this.inventory) {
             return;
         }
 
@@ -92,16 +115,30 @@ public class Teleporter extends CustomItem implements TierableItem, EventListene
         if (current == null) {
             return;
         }
+
         ItemMeta meta = current.getItemMeta();
         assert meta != null;
         String tpName = meta.getDisplayName();
         Location location;
+
+        if (tpName.equalsIgnoreCase(ChatColor.GOLD + "Home")) {
+            tpName = "custom_home_" + event.getWhoClicked().getName();
+        }
 
         Player otherPlayer = Gronia.getInstance().getServer().getPlayer(tpName);
         if (otherPlayer != null) {
             location = otherPlayer.getLocation();
         } else {
             var configuration = Gronia.getInstance().getSubPlugin(PerfectTPPlugin.class).getConfig().getConfigurationSection(tpName);
+            if (configuration == null) {
+                if (tpName.startsWith("custom_home_")) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "You have to assign home first. Use: /ptp home");
+                } else {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "Something went wrong");
+                }
+                return;
+            }
+
             location = configuration.getLocation("location");
         }
 

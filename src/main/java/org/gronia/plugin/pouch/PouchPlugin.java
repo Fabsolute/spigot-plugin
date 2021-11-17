@@ -12,8 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PouchPlugin extends SubUtilPlugin<PouchPlugin, PouchUtil> {
-    public int MAX_COUNT;
-    public final String INVENTORY_TITLE = "[Pouch]";
+    public int MAX_COUNT = 1024;
     public final ItemStack lockedAreaItem;
     public final ItemStack enderChestItem;
     public final ItemStack applyAllItem;
@@ -92,7 +91,6 @@ public class PouchPlugin extends SubUtilPlugin<PouchPlugin, PouchUtil> {
     @Override
     public void onEnable() {
         super.onEnable();
-        MAX_COUNT = this.getConfig().getInt("MAX_COUNT", 20480);
         this.getServer().getScheduler().scheduleSyncRepeatingTask(this.getPlugin(), this::saveConfig, 80, 80);
     }
 }

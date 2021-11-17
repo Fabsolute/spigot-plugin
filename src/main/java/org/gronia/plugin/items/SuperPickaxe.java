@@ -77,10 +77,10 @@ public class SuperPickaxe extends CustomItem implements TierableItem, CraftableI
         meta.setLore(this.getLore(isSilkTouch));
         item.setItemMeta(meta);
 
-        event.getPlayer().sendTitle(ChatColor.GREEN + (isSilkTouch ? "SILK TOUCH" : "FORTUNE"), ChatColor.GOLD + (isSilkTouch ? "Silk Touch" : "Fortune") + " activated.", 1, 20, 1);
+        event.getPlayer().sendTitle(isSilkTouch ? (ChatColor.GREEN + "SILK TOUCH") : (ChatColor.BLUE + "FORTUNE"), ChatColor.GOLD + (isSilkTouch ? "Silk Touch" : "Fortune") + " activated.", 1, 20, 1);
     }
 
     private List<String> getLore(boolean isSilkTouch) {
-        return List.of("", "§dMode: §c " + (isSilkTouch ? "Silk Touch" : "Fortune"));
+        return List.of("", ChatColor.LIGHT_PURPLE + "Mode: " + ChatColor.RED + " " + (isSilkTouch ? "Silk Touch" : "Fortune"));
     }
 }

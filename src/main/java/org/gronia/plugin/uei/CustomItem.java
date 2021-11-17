@@ -102,4 +102,8 @@ public abstract class CustomItem {
 
         return stack;
     }
+
+    public void onEnable(){
+
+    }
 }

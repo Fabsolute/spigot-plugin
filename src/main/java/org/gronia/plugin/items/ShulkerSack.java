@@ -9,6 +9,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
@@ -16,10 +17,14 @@ import org.gronia.plugin.pouch.PouchPlugin;
 import org.gronia.plugin.uei.*;
 import org.gronia.utils.Pair;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ShulkerSack extends CustomItem implements CraftableItem<CustomShapedRecipe>, TierableItem, EventListenerItem {
+    private final Map<HumanEntity, Inventory> inventoryMap = new HashMap<>();
+
     public ShulkerSack() {
         super(Material.PLAYER_HEAD, ItemNames.SHULKER_SACK, "Shulker Sack");
     }
@@ -27,8 +32,8 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
     @Override
     public void fillRecipe(CustomShapedRecipe recipe) {
         recipe.shape("CCC", "CSC", "CCC");
-        recipe.setIngredient('C', ItemNames.ENCHANTED_OBSIDIAN);
-        recipe.setIngredient('S', Material.SHULKER_BOX);
+        recipe.setIngredient('C', ItemNames.SUPER_ENCHANTED_COBBLESTONE);
+        recipe.setIngredient('S', ItemNames.ULTRA_ENCHANTED_OBSIDIAN);
     }
 
     @Override
@@ -80,7 +85,7 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
 
     void onItemClick(InventoryClickEvent event) {
         var plugin = Gronia.getInstance().getSubPlugin(PouchPlugin.class);
-        if (!event.getView().getTitle().equals(plugin.INVENTORY_TITLE)) {
+        if (event.getInventory() != this.inventoryMap.get(event.getWhoClicked())) {
             return;
         }
 
@@ -153,6 +158,11 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
         }
 
         event.setCancelled(true);
-        Gronia.getInstance().getSubPlugin(PouchPlugin.class).getUtils().openPouch(player);
+
+        if (!inventoryMap.containsKey(player)) {
+            inventoryMap.put(player, Bukkit.createInventory(player, 54));
+        }
+
+        Gronia.getInstance().getSubPlugin(PouchPlugin.class).getUtils().openPouch(player, inventoryMap.get(player));
     }
 }

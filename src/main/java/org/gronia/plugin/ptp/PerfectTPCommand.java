@@ -39,6 +39,10 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
             return this.handleList(player);
         }
 
+        if (command.equalsIgnoreCase("home")) {
+            return this.handleHome(player);
+        }
+
         if (command.equalsIgnoreCase("take")) {
             return this.handleTake(player);
         }
@@ -52,7 +56,7 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
         }
 
         if (command.equalsIgnoreCase("add")) {
-            return this.handleAdd(player, args[1].toLowerCase());
+            return this.handleAdd(player, args[1].toLowerCase(), true);
         }
 
         if (args.length < 3) {
@@ -105,6 +109,10 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
 
         Set<String> keys = config.getKeys(false);
         for (String name : keys) {
+            if (name.startsWith("custom_home_")) {
+                continue;
+            }
+
             Location detail = config.getConfigurationSection(name).getLocation("location");
             assert detail != null;
 
@@ -113,10 +121,10 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
         return true;
     }
 
-    public boolean handleAdd(Player player, String name) {
+    public boolean handleAdd(Player player, String name, boolean checkExistence) {
         ConfigurationSection config = this.getPlugin().getConfig();
 
-        if (config.get(name, null) != null) {
+        if (checkExistence && config.get(name, null) != null) {
             player.sendMessage("[Perfect TP] " + ChatColor.RED + "This name is already exists.");
             return true;
         }
@@ -152,6 +160,10 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
 
         player.sendMessage("[Perfect TP] " + ChatColor.GREEN + "Named TP point is deactivated.");
         return true;
+    }
+
+    public boolean handleHome(Player player) {
+        return this.handleAdd(player, "custom_home_" + player.getName(), false);
     }
 
     public boolean handleTake(Player player) {

@@ -181,10 +181,11 @@ public class StorageListener extends SubListener<StoragePlugin> {
 
                 stackableConfig.setDirty();
 
-                inventory.remove(stack);
                 loads.put(key, loads.getOrDefault(key, 0) + stack.getAmount());
                 newCounts.put(key, count);
             }
+
+            inventory.remove(stack);
         }
 
         if (name == null) {
@@ -196,6 +197,8 @@ public class StorageListener extends SubListener<StoragePlugin> {
             name = ChatColor.AQUA + entity.getName() + ChatColor.WHITE;
         }
 
+        var messages = new ArrayList<String>();
+
         for (Map.Entry<String, Integer> load : loads.entrySet()) {
             int old = counts.getOrDefault(load.getKey(), 0);
             counts.remove(load.getKey());
@@ -206,15 +209,17 @@ public class StorageListener extends SubListener<StoragePlugin> {
             }
 
             if (count > 0) {
-                this.getPlugin().getServer().broadcastMessage("[Storage] " + name + " stored " + ChatColor.GREEN + "" + count + " " + load.getKey() + ChatColor.WHITE + " and new count is " + ChatColor.GOLD + newCounts.get(load.getKey()) + ChatColor.WHITE + ".");
+                messages.add("[Storage] " + name + " stored " + ChatColor.GREEN + "" + count + " " + load.getKey() + ChatColor.WHITE + " and new count is " + ChatColor.GOLD + newCounts.get(load.getKey()) + ChatColor.WHITE + ".");
             } else {
-                this.getPlugin().getServer().broadcastMessage("[Storage] " + name + " took " + ChatColor.GREEN + "" + -count + " " + load.getKey() + ChatColor.WHITE + ".");
+                messages.add("[Storage] " + name + " took " + ChatColor.GREEN + "" + -count + " " + load.getKey() + ChatColor.WHITE + ".");
             }
         }
 
         for (Map.Entry<String, Integer> count : counts.entrySet()) {
-            this.getPlugin().getServer().broadcastMessage("[Storage] " + name + " took " + ChatColor.GREEN + "" + count.getValue() + " " + count.getKey() + ChatColor.WHITE + ".");
+            messages.add("[Storage] " + name + " took " + ChatColor.GREEN + "" + count.getValue() + " " + count.getKey() + ChatColor.WHITE + ".");
         }
+
+        this.getPlugin().getAPI().sendMessages(messages, name);
 
         this.getPlugin().tempCounts.remove(inventory);
     }
