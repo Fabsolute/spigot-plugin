@@ -1,11 +1,10 @@
-package org.gronia.plugin.pouch;
+package org.gronia.plugin.sack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -17,16 +16,17 @@ import org.gronia.plugin.SubUtil;
 import org.gronia.plugin.items.ShulkerSack;
 
 import java.util.*;
+import java.util.logging.Level;
 
-public class PouchUtil extends SubUtil<PouchPlugin> {
-    public PouchUtil(PouchPlugin plugin) {
+public class SackUtil extends SubUtil<SackPlugin> {
+    public SackUtil(SackPlugin plugin) {
         super(plugin);
     }
 
     public void pickItem(Player player, ItemStack stack) {
         PlayerInventory playerInventory = player.getInventory();
 
-        if (PouchPlugin.pouchableItems.contains(stack.getType())) {
+        if (SackPlugin.sackableItems.contains(stack.getType())) {
             var playerHeads = playerInventory.all(Material.PLAYER_HEAD);
             for (var head : playerHeads.values()) {
                 if (!(ItemRegistry.getCustomItem(head) instanceof ShulkerSack)) {
@@ -75,7 +75,7 @@ public class PouchUtil extends SubUtil<PouchPlugin> {
         return output;
     }
 
-    public void openPouch(Player player, Inventory inventory) {
+    public void openSack(Player player, Inventory inventory) {
 
         for (int j = 0; j < 6; j++) {
             for (int i = 0; i < 9; i++) {
@@ -113,7 +113,7 @@ public class PouchUtil extends SubUtil<PouchPlugin> {
 
         for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 5; i++) {
-                Material material = PouchPlugin.pouchableItems.get(i * 5 + j);
+                Material material = SackPlugin.sackableItems.get(i * 5 + j);
                 ItemStack item = new ItemStack(material);
                 ItemMeta meta = item.getItemMeta();
                 assert meta != null;
@@ -169,8 +169,10 @@ public class PouchUtil extends SubUtil<PouchPlugin> {
 
             int dropCount = pickItemToHead(player, item, false);
 
+            Bukkit.getLogger().log(Level.WARNING, "dc" + dropCount);
+
             if (dropCount == 0) {
-                playerInventory.remove(item);
+                playerInventory.removeItem(item);
             } else {
                 item.setAmount(dropCount);
                 break;

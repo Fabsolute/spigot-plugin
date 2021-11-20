@@ -2,6 +2,7 @@ package org.gronia.plugin.items;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
@@ -18,6 +19,7 @@ import org.gronia.utils.Pair;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class SuperHoe extends CustomItem implements TierableItem, CraftableItem<CustomShapedRecipe>, EventListenerItem {
     private final Map<Material, Material> cropList = Map.of(
@@ -31,6 +33,11 @@ public class SuperHoe extends CustomItem implements TierableItem, CraftableItem<
             Material.BEETROOT,
             Material.SWEET_BERRY_BUSH,
             Material.SWEET_BERRIES
+    );
+
+    private final List<Material> stackableList = List.of(
+            Material.SUGAR_CANE,
+            Material.CACTUS
     );
 
     public SuperHoe() {
@@ -73,20 +80,7 @@ public class SuperHoe extends CustomItem implements TierableItem, CraftableItem<
             return;
         }
 
-        var block = event.getBlock();
-        final BlockData blockData = block.getBlockData();
-        if (!(blockData instanceof Ageable ageable)) {
-            event.setCancelled(true);
-            return;
-        }
-
-        if (ageable.getAge() != ageable.getMaximumAge()) {
-            event.setCancelled(true);
-            return;
-        }
-
-        final Material material = block.getType();
-        if (!this.cropList.containsKey(material)) {
+        if (!checkCrops(event) && !checkStackable(event)) {
             event.setCancelled(true);
             return;
         }
@@ -98,11 +92,53 @@ public class SuperHoe extends CustomItem implements TierableItem, CraftableItem<
             meta.setDamage(meta.getDamage() + 1);
             item.setItemMeta(meta);
         }
+    }
+
+    private boolean checkStackable(BlockBreakEvent event) {
+        var block = event.getBlock();
+        final Material material = block.getType();
+
+        if (!this.stackableList.contains(material)) {
+            return false;
+        }
+
+        var bottomBlock = block.getRelative(BlockFace.DOWN);
+        if (bottomBlock.getType() != material) {
+            Bukkit.getLogger().log(Level.WARNING, "Bottom" + bottomBlock.getType());
+            return false;
+        }
+
+        var topBlock = block.getRelative(BlockFace.UP);
+        if (topBlock.getType() == material) {
+            event.getPlayer().breakBlock(topBlock);
+        }
+
+        return true;
+    }
+
+    private boolean checkCrops(BlockBreakEvent event) {
+        var block = event.getBlock();
+        var material = block.getType();
+
+        final BlockData blockData = block.getBlockData();
+        if (!(blockData instanceof Ageable ageable)) {
+            return false;
+        }
+
+        if (ageable.getAge() != ageable.getMaximumAge()) {
+            return false;
+        }
+
+        if (!this.cropList.containsKey(material)) {
+            return false;
+        }
 
         final Player player = event.getPlayer();
         Bukkit.getScheduler().runTaskLater(Gronia.getInstance(), () -> {
             block.setType(material);
             player.getInventory().removeItem(new ItemStack(this.cropList.get(material)));
         }, 1L);
+
+        return true;
     }
 }

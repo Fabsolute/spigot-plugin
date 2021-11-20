@@ -1,11 +1,7 @@
 package org.gronia.plugin.uei;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -19,12 +15,11 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubListener;
-import org.gronia.plugin.pouch.PouchPlugin;
+import org.gronia.plugin.sack.SackPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -154,7 +149,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
 
         var stack = ItemRegistry.createItem(recipe.getResult());
         stack.setAmount(applyCount);
-        this.getPlugin().getSubPlugin(PouchPlugin.class).getUtils().pickItem(event.getPlayer(), stack);
+        this.getPlugin().getSubPlugin(SackPlugin.class).getUtils().pickItemToPlayer(event.getPlayer(), stack, true);
 
         event.setCancelled(true);
     }

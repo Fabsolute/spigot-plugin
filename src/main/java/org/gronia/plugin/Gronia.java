@@ -6,7 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.plugin.griefing.GriefingPlugin;
 import org.gronia.plugin.items.*;
 import org.gronia.plugin.npc.NPCPlugin;
-import org.gronia.plugin.pouch.PouchPlugin;
+import org.gronia.plugin.sack.SackPlugin;
 import org.gronia.plugin.ptp.PerfectTPPlugin;
 import org.gronia.plugin.repair.RepairPlugin;
 import org.gronia.plugin.storage.StoragePlugin;
@@ -29,7 +29,7 @@ public class Gronia extends JavaPlugin {
 
     private final SubPlugin<?>[] plugins = new SubPlugin[]{
             new TeleportItemPlugin(this),
-            new PouchPlugin(this),
+            new SackPlugin(this),
             new UltraEnchantedItemPlugin(this),
             new PerfectTPPlugin(this),
             new StoragePlugin(this),
@@ -44,6 +44,8 @@ public class Gronia extends JavaPlugin {
             addAll(Carrot.getAll());
             addAll(Cobblestone.getAll());
             addAll(Obsidian.getAll());
+            addAll(Netherrack.getAll());
+            add(new PiercerPickaxe());
             add(new SuperHoe());
             add(new HyperFurnace());
             add(new Teleporter());

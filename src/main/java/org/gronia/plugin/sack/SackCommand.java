@@ -1,4 +1,4 @@
-package org.gronia.plugin.pouch;
+package org.gronia.plugin.sack;
 
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.gronia.plugin.SubCommandExecutor;
 
-public class PouchCommand extends SubCommandExecutor<PouchPlugin> {
-    public PouchCommand(PouchPlugin plugin) {
+public class SackCommand extends SubCommandExecutor<SackPlugin> {
+    public SackCommand(SackPlugin plugin) {
         super(plugin);
     }
 

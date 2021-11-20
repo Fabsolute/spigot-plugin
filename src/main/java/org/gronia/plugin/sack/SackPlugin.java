@@ -1,4 +1,4 @@
-package org.gronia.plugin.pouch;
+package org.gronia.plugin.sack;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -11,14 +11,14 @@ import org.gronia.plugin.SubUtilPlugin;
 import java.util.Arrays;
 import java.util.List;
 
-public class PouchPlugin extends SubUtilPlugin<PouchPlugin, PouchUtil> {
+public class SackPlugin extends SubUtilPlugin<SackPlugin, SackUtil> {
     public int MAX_COUNT = 1024;
     public final ItemStack lockedAreaItem;
     public final ItemStack enderChestItem;
     public final ItemStack applyAllItem;
     public final ItemStack craftingTable;
 
-    public static final List<Material> pouchableItems = Arrays.asList(
+    public static final List<Material> sackableItems = Arrays.asList(
             Material.TUFF,
             Material.COBBLED_DEEPSLATE,
             Material.DIORITE,
@@ -50,7 +50,7 @@ public class PouchPlugin extends SubUtilPlugin<PouchPlugin, PouchUtil> {
             Material.REDSTONE
     );
 
-    public PouchPlugin(JavaPlugin plugin) {
+    public SackPlugin(JavaPlugin plugin) {
         super(plugin);
 
         lockedAreaItem = this.getUtils().createEmptyItem(Material.BLACK_STAINED_GLASS_PANE);
@@ -64,27 +64,27 @@ public class PouchPlugin extends SubUtilPlugin<PouchPlugin, PouchUtil> {
     }
 
     @Override
-    public PouchUtil getUtils() {
-        return new PouchUtil(this);
+    public SackUtil getUtils() {
+        return new SackUtil(this);
     }
 
     @Override
     public String getName() {
-        return "pouch";
+        return "sack";
     }
 
     @Override
-    public SubListener<PouchPlugin> getListener() {
+    public SubListener<SackPlugin> getListener() {
         return null;
     }
 
     @Override
-    public SubCommandExecutor<PouchPlugin> getExecutor() {
-        return new PouchCommand(this);
+    public SubCommandExecutor<SackPlugin> getExecutor() {
+        return new SackCommand(this);
     }
 
     @Override
-    public SubTabCompleter<PouchPlugin> getTabCompleter() {
+    public SubTabCompleter<SackPlugin> getTabCompleter() {
         return null;
     }
 

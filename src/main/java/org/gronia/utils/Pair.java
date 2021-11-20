@@ -7,3 +7,4 @@ public record Pair<T>(Class<T> p1, Consumer<T> p2) {
         return new Pair<>(p1, p2);
     }
 }
+

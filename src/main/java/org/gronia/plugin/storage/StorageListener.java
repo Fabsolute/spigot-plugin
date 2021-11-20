@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubListener;
 import org.gronia.utils.GroniaMysqlConfiguration;
+import org.gronia.utils.Pair2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -197,7 +198,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
             name = ChatColor.AQUA + entity.getName() + ChatColor.WHITE;
         }
 
-        var messages = new ArrayList<String>();
+        var messages = new ArrayList<Pair2<String, Boolean>>();
 
         for (Map.Entry<String, Integer> load : loads.entrySet()) {
             int old = counts.getOrDefault(load.getKey(), 0);
@@ -209,14 +210,14 @@ public class StorageListener extends SubListener<StoragePlugin> {
             }
 
             if (count > 0) {
-                messages.add("[Storage] " + name + " stored " + ChatColor.GREEN + "" + count + " " + load.getKey() + ChatColor.WHITE + " and new count is " + ChatColor.GOLD + newCounts.get(load.getKey()) + ChatColor.WHITE + ".");
+                messages.add(Pair2.of("[Storage] " + name + " stored " + ChatColor.GREEN + "" + count + " " + load.getKey() + ChatColor.WHITE + " and new count is " + ChatColor.GOLD + newCounts.get(load.getKey()) + ChatColor.WHITE + ".",false));
             } else {
-                messages.add("[Storage] " + name + " took " + ChatColor.GREEN + "" + -count + " " + load.getKey() + ChatColor.WHITE + ".");
+                messages.add(Pair2.of("[Storage] " + name + " took " + ChatColor.GREEN + "" + -count + " " + load.getKey() + ChatColor.WHITE + ".",true));
             }
         }
 
         for (Map.Entry<String, Integer> count : counts.entrySet()) {
-            messages.add("[Storage] " + name + " took " + ChatColor.GREEN + "" + count.getValue() + " " + count.getKey() + ChatColor.WHITE + ".");
+            messages.add(Pair2.of("[Storage] " + name + " took " + ChatColor.GREEN + "" + count.getValue() + " " + count.getKey() + ChatColor.WHITE + ".",true));
         }
 
         this.getPlugin().getAPI().sendMessages(messages, name);

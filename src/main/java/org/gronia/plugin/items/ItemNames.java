@@ -1,6 +1,7 @@
 package org.gronia.plugin.items;
 
 public class ItemNames {
+    public static final String PIERCER_PICKAXE = "piercer_pickaxe";
     public static final String SUPER_PICKAXE = "super_pickaxe";
     public static final String SUPER_HOE = "super_hoe";
     public static final String SHULKER_SACK = "shulker_sack";
@@ -16,6 +17,11 @@ public class ItemNames {
     public static final String EXTRA_ENCHANTED_COBBLESTONE = "extra_enchanted_cobblestone";
     public static final String ULTRA_ENCHANTED_COBBLESTONE = "ultra_enchanted_cobblestone";
     public static final String SUPER_ENCHANTED_COBBLESTONE = "super_enchanted_cobblestone";
+
+    public static final String ENCHANTED_NETHERRACK = "enchanted_netherrack";
+    public static final String EXTRA_ENCHANTED_NETHERRACK = "extra_enchanted_netherrack";
+    public static final String ULTRA_ENCHANTED_NETHERRACK = "ultra_enchanted_netherrack";
+    public static final String SUPER_ENCHANTED_NETHERRACK = "super_enchanted_netherrack";
 
     public static final String ENCHANTED_OBSIDIAN = "enchanted_obsidian";
     public static final String EXTRA_ENCHANTED_OBSIDIAN = "extra_enchanted_obsidian";

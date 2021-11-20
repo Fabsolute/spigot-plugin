@@ -13,7 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
-import org.gronia.plugin.pouch.PouchPlugin;
+import org.gronia.plugin.sack.SackPlugin;
 import org.gronia.plugin.uei.*;
 import org.gronia.utils.Pair;
 
@@ -64,7 +64,7 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
     public List<Pair<? extends Event>> getEventConsumers() {
         return List.of(
                 Pair.of(PlayerInteractEvent.class, this::onPlayerInteract),
-                Pair.of(BlockPlaceEvent.class, this::onPouchPlaced),
+                Pair.of(BlockPlaceEvent.class, this::onSackPlaced),
                 Pair.of(InventoryClickEvent.class, this::onItemClick)
         );
     }
@@ -75,16 +75,16 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
             return;
         }
 
-        checkPouchClicked(itemStack, event.getPlayer(), event);
+        checkSackClicked(itemStack, event.getPlayer(), event);
     }
 
-    private void onPouchPlaced(BlockPlaceEvent event) {
+    private void onSackPlaced(BlockPlaceEvent event) {
         ItemStack stack = event.getItemInHand();
-        checkPouchClicked(stack, event.getPlayer(), event);
+        checkSackClicked(stack, event.getPlayer(), event);
     }
 
     void onItemClick(InventoryClickEvent event) {
-        var plugin = Gronia.getInstance().getSubPlugin(PouchPlugin.class);
+        var plugin = Gronia.getInstance().getSubPlugin(SackPlugin.class);
         if (event.getInventory() != this.inventoryMap.get(event.getWhoClicked())) {
             return;
         }
@@ -137,7 +137,7 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
     }
 
     private void clickItem(HumanEntity player, ItemStack current, boolean isLeftClick) {
-        var plugin = Gronia.getInstance().getSubPlugin(PouchPlugin.class);
+        var plugin = Gronia.getInstance().getSubPlugin(SackPlugin.class);
         var type = current.getType();
 
         if (isLeftClick) {
@@ -152,7 +152,7 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
         current.setItemMeta(meta);
     }
 
-    private void checkPouchClicked(ItemStack stack, Player player, Cancellable event) {
+    private void checkSackClicked(ItemStack stack, Player player, Cancellable event) {
         if (ItemRegistry.getCustomItem(stack) != this) {
             return;
         }
@@ -163,6 +163,6 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
             inventoryMap.put(player, Bukkit.createInventory(player, 54));
         }
 
-        Gronia.getInstance().getSubPlugin(PouchPlugin.class).getUtils().openPouch(player, inventoryMap.get(player));
+        Gronia.getInstance().getSubPlugin(SackPlugin.class).getUtils().openSack(player, inventoryMap.get(player));
     }
 }

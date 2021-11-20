@@ -5,9 +5,9 @@ website: https://gronia.org
 
 api-version: 1.17
 commands:
-  pouch:
-    description: Pouch
-    usage: /pouch
+  sack:
+    description: Sack
+    usage: /sack
   ptp:
     description: Perfect TP
     usage: /ptp
