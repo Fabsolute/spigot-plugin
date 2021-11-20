@@ -65,7 +65,7 @@ public class FatigueUtil {
             }
         }
 
-        return 100;
+        return MAX_FATIGUE;
     }
 
     public boolean canBreak(Player player, int length) {

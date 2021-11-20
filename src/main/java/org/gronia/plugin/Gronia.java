@@ -47,6 +47,8 @@ public class Gronia extends JavaPlugin {
             addAll(Cobblestone.getAll());
             addAll(Obsidian.getAll());
             addAll(Netherrack.getAll());
+            addAll(SweetBerries.getAll());
+            addAll(SweetPotion.getAll());
             add(new PiercerPickaxe());
             add(new SuperHoe());
             add(new HyperFurnace());
