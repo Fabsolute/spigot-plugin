@@ -20,3 +20,6 @@ commands:
   griefing:
     description: Griefing
     usage: /griefing add|remove|list
+  ge:
+    description: GE
+    usage: /ge
