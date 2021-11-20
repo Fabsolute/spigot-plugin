@@ -16,7 +16,6 @@ import org.gronia.plugin.SubUtil;
 import org.gronia.plugin.items.ShulkerSack;
 
 import java.util.*;
-import java.util.logging.Level;
 
 public class SackUtil extends SubUtil<SackPlugin> {
     public SackUtil(SackPlugin plugin) {
@@ -168,8 +167,6 @@ public class SackUtil extends SubUtil<SackPlugin> {
             }
 
             int dropCount = pickItemToHead(player, item, false);
-
-            Bukkit.getLogger().log(Level.WARNING, "dc" + dropCount);
 
             if (dropCount == 0) {
                 playerInventory.removeItem(item);

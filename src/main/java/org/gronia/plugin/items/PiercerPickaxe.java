@@ -1,5 +1,9 @@
 package org.gronia.plugin.items;
 
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.TitlePart;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,8 +20,12 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
+import org.gronia.plugin.fatigue.FatiguePlugin;
 import org.gronia.plugin.uei.*;
 import org.gronia.utils.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +124,7 @@ public class PiercerPickaxe extends CustomItem implements TierableItem, Craftabl
             mode = 0;
         }
 
-        var others = new ArrayList<Block>();
+        List<Block> others = new ArrayList<>();
         var block = event.getBlock();
         switch (mode) {
             case 0 -> {
@@ -141,14 +149,23 @@ public class PiercerPickaxe extends CustomItem implements TierableItem, Craftabl
             }
         }
 
-        player.setMetadata("pierce.breaking", new FixedMetadataValue(Gronia.getInstance(), true));
-
-        for (var b : others) {
-            if (isSafeToBreak(b)) {
-                player.breakBlock(b);
-            }
+        others = others.stream().filter(this::isSafeToBreak).toList();
+        if (others.size() == 0) {
+            return;
         }
 
+        var fatigueUtil = Gronia.getInstance().getSubPlugin(FatiguePlugin.class).getUtil();
+        var canBreak = fatigueUtil.canBreak(player, others.size());
+        if (!canBreak) {
+            return;
+        }
+
+        fatigueUtil.changeFatigue(player, -others.size());
+
+        player.setMetadata("pierce.breaking", new FixedMetadataValue(Gronia.getInstance(), true));
+        for (var b : others) {
+            player.breakBlock(b);
+        }
         Bukkit.getScheduler().runTaskLater(Gronia.getInstance(), () -> player.removeMetadata("pierce.breaking", Gronia.getInstance()), 1L);
     }
 
