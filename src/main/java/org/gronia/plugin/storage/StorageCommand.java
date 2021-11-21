@@ -11,11 +11,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubCommandExecutor;
+import org.gronia.plugin.ge.GEPlugin;
+import xyz.janboerman.guilib.api.GuiInventoryHolder;
+import xyz.janboerman.guilib.api.menu.MenuHolder;
+import xyz.janboerman.guilib.api.menu.PageMenu;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
     public static final boolean DISABLED = false;
@@ -43,12 +49,12 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
 
         if (command.equalsIgnoreCase("list")) {
             if (args.length == 1) {
-                this.showInventory(player, -1);
+                this.showInventory(player);
             } else {
                 try {
-                    this.showInventory(player, Integer.parseInt(args[1]));
+                    this.showInventory(player);
                 } catch (Exception e) {
-                    this.showInventory(player, -1);
+                    this.showInventory(player);
                 }
             }
             return true;
@@ -144,50 +150,20 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
         return true;
     }
 
-    public void showInventory(final HumanEntity ent, int page) {
+    public void showInventory(final HumanEntity ent) {
         ConfigurationSection section = this.getPlugin().getStackableConfig();
         Set<String> keys = section.getKeys(false);
         if (keys.size() == 0) {
             return;
         }
 
-        if (page == -1 && keys.size() > 54) {
-            ent.sendMessage(ChatColor.RED + "Page count: " + (int) (Math.ceil(keys.size() / 54f)));
-            return;
-        }
-
-        page -= 1;
-        if (page < 0) {
-            page = 0;
-        }
-
-        int slotCount = Math.min((int) Math.ceil(keys.size() / 9.0) * 9, 54);
-
-        Inventory inv = Bukkit.createInventory(null, slotCount, "[Storage] View");
-
         Map<String, Integer> items = new HashMap<>();
         for (String key : keys) {
             items.put(key, section.getInt(key));
         }
 
-        List<Map.Entry<String, Integer>> list = items.entrySet().stream().filter(i -> i.getValue() != 0).sorted(Map.Entry.comparingByValue()).skip(page * 54L).limit(54).collect(Collectors.toList());
-        for (Map.Entry<String, Integer> e : list) {
-            ItemStack stack = ItemRegistry.createItem(e.getKey());
-            List<String> lore = new ArrayList<>();
-            int count = e.getValue();
-            if (count > 0) {
-                lore.add(ChatColor.GREEN + "Count: " + count);
-            } else {
-                lore.add(ChatColor.RED + "Count: " + count);
-            }
-            ItemMeta meta = stack.getItemMeta();
-            assert meta != null;
-            meta.setLore(lore);
-            stack.setItemMeta(meta);
-            inv.addItem(stack);
-        }
-
-        ent.openInventory(inv);
+        var pageMenu = PageMenu.create(this.getPlugin().getPlugin(), new StorageAllIterator(items));
+        ent.openInventory(pageMenu.getInventory());
     }
 
     public void openInventory(final HumanEntity ent, String materialName) {

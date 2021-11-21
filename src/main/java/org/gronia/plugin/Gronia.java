@@ -1,5 +1,7 @@
 package org.gronia.plugin;
 
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.trait.TraitInfo;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -7,7 +9,8 @@ import org.gronia.plugin.fatigue.FatiguePlugin;
 import org.gronia.plugin.ge.GEPlugin;
 import org.gronia.plugin.griefing.GriefingPlugin;
 import org.gronia.plugin.items.*;
-import org.gronia.plugin.npc.NPCPlugin;
+import org.gronia.plugin.npc.BlacksmithTrait;
+import org.gronia.plugin.npc.StorageWorkerTrait;
 import org.gronia.plugin.sack.SackPlugin;
 import org.gronia.plugin.ptp.PerfectTPPlugin;
 import org.gronia.plugin.repair.RepairPlugin;
@@ -38,8 +41,6 @@ public class Gronia extends JavaPlugin {
             new RepairPlugin(this),
             new GriefingPlugin(this),
             new FatiguePlugin(this),
-            new NPCPlugin(this),
-
             new GEPlugin(this)
     };
 
@@ -73,6 +74,9 @@ public class Gronia extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(BlacksmithTrait.class).withName("Blacksmith"));
+        CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(StorageWorkerTrait.class).withName("StorageWorker"));
+
         var config = this.getConfig();
         var url = config.getString("mysql_connection");
         assert url != null;
