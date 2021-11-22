@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.utils.GroniaMysqlConfiguration;
 
 import java.sql.SQLException;
+import java.util.Random;
 import java.util.logging.Logger;
 
 public abstract class SubPlugin<T extends SubPlugin<T>> {
@@ -23,9 +24,11 @@ public abstract class SubPlugin<T extends SubPlugin<T>> {
     public abstract SubTabCompleter<T> getTabCompleter();
 
     private final JavaPlugin plugin;
+    private final String password;
 
     public SubPlugin(JavaPlugin plugin) {
         this.plugin = plugin;
+        password = randomString(16);
     }
 
     public GroniaMysqlConfiguration getConfig() {
@@ -83,5 +86,18 @@ public abstract class SubPlugin<T extends SubPlugin<T>> {
 
     public Logger getLogger() {
         return this.getPlugin().getLogger();
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    private String randomString(int length) {
+        int leftLimit = 97;
+        int rightLimit = 122;
+        return new Random().ints(leftLimit, rightLimit + 1)
+                .limit(length)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
     }
 }

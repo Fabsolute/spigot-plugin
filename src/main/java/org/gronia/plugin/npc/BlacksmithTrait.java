@@ -11,6 +11,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.gronia.plugin.Gronia;
+import org.gronia.plugin.repair.RepairPlugin;
 import xyz.janboerman.guilib.api.mask.Mask;
 import xyz.janboerman.guilib.api.mask.Pattern;
 import xyz.janboerman.guilib.api.mask.patterns.BorderPattern;
@@ -30,7 +31,7 @@ public class BlacksmithTrait extends Trait {
             public void onClick(MenuHolder<Gronia> holder, InventoryClickEvent event) {
                 super.onClick(holder, event);
                 var player = event.getWhoClicked();
-                Gronia.getInstance().getServer().dispatchCommand(player, "repair unsafe");
+                Gronia.getInstance().getSubPlugin(RepairPlugin.class).executeRepairUnsafe(player);
                 event.getView().close();
                 player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, SoundCategory.AMBIENT, 1, 1);
             }
@@ -40,7 +41,7 @@ public class BlacksmithTrait extends Trait {
             public void onClick(MenuHolder<Gronia> holder, InventoryClickEvent event) {
                 super.onClick(holder, event);
                 var player = event.getWhoClicked();
-                Gronia.getInstance().getServer().dispatchCommand(player, "repair");
+                Gronia.getInstance().getSubPlugin(RepairPlugin.class).executeRepair(player);
                 event.getView().close();
                 player.getWorld().playSound(player.getLocation(), Sound.BLOCK_ANVIL_USE, SoundCategory.AMBIENT, 1, 1);
             }

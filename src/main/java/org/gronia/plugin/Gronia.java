@@ -6,7 +6,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.plugin.fatigue.FatiguePlugin;
-import org.gronia.plugin.ge.GEPlugin;
 import org.gronia.plugin.griefing.GriefingPlugin;
 import org.gronia.plugin.items.*;
 import org.gronia.plugin.npc.BlacksmithTrait;
@@ -40,8 +39,7 @@ public class Gronia extends JavaPlugin {
             new StoragePlugin(this),
             new RepairPlugin(this),
             new GriefingPlugin(this),
-            new FatiguePlugin(this),
-            new GEPlugin(this)
+            new FatiguePlugin(this)
     };
 
     private final List<CustomItem> customItems = new ArrayList<>() {

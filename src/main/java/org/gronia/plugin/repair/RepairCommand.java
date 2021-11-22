@@ -21,9 +21,18 @@ public class RepairCommand extends SubCommandExecutor<RepairPlugin> {
             return true;
         }
 
+        if (args.length == 0) {
+            return false;
+        }
+
+        String password = args[0];
+        if (!this.getPlugin().getPassword().equalsIgnoreCase(password)) {
+            return false;
+        }
+
         boolean unsafe = false;
-        if (args.length > 0) {
-            String command = args[0];
+        if (args.length > 1) {
+            String command = args[1];
             if (command.equalsIgnoreCase("unsafe")) {
                 unsafe = true;
             }

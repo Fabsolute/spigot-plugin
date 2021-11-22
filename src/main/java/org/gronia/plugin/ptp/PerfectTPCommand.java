@@ -6,14 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.gronia.plugin.ItemRegistry;
-import org.gronia.plugin.NumberMap;
 import org.gronia.plugin.SubCommandExecutor;
 import org.gronia.plugin.items.ItemNames;
-import org.gronia.plugin.storage.StorageAPI;
 import org.gronia.plugin.storage.StoragePlugin;
 
 import java.util.*;
@@ -167,16 +161,7 @@ public class PerfectTPCommand extends SubCommandExecutor<PerfectTPPlugin> {
     }
 
     public boolean handleTake(Player player) {
-        StorageAPI api = this.getPlugin().getSubPlugin(StoragePlugin.class).getAPI();
-
-        var stack = ItemRegistry.createItem(ItemNames.TELEPORTER);
-        stack.setAmount(64);
-
-        api.addItemToPlayer(player, stack);
-        Map<String, Integer> changes = new HashMap<>();
-        changes.put(ItemNames.TELEPORTER, -64);
-        api.applyStackable(player.getName(), changes);
-
+        this.getPlugin().getSubPlugin(StoragePlugin.class).executeTakeCommand(player, ItemNames.TELEPORTER, 64);
         return true;
     }
 

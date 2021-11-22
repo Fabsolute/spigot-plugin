@@ -3,15 +3,14 @@ package org.gronia.plugin.storage;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubListener;
 import org.gronia.utils.GroniaMysqlConfiguration;
+import org.gronia.utils.NumberMap;
 import org.gronia.utils.Pair2;
 
 import java.util.ArrayList;
@@ -21,22 +20,10 @@ import java.util.Map;
 
 
 public class StorageListener extends SubListener<StoragePlugin> {
+    private final Map<Inventory, Map<String, Integer>> tempCounts = new HashMap<>();
+
     public StorageListener(StoragePlugin plugin) {
         super(plugin);
-    }
-
-    @EventHandler
-    public void onInventoryClick(final InventoryClickEvent e) {
-        if (e.getView().getTitle().equals("[Storage] View")) {
-            e.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onInventoryClick(final InventoryDragEvent e) {
-        if (e.getView().getTitle().equals("[Storage] View")) {
-            e.setCancelled(true);
-        }
     }
 
     @EventHandler
@@ -44,20 +31,16 @@ public class StorageListener extends SubListener<StoragePlugin> {
         Map<String, Integer> counts = new HashMap<>();
 
         String title = e.getView().getTitle();
-        if (!title.startsWith("[Storage] ") && !title.startsWith("[S] ")) {
+        if (!title.startsWith(ChatColor.DARK_GRAY + "Storage ") && !title.startsWith(ChatColor.DARK_GRAY + "S ")) {
             return;
         }
 
-        title = title.replace("[Storage] ", "").replace("[S] ", "").toLowerCase().replace(" ", "_");
+        title = title.replace(ChatColor.DARK_GRAY + "Storage ", "").replace(ChatColor.DARK_GRAY + "S ", "").toLowerCase().replace(" ", "_");
         if (title.equalsIgnoreCase("view")) {
             return;
         }
 
         if (title.equalsIgnoreCase("deposit")) {
-            return;
-        }
-
-        if (StorageCommand.DISABLED && !e.getPlayer().getName().equalsIgnoreCase("fabsolutely")) {
             return;
         }
 
@@ -123,45 +106,34 @@ public class StorageListener extends SubListener<StoragePlugin> {
                 config.setDirty();
             }
 
-            this.getPlugin().tempCounts.put(e.getInventory(), counts);
+            this.tempCounts.put(e.getInventory(), counts);
         }
     }
 
     @EventHandler
     public void onInventoryClose(final InventoryCloseEvent e) {
         String title = e.getView().getTitle();
-        if (!title.startsWith("[Storage] ") && !title.startsWith("[S] ")) {
+        if (!title.startsWith(ChatColor.DARK_GRAY + "Storage ") && !title.startsWith(ChatColor.DARK_GRAY + "S ")) {
             return;
         }
 
-        title = title.replace("[Storage] ", "").replace("[S] ", "");
+        title = title.replace(ChatColor.DARK_GRAY + "Storage ", "").replace(ChatColor.DARK_GRAY + "S ", "");
         if (title.equalsIgnoreCase("View")) {
-            return;
-        }
-
-        if (StorageCommand.DISABLED && !e.getPlayer().getName().equalsIgnoreCase("fabsolutely")) {
             return;
         }
 
         this.flushInventory(e.getInventory(), e.getPlayer());
     }
 
-
     private void flushInventory(Inventory inventory, HumanEntity entity) {
-        this.flushInventory(inventory, entity, null);
-    }
-
-    private void flushInventory(Inventory inventory, HumanEntity entity, String name) {
-        Map<String, Integer> counts = this.getPlugin().tempCounts.getOrDefault(inventory, new HashMap<>());
+        Map<String, Integer> counts = this.tempCounts.getOrDefault(inventory, new HashMap<>());
         ItemStack[] contents = inventory.getContents();
         if (contents.length == 0) {
             return;
         }
 
-        GroniaMysqlConfiguration stackableConfig = this.getPlugin().getStackableConfig();
         GroniaMysqlConfiguration serializableConfig = this.getPlugin().getSerializableConfig();
-        Map<String, Integer> loads = new HashMap<>();
-        Map<String, Integer> newCounts = new HashMap<>();
+        var newCounts = new NumberMap<String>();
         for (ItemStack stack : contents) {
             if (stack == null) {
                 continue;
@@ -176,52 +148,14 @@ public class StorageListener extends SubListener<StoragePlugin> {
                 serializableConfig.set(key, stacks);
                 serializableConfig.setDirty();
             } else {
-                int count = stackableConfig.getInt(key, 0);
-                count += stack.getAmount();
-                stackableConfig.set(key, count);
-
-                stackableConfig.setDirty();
-
-                loads.put(key, loads.getOrDefault(key, 0) + stack.getAmount());
-                newCounts.put(key, count);
+                newCounts.plus(key, stack.getAmount());
             }
 
             inventory.remove(stack);
         }
 
-        if (name == null) {
-            name = "";
-        }
+        this.getPlugin().applyStackable(entity.getName(), newCounts, counts);
 
-        name = ChatColor.LIGHT_PURPLE + name.replace("[", "").replace("]", "") + ChatColor.WHITE;
-        if (entity != null) {
-            name = ChatColor.AQUA + entity.getName() + ChatColor.WHITE;
-        }
-
-        var messages = new ArrayList<Pair2<String, Boolean>>();
-
-        for (Map.Entry<String, Integer> load : loads.entrySet()) {
-            int old = counts.getOrDefault(load.getKey(), 0);
-            counts.remove(load.getKey());
-            int count = load.getValue() - old;
-
-            if (count == 0) {
-                continue;
-            }
-
-            if (count > 0) {
-                messages.add(Pair2.of("[Storage] " + name + " stored " + ChatColor.GREEN + "" + count + " " + load.getKey() + ChatColor.WHITE + " and new count is " + ChatColor.GOLD + newCounts.get(load.getKey()) + ChatColor.WHITE + ".",false));
-            } else {
-                messages.add(Pair2.of("[Storage] " + name + " took " + ChatColor.GREEN + "" + -count + " " + load.getKey() + ChatColor.WHITE + ".",true));
-            }
-        }
-
-        for (Map.Entry<String, Integer> count : counts.entrySet()) {
-            messages.add(Pair2.of("[Storage] " + name + " took " + ChatColor.GREEN + "" + count.getValue() + " " + count.getKey() + ChatColor.WHITE + ".",true));
-        }
-
-        this.getPlugin().getAPI().sendMessages(messages, name);
-
-        this.getPlugin().tempCounts.remove(inventory);
+        this.tempCounts.remove(inventory);
     }
 }

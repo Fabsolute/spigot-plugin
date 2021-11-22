@@ -1,4 +1,4 @@
-package org.gronia.plugin;
+package org.gronia.utils;
 
 import java.util.HashMap;
 

@@ -20,10 +20,20 @@ public class StorageAllIterator implements Iterator<GuiInventoryHolder<?>> {
     private final int pageCount;
     private final List<Map.Entry<String, Integer>> items;
 
-    public StorageAllIterator(Map<String, Integer> items) {
+    public StorageAllIterator(Map<String, Integer> items, List<String> filter) {
+        var newItems = items.entrySet().stream().filter(i -> i.getValue() != 0);
+        if (filter != null) {
+            Bukkit.getLogger().log(Level.WARNING,"Filter "+ Arrays.toString(filter.toArray()));
+            newItems = newItems.filter(i -> filter.stream().anyMatch(f -> f.equalsIgnoreCase(i.getKey())));
+        }
+
         this.page = 0;
-        this.items = items.entrySet().stream().filter(i -> i.getValue() != 0).sorted(Map.Entry.comparingByValue()).toList();
-        this.pageCount = (int) (Math.ceil(items.size() / 45f));
+        this.items = newItems.sorted(Map.Entry.comparingByValue()).toList();
+        this.pageCount = (int) (Math.ceil(this.items.size() / 45f));
+    }
+
+    public StorageAllIterator(Map<String, Integer> items) {
+        this(items, null);
     }
 
     @Override
@@ -54,7 +64,7 @@ public class StorageAllIterator implements Iterator<GuiInventoryHolder<?>> {
                 @Override
                 public void onClick(MenuHolder<Gronia> holder, InventoryClickEvent event) {
                     super.onClick(holder, event);
-                    Gronia.getInstance().getServer().dispatchCommand(event.getWhoClicked(), "storage open " + e.getKey());
+                    Gronia.getInstance().getSubPlugin(StoragePlugin.class).executeOpenCommand(event.getWhoClicked(), e.getKey());
                 }
             });
             i++;

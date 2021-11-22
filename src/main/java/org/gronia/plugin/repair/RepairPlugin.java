@@ -1,5 +1,7 @@
 package org.gronia.plugin.repair;
 
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.plugin.SubCommandExecutor;
 import org.gronia.plugin.SubListener;
@@ -29,5 +31,13 @@ public class RepairPlugin extends SubPlugin<RepairPlugin> {
     @Override
     public SubTabCompleter<RepairPlugin> getTabCompleter() {
         return null;
+    }
+
+    public void executeRepair(HumanEntity player) {
+        this.getServer().dispatchCommand(player, "repair " + this.getPassword());
+    }
+
+    public void executeRepairUnsafe(HumanEntity player) {
+        this.getServer().dispatchCommand(player, "repair " + this.getPassword() + " unsafe");
     }
 }

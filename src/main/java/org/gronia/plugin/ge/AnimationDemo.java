@@ -14,7 +14,6 @@ import xyz.janboerman.guilib.api.util.IntGenerator;
 import xyz.janboerman.guilib.api.util.Option;
 
 public class AnimationDemo extends GuiInventoryHolder<Gronia> {
-
     private static final int SIZE = 54;
     private static final ItemStack PUFFERFISH = new ItemStack(Material.PUFFERFISH);
 

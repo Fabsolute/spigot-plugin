@@ -4,6 +4,8 @@ import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.trait.Trait;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
+import org.gronia.plugin.Gronia;
+import org.gronia.plugin.storage.StoragePlugin;
 
 public class StorageWorkerTrait extends Trait {
     public StorageWorkerTrait() {
@@ -17,6 +19,6 @@ public class StorageWorkerTrait extends Trait {
             return;
         }
 
-        Bukkit.getServer().dispatchCommand(event.getClicker(), "storage list 1");
+        Gronia.getInstance().getSubPlugin(StoragePlugin.class).executeListCommand(event.getClicker());
     }
 }
