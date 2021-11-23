@@ -23,7 +23,6 @@ public class StorageAllIterator implements Iterator<GuiInventoryHolder<?>> {
     public StorageAllIterator(Map<String, Integer> items, List<String> filter) {
         var newItems = items.entrySet().stream().filter(i -> i.getValue() != 0);
         if (filter != null) {
-            Bukkit.getLogger().log(Level.WARNING,"Filter "+ Arrays.toString(filter.toArray()));
             newItems = newItems.filter(i -> filter.stream().anyMatch(f -> f.equalsIgnoreCase(i.getKey())));
         }
 

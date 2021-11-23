@@ -1,21 +1,20 @@
 package org.gronia.plugin.sack;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubUtil;
 import org.gronia.plugin.items.ShulkerSack;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class SackUtil extends SubUtil<SackPlugin> {
     public SackUtil(SackPlugin plugin) {
@@ -23,16 +22,17 @@ public class SackUtil extends SubUtil<SackPlugin> {
     }
 
     public void pickItem(Player player, ItemStack stack) {
+        var inventory = this.getInventory(player);
         PlayerInventory playerInventory = player.getInventory();
 
-        if (SackPlugin.sackableItems.contains(stack.getType())) {
+        if (inventory.getKeys(false).contains(stack.getType().name())) {
             var playerHeads = playerInventory.all(Material.PLAYER_HEAD);
             for (var head : playerHeads.values()) {
                 if (!(ItemRegistry.getCustomItem(head) instanceof ShulkerSack)) {
                     continue;
                 }
 
-                pickItemToHead(player, stack, true);
+                pickItemToHead(head, player, stack, true);
                 return;
             }
         }
@@ -65,69 +65,9 @@ public class SackUtil extends SubUtil<SackPlugin> {
         return drops;
     }
 
-    public ItemStack createEmptyItem(Material material) {
-        ItemStack output = new ItemStack(material);
-        ItemMeta meta = output.getItemMeta();
-        assert meta != null;
-        meta.setDisplayName(" ");
-        output.setItemMeta(meta);
-        return output;
-    }
-
-    public void openSack(Player player, Inventory inventory) {
-
-        for (int j = 0; j < 6; j++) {
-            for (int i = 0; i < 9; i++) {
-                if (i >= 2 && i <= 6 && j <= 4) {
-                    continue;
-                }
-
-                if ((i == 8 || i == 0) && j == 5) {
-                    continue;
-                }
-
-                inventory.setItem(
-                        j * 9 + i,
-                        this.getPlugin().lockedAreaItem
-                );
-            }
-        }
-
-
-        inventory.setItem(
-                53,
-                this.getPlugin().enderChestItem
-        );
-
-
-        inventory.setItem(
-                45,
-                this.getPlugin().applyAllItem
-        );
-
-        inventory.setItem(
-                8,
-                this.getPlugin().craftingTable
-        );
-
-        for (int j = 0; j < 5; j++) {
-            for (int i = 0; i < 5; i++) {
-                Material material = SackPlugin.sackableItems.get(i * 5 + j);
-                ItemStack item = new ItemStack(material);
-                ItemMeta meta = item.getItemMeta();
-                assert meta != null;
-
-                meta.setLore(getLore(player, material));
-                item.setItemMeta(meta);
-
-                inventory.setItem(
-                        j * 9 + (i + 2),
-                        item
-                );
-            }
-        }
-
-        player.openInventory(inventory);
+    public void openSack(Player player, ItemStack head) {
+        var menu = new SackMenu(Gronia.getInstance(), head, getInventory(player));
+        player.openInventory(menu.getInventory());
     }
 
     public void fillPlayer(HumanEntity player, Material material) {
@@ -148,6 +88,18 @@ public class SackUtil extends SubUtil<SackPlugin> {
         this.getPlugin().getConfig().setDirty();
     }
 
+    public void tryRemoveItem(HumanEntity player, Material material) {
+        var inventory = this.getInventory(player);
+        var name = material.name();
+        int count = inventory.getInt(name, 0);
+        if (count != 0) {
+            player.sendMessage(ChatColor.RED + "Slot is not empty.");
+            return;
+        }
+
+        inventory.set(name, null);
+    }
+
     public void addDebt(String player, Material material, int count) {
         count = -count;
 
@@ -158,7 +110,7 @@ public class SackUtil extends SubUtil<SackPlugin> {
         this.getPlugin().getConfig().setDirty();
     }
 
-    public void emptyPlayer(HumanEntity player, Material material) {
+    public void emptyPlayer(ItemStack head, HumanEntity player, Material material) {
         var playerInventory = player.getInventory();
 
         for (var item : playerInventory.all(material).values()) {
@@ -166,7 +118,7 @@ public class SackUtil extends SubUtil<SackPlugin> {
                 continue;
             }
 
-            int dropCount = pickItemToHead(player, item, false);
+            int dropCount = pickItemToHead(head, player, item, false);
 
             if (dropCount == 0) {
                 playerInventory.removeItem(item);
@@ -179,30 +131,18 @@ public class SackUtil extends SubUtil<SackPlugin> {
         this.getPlugin().getConfig().setDirty();
     }
 
-    public List<String> getLore(HumanEntity player, Material material) {
-        var lore = new ArrayList<String>();
+    private int pickItemToHead(ItemStack head, HumanEntity player, ItemStack stack, boolean drop) {
+        var size = ShulkerSack.getSize(head);
+        var MAX_COUNT = this.getPlugin().PER_COUNT * size;
 
-        if (player != null) {
-            var headInventory = this.getInventory(player);
-            int count = headInventory.getInt(material.name(), 0);
-            lore.add("Count: " + ChatColor.AQUA + count);
-        }
-
-        lore.add(ChatColor.RED + "↑ Right Click");
-        lore.add(ChatColor.GREEN + "↓ Left Click");
-
-        return lore;
-    }
-
-    private int pickItemToHead(HumanEntity player, ItemStack stack, boolean drop) {
         ConfigurationSection configurationSection = this.getInventory(player);
         String name = stack.getType().name();
         int count = configurationSection.getInt(name, 0);
         count += stack.getAmount();
         int drops = 0;
-        if (count > this.getPlugin().MAX_COUNT) {
-            drops = count - getPlugin().MAX_COUNT;
-            count = getPlugin().MAX_COUNT;
+        if (count > MAX_COUNT) {
+            drops = count - MAX_COUNT;
+            count = MAX_COUNT;
         }
 
         configurationSection.set(name, count);
@@ -233,8 +173,7 @@ public class SackUtil extends SubUtil<SackPlugin> {
     private ConfigurationSection getInventory(String player) {
         var playerConfiguration = this.getPlugin().getConfig().getConfigurationSection(player);
         if (playerConfiguration == null) {
-            playerConfiguration = new MemoryConfiguration(this.getPlugin().getConfig());
-            this.getPlugin().getConfig().set(player, playerConfiguration);
+            playerConfiguration = this.getPlugin().createSackConfiguration(player);
         }
 
         return playerConfiguration;

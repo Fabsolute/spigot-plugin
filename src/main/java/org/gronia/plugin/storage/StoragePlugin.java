@@ -123,6 +123,7 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
 
             if (oldCounts.containsKey(materialName)) {
                 count += oldCounts.get(materialName);
+                totalLength += oldCounts.get(materialName);
             }
 
             if (count == 0) {
@@ -191,5 +192,4 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
 
         super.saveConfig();
     }
-
 }

@@ -30,7 +30,7 @@ public class SuperHoe extends CustomItem implements TierableItem, CraftableItem<
             Material.CARROTS,
             Material.CARROT,
             Material.BEETROOTS,
-            Material.BEETROOT,
+            Material.BEETROOT_SEEDS,
             Material.SWEET_BERRY_BUSH,
             Material.SWEET_BERRIES
     );

@@ -2,11 +2,8 @@ package org.gronia.utils;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfigurationOptions;
 import org.bukkit.configuration.file.YamlConstructor;
 import org.bukkit.configuration.file.YamlRepresenter;
 import org.yaml.snakeyaml.DumperOptions;
@@ -44,7 +41,7 @@ public abstract class GroniaMysqlConfiguration extends MemoryConfiguration {
         return GroniaMysqlConfiguration.connection;
     }
 
-    private static PreparedStatement prepareStatement(String sql) throws SQLException {
+    protected static PreparedStatement prepareStatement(String sql) throws SQLException {
         if (connection == null || connection.isClosed()) {
             connection = null;
         }
@@ -52,7 +49,7 @@ public abstract class GroniaMysqlConfiguration extends MemoryConfiguration {
         return getConnection().prepareStatement(sql);
     }
 
-    private static Statement createStatement() throws SQLException {
+    protected static Statement createStatement() throws SQLException {
         if (connection == null || connection.isClosed()) {
             connection = null;
         }
@@ -95,8 +92,12 @@ public abstract class GroniaMysqlConfiguration extends MemoryConfiguration {
         this.createTable();
 
         var stmt = createStatement();
-        var rs = stmt.executeQuery("SELECT `key`, `value` FROM " + this.name);
+        var rs = stmt.executeQuery("SELECT * FROM " + this.name);
         this.loadFromResultSet(rs);
+    }
+
+    public String prepareUpsertQuery() {
+        return "INSERT INTO " + name + " (`key`,`value`) VALUES(?,?) ON DUPLICATE KEY UPDATE `value` = ?";
     }
 
     public void save() throws SQLException {
@@ -104,7 +105,7 @@ public abstract class GroniaMysqlConfiguration extends MemoryConfiguration {
             return;
         }
 
-        String upsert = "INSERT INTO " + name + " (`key`,`value`) VALUES(?,?) ON DUPLICATE KEY UPDATE `value` = ?";
+        String upsert = prepareUpsertQuery();
         var st = prepareStatement(upsert);
 
         for (var kv : this.getValues(false).entrySet()) {
@@ -178,7 +179,7 @@ public abstract class GroniaMysqlConfiguration extends MemoryConfiguration {
 
             Map<Object, Object> input = new HashMap<>();
             while (rs.next()) {
-                input.put(rs.getString("key"), ((Map)this.yaml.load(rs.getString("value"))).get("value"));
+                input.put(rs.getString("key"), ((Map) this.yaml.load(rs.getString("value"))).get("value"));
             }
 
             this.convertMapsToSections(input, this);
