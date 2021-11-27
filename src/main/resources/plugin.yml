@@ -2,6 +2,7 @@ name: gronia
 version: 0.1
 main: org.gronia.plugin.Gronia
 website: https://gronia.org
+depend: [ProtocolLib]
 
 api-version: 1.17
 commands:

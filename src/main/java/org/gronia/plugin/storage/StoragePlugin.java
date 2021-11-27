@@ -1,22 +1,46 @@
 package org.gronia.plugin.storage;
 
+import com.comphenix.packetwrapper.WrapperPlayClientUpdateSign;
+import com.comphenix.packetwrapper.WrapperPlayServerBlockChange;
+import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEditor;
+import com.comphenix.packetwrapper.WrapperPlayServerTileEntityData;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.BlockPosition;
+import com.comphenix.protocol.wrappers.WrappedBlockData;
+import com.comphenix.protocol.wrappers.nbt.NbtCompound;
+import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.plugin.*;
 import org.gronia.utils.GroniaMysqlConfiguration;
 import org.gronia.utils.Pair2;
+import xyz.janboerman.guilib.api.ItemBuilder;
+import xyz.janboerman.guilib.api.menu.*;
 
 import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 
 public class StoragePlugin extends SubPlugin<StoragePlugin> {
+    private final Map<UUID, Location> mSignGUILocationMap = new HashMap<>();
     private GroniaMysqlConfiguration storageStackable;
     private GroniaMysqlConfiguration storageSerializable;
 
@@ -42,6 +66,10 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
     @Override
     public SubTabCompleter<StoragePlugin> getTabCompleter() {
         return null;
+    }
+
+    public Map<UUID, Location> getSignGUILocationMap() {
+        return mSignGUILocationMap;
     }
 
     public GroniaMysqlConfiguration getStackableConfig() {
@@ -174,6 +202,7 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
     @Override
     public void onEnable() {
         super.onEnable();
+        this.enableSearchListener();
         this.getServer().getScheduler().runTaskTimerAsynchronously(this.getPlugin(), this::saveConfig, 1200, 1200);
     }
 
@@ -191,5 +220,160 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
         }
 
         super.saveConfig();
+    }
+
+    void enableSearchListener() {
+        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+
+        manager.addPacketListener(new PacketAdapter(this.getPlugin(), PacketType.Play.Client.UPDATE_SIGN) {
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                WrapperPlayClientUpdateSign wrapper = new WrapperPlayClientUpdateSign(event.getPacket());
+                BlockPosition blockPos = wrapper.getLocation();
+                Location savedPos = mSignGUILocationMap.get(event.getPlayer().getUniqueId());
+
+                if (savedPos != null && blockPos.getX() == savedPos.getX() && blockPos.getY() == savedPos.getY() && blockPos.getZ() == savedPos.getZ()) {
+                    // Do anything here
+                    fixFakeBlockFor(event.getPlayer(), savedPos);
+                    var line = wrapper.getLines()[0];
+Bukkit.getLogger().log(Level.WARNING,"Line:"+line);
+                    var items = StoragePlugin.this.getItems();
+                    if (items == null) {
+                        return;
+                    }
+                    Bukkit.getLogger().log(Level.WARNING,"NP-1:"+line);
+                    var newMenu = PageMenu.create(StoragePlugin.this.getPlugin(), new StorageAllIterator(items, List.of("*" + line + "*")));
+                    Bukkit.getLogger().log(Level.WARNING,"NP0:"+line);
+                    newMenu.setButton(45, new BackButton<>(StoragePlugin.this::getInventory));
+                    Bukkit.getLogger().log(Level.WARNING,"NP:"+line);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(this.getPlugin(), new Runnable() {
+                        @Override
+                        public void run() {
+                            event.getPlayer().openInventory(newMenu.getInventory());
+                        }
+                    },1);
+                    Bukkit.getLogger().log(Level.WARNING,"Bam:"+line);
+                }
+            }
+        });
+    }
+
+    void fixFakeBlockFor(Player player, Location loc) {
+        if (loc.getWorld() != null && player.getWorld().equals(loc.getWorld())) {
+            ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+
+            WrapperPlayServerBlockChange wrapperBlockChange = new WrapperPlayServerBlockChange(manager.createPacket(PacketType.Play.Server.BLOCK_CHANGE));
+
+            Material material = loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).getType();
+            WrappedBlockData blockData = WrappedBlockData.createData(material, loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()).getData());
+            wrapperBlockChange.setLocation(new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
+            wrapperBlockChange.setBlockData(blockData);
+
+            wrapperBlockChange.sendPacket(player);
+        }
+    }
+
+    public Map<String, Integer> getItems() {
+        ConfigurationSection section = this.getStackableConfig();
+        ConfigurationSection section2 = this.getSerializableConfig();
+        Set<String> keys = section.getKeys(false);
+        Set<String> keys2 = section2.getKeys(false);
+
+        Map<String, Integer> items = new HashMap<>();
+        for (String key : keys) {
+            items.put(key, section.getInt(key));
+        }
+
+        for (String key : keys2) {
+            items.put(key, section2.getList(key, new ArrayList<>()).size());
+        }
+
+        if (items.size() == 0) {
+            return null;
+        }
+
+        return items;
+    }
+
+    public void showInventory(final HumanEntity ent) {
+        var inventory = getInventory();
+        if (inventory == null) {
+            return;
+        }
+
+        ent.openInventory(inventory);
+    }
+
+    public Inventory getInventory() {
+        var items = this.getItems();
+        if (items == null) {
+            return null;
+        }
+
+        var pageMenu = PageMenu.create(this.getPlugin(), new StorageAllIterator(items));
+        for (int i = 0; i < 9; i++) {
+            var category = this.getCategory(Integer.toString(i));
+            if (category == null || !category.enabled()) {
+                continue;
+            }
+
+            Material m = Material.BARRIER;
+
+            try {
+                m = Material.valueOf(category.icon());
+            } catch (Exception ignored) {
+            }
+
+            var item = new ItemStack(m);
+            var meta = item.getItemMeta();
+            assert meta != null;
+            meta.setDisplayName(ChatColor.RED + "Category: " + ChatColor.GREEN + category.name());
+            meta.addEnchant(Enchantment.LURE, 1, true);
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(meta);
+
+            pageMenu.setButton(45 + i, new RedirectItemButton<>(item, () -> {
+                var newMenu = PageMenu.create(this.getPlugin(), new StorageAllIterator(items, category.items()));
+                newMenu.setButton(45, new BackButton<>(pageMenu::getInventory));
+                return newMenu.getInventory();
+            }));
+        }
+
+        pageMenu.setButton(53, new ItemButton<MenuHolder<Gronia>>(new ItemBuilder(Material.OAK_SIGN).name("Search").build()) {
+            @Override
+            public void onClick(MenuHolder<Gronia> holder, InventoryClickEvent event) {
+                super.onClick(holder, event);
+                var player = (Player) event.getWhoClicked();
+                ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+                BlockPosition pos = new BlockPosition(player.getLocation().getBlockX(), 0, player.getLocation().getBlockZ());
+                NbtCompound signNbt = NbtFactory.ofCompound("Search");
+                signNbt.put("Text1", "{\"text\":\"\"}");
+                signNbt.put("Text2", "{\"text\":\"===============\"}");
+                signNbt.put("Text3", "{\"text\":\"===============\"}");
+                signNbt.put("Text4", "{\"text\":\"===============\"}");
+                signNbt.put("id", "minecraft:oak_sign");
+                signNbt.put("x", pos.getX());
+                signNbt.put("y", pos.getY());
+                signNbt.put("z", pos.getZ());
+
+                WrapperPlayServerBlockChange wrapperBlockChange = new WrapperPlayServerBlockChange(manager.createPacket(PacketType.Play.Server.BLOCK_CHANGE));
+                WrapperPlayServerOpenSignEditor wrapperOpenSignEditor = new WrapperPlayServerOpenSignEditor(manager.createPacket(PacketType.Play.Server.OPEN_SIGN_EDITOR));
+                WrapperPlayServerTileEntityData wrapperTileEntityData = new WrapperPlayServerTileEntityData(manager.createPacket(PacketType.Play.Server.TILE_ENTITY_DATA));
+
+                wrapperBlockChange.setLocation(pos);
+                wrapperBlockChange.setBlockData(WrappedBlockData.createData(Material.OAK_SIGN));
+                wrapperOpenSignEditor.setLocation(pos);
+                wrapperTileEntityData.setNbtData(signNbt);
+                wrapperTileEntityData.setAction(9);
+                wrapperTileEntityData.setLocation(pos);
+                wrapperBlockChange.sendPacket(player);
+                wrapperOpenSignEditor.sendPacket(player);
+                wrapperTileEntityData.sendPacket(player);
+                StoragePlugin.this.getSignGUILocationMap().put(player.getUniqueId(), new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ()));
+                StoragePlugin.this.getSignGUILocationMap().put(player.getUniqueId(), new Location(player.getWorld(), pos.getX(), pos.getY(), pos.getZ()));
+            }
+        });
+
+        return pageMenu.getInventory();
     }
 }

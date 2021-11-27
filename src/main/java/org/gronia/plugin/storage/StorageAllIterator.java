@@ -23,7 +23,15 @@ public class StorageAllIterator implements Iterator<GuiInventoryHolder<?>> {
     public StorageAllIterator(Map<String, Integer> items, List<String> filter) {
         var newItems = items.entrySet().stream().filter(i -> i.getValue() != 0);
         if (filter != null) {
-            newItems = newItems.filter(i -> filter.stream().anyMatch(f -> f.equalsIgnoreCase(i.getKey())));
+            newItems = newItems.filter(i -> filter.stream().anyMatch(f -> {
+                var contains = f.contains("*");
+                f = f.replaceAll("\\*", "");
+                if (contains) {
+                    return i.getKey().contains(f);
+                }
+
+                return f.equalsIgnoreCase(i.getKey());
+            }));
         }
 
         this.page = 0;
