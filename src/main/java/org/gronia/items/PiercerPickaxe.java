@@ -1,9 +1,5 @@
-package org.gronia.plugin.items;
+package org.gronia.items;
 
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.Title;
-import net.kyori.adventure.title.TitlePart;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,9 +19,6 @@ import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.fatigue.FatiguePlugin;
 import org.gronia.plugin.uei.*;
 import org.gronia.utils.Pair;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
-import org.gronia.plugin.items.ShulkerSack;
+import org.gronia.items.ShulkerSack;
 import org.jetbrains.annotations.Nullable;
 import xyz.janboerman.guilib.api.ItemBuilder;
 import xyz.janboerman.guilib.api.menu.ItemButton;
@@ -62,7 +62,10 @@ public class SackMenu extends MenuHolder<Gronia> {
 
         var customItem = ItemRegistry.getCustomItem(item);
         if (customItem instanceof ShulkerSack.Upgrader shulkerSack) {
-            shulkerSack.increase(head);
+            if (!shulkerSack.upgrade(head)) {
+                return;
+            }
+
             var tmpItem = item.clone();
             tmpItem.setAmount(1);
             event.getView().getBottomInventory().removeItem(tmpItem);

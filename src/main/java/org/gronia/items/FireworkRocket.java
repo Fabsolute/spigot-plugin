@@ -1,11 +1,4 @@
-package org.gronia.plugin.items;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.gronia.plugin.uei.CustomItem;
+package org.gronia.items;
 
 public class FireworkRocket /*extends CustomItem*/ {
     public FireworkRocket() {

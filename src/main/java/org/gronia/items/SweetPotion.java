@@ -1,4 +1,4 @@
-package org.gronia.plugin.items;
+package org.gronia.items;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -13,7 +13,6 @@ import org.gronia.plugin.fatigue.FatiguePlugin;
 import org.gronia.plugin.uei.*;
 import org.gronia.utils.Pair;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class SweetPotion extends CustomItem implements TierableItem, CraftableItem<CustomShapedRecipe>, EventListenerItem {

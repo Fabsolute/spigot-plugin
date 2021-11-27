@@ -7,7 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.plugin.fatigue.FatiguePlugin;
 import org.gronia.plugin.griefing.GriefingPlugin;
-import org.gronia.plugin.items.*;
+import org.gronia.items.*;
 import org.gronia.plugin.npc.BlacksmithTrait;
 import org.gronia.plugin.npc.StorageWorkerTrait;
 import org.gronia.plugin.sack.SackPlugin;
@@ -58,6 +58,7 @@ public class Gronia extends JavaPlugin {
             add(new SuperPickaxe());
             add(new ShulkerSack());
             add(new ShulkerSack.Upgrader());
+            add(new ElytraUpgrader());
         }
     };
 

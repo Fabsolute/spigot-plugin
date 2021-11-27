@@ -7,7 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.gronia.plugin.SubCommandExecutor;
-import org.gronia.plugin.items.ItemNames;
+import org.gronia.items.ItemNames;
 import org.gronia.plugin.storage.StoragePlugin;
 
 import java.util.*;

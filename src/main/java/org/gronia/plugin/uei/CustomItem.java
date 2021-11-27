@@ -104,6 +104,5 @@ public abstract class CustomItem {
     }
 
     public void onEnable(){
-
     }
 }

@@ -1,4 +1,4 @@
-package org.gronia.plugin.items;
+package org.gronia.items;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

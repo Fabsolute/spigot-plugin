@@ -10,7 +10,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubUtil;
-import org.gronia.plugin.items.ShulkerSack;
+import org.gronia.items.ShulkerSack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -132,7 +132,7 @@ public class SackUtil extends SubUtil<SackPlugin> {
     }
 
     private int pickItemToHead(ItemStack head, HumanEntity player, ItemStack stack, boolean drop) {
-        var size = ShulkerSack.getSize(head);
+        var size = ShulkerSack.Upgrader.getSize(head);
         var MAX_COUNT = this.getPlugin().PER_COUNT * size;
 
         ConfigurationSection configurationSection = this.getInventory(player);

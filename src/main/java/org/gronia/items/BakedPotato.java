@@ -1,4 +1,4 @@
-package org.gronia.plugin.items;
+package org.gronia.items;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
