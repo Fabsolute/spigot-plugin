@@ -236,23 +236,19 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
                     // Do anything here
                     fixFakeBlockFor(event.getPlayer(), savedPos);
                     var line = wrapper.getLines()[0];
-Bukkit.getLogger().log(Level.WARNING,"Line:"+line);
                     var items = StoragePlugin.this.getItems();
                     if (items == null) {
                         return;
                     }
-                    Bukkit.getLogger().log(Level.WARNING,"NP-1:"+line);
-                    var newMenu = PageMenu.create(StoragePlugin.this.getPlugin(), new StorageAllIterator(items, List.of("*" + line + "*")));
-                    Bukkit.getLogger().log(Level.WARNING,"NP0:"+line);
+
+                    var newMenu = PageMenu.create(StoragePlugin.this.getPlugin(), new StorageAllIterator(items, List.of("*" + line.toLowerCase() + "*")));
                     newMenu.setButton(45, new BackButton<>(StoragePlugin.this::getInventory));
-                    Bukkit.getLogger().log(Level.WARNING,"NP:"+line);
                     Bukkit.getScheduler().scheduleSyncDelayedTask(this.getPlugin(), new Runnable() {
                         @Override
                         public void run() {
                             event.getPlayer().openInventory(newMenu.getInventory());
                         }
-                    },1);
-                    Bukkit.getLogger().log(Level.WARNING,"Bam:"+line);
+                    }, 1);
                 }
             }
         });

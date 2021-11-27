@@ -12,7 +12,6 @@ import xyz.janboerman.guilib.api.menu.ItemButton;
 import xyz.janboerman.guilib.api.menu.MenuHolder;
 
 import java.util.*;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class StorageAllIterator implements Iterator<GuiInventoryHolder<?>> {
