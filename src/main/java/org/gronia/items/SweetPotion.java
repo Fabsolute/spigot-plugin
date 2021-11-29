@@ -59,7 +59,7 @@ public abstract class SweetPotion extends CustomItem implements TierableItem, Cr
             return;
         }
 
-        Gronia.getInstance().getSubPlugin(FatiguePlugin.class).getUtil().changeFatigue(event.getPlayer(), this.getFatigueRefresh());
+        Gronia.getInstance().getSubPlugin(FatiguePlugin.class).getUtil().changeRestness(event.getPlayer(), this.getFatigueRefresh());
     }
 
     @Override

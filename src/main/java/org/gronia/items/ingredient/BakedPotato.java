@@ -1,10 +1,11 @@
-package org.gronia.items;
+package org.gronia.items.ingredient;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.gronia.items.ItemNames;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.uei.*;
 import org.gronia.utils.Pair;

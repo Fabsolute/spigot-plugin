@@ -1,4 +1,4 @@
-package org.gronia.plugin.sack;
+package org.gronia.menu;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,8 +10,11 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+import org.gronia.items.ShulkerSack;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
+import org.gronia.plugin.sack.SackPlugin;
 import org.jetbrains.annotations.Nullable;
 import xyz.janboerman.guilib.api.ItemBuilder;
 import xyz.janboerman.guilib.api.menu.ItemButton;
@@ -71,8 +74,6 @@ public class SackMenu extends MenuHolder<Gronia> {
     private void initialize() {
         var greenWool = new ItemBuilder(Material.GREEN_WOOL).name("Edit Mode Enabled").build();
         var whiteWool = new ItemBuilder(Material.WHITE_WOOL).name("Edit Mode Disabled").build();
-        var enderChestItem = new ItemBuilder(Material.ENDER_CHEST).build();
-        var craftingTable = new ItemBuilder(Material.CRAFTING_TABLE).build();
 
         var applyAllItem = new ItemStack(Material.PLAYER_HEAD);
         Bukkit.getUnsafe().modifyItemStack(
@@ -95,20 +96,25 @@ public class SackMenu extends MenuHolder<Gronia> {
             }
         });
 
-        this.setButton(
-                53,
-                new ItemButton<MenuHolder<Gronia>>(enderChestItem) {
-                    @Override
-                    public void onClick(MenuHolder<Gronia> holder, InventoryClickEvent event) {
-                        super.onClick(holder, event);
-                        if (editMode) {
-                            return;
-                        }
+        var shulkerSack = (ShulkerSack)ItemRegistry.getCustomItem(head);
 
-                        event.getWhoClicked().openInventory(event.getWhoClicked().getEnderChest());
+        if (this.hasEnderChest(shulkerSack)) {
+            var enderChestItem = new ItemBuilder(Material.ENDER_CHEST).build();
+            this.setButton(
+                    53,
+                    new ItemButton<MenuHolder<Gronia>>(enderChestItem) {
+                        @Override
+                        public void onClick(MenuHolder<Gronia> holder, InventoryClickEvent event) {
+                            super.onClick(holder, event);
+                            if (editMode) {
+                                return;
+                            }
+
+                            event.getWhoClicked().openInventory(event.getWhoClicked().getEnderChest());
+                        }
                     }
-                }
-        );
+            );
+        }
 
         this.setButton(
                 45,
@@ -136,20 +142,23 @@ public class SackMenu extends MenuHolder<Gronia> {
                 }
         );
 
-        this.setButton(
-                8,
-                new ItemButton<MenuHolder<Gronia>>(craftingTable) {
-                    @Override
-                    public void onClick(MenuHolder<Gronia> holder, InventoryClickEvent event) {
-                        super.onClick(holder, event);
-                        if (editMode) {
-                            return;
-                        }
+        if (this.hasCraftingTable(shulkerSack)) {
+            var craftingTable = new ItemBuilder(Material.CRAFTING_TABLE).build();
+            this.setButton(
+                    8,
+                    new ItemButton<MenuHolder<Gronia>>(craftingTable) {
+                        @Override
+                        public void onClick(MenuHolder<Gronia> holder, InventoryClickEvent event) {
+                            super.onClick(holder, event);
+                            if (editMode) {
+                                return;
+                            }
 
-                        event.getWhoClicked().openWorkbench(null, true);
+                            event.getWhoClicked().openWorkbench(null, true);
+                        }
                     }
-                }
-        );
+            );
+        }
 
         var shulkerInventory = this.inventory.getKeys(false).stream().toList();
 
@@ -181,6 +190,14 @@ public class SackMenu extends MenuHolder<Gronia> {
             }
         }
 
+    }
+
+    private boolean hasCraftingTable(ShulkerSack sack) {
+        return this.head.getItemMeta().getPersistentDataContainer().has(sack.craftingTableKey, PersistentDataType.INTEGER);
+    }
+
+    private boolean hasEnderChest(ShulkerSack sack) {
+        return this.head.getItemMeta().getPersistentDataContainer().has(sack.enderChestKey, PersistentDataType.INTEGER);
     }
 
     private List<String> getLore(int count) {

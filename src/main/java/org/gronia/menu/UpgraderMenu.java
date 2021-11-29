@@ -1,4 +1,4 @@
-package org.gronia.utils;
+package org.gronia.menu;
 
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;

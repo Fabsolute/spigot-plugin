@@ -153,7 +153,7 @@ public class PiercerPickaxe extends CustomItem implements TierableItem, Craftabl
             return;
         }
 
-        fatigueUtil.changeFatigue(player, -others.size());
+        fatigueUtil.changeRestness(player, -others.size());
 
         player.setMetadata("pierce.breaking", new FixedMetadataValue(Gronia.getInstance(), true));
         for (var b : others) {

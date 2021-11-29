@@ -40,7 +40,7 @@ public class FatiguePlugin extends SubPlugin<FatiguePlugin> {
     @Override
     public void onEnable() {
         super.onEnable();
-        this.taskId = Bukkit.getScheduler().scheduleAsyncRepeatingTask(Gronia.getInstance(), this::increaseFatigue, 100L, 100L);
+        this.taskId = Bukkit.getScheduler().scheduleAsyncRepeatingTask(Gronia.getInstance(), this::increaseRestness, 100L, 100L);
     }
 
     @Override
@@ -49,9 +49,9 @@ public class FatiguePlugin extends SubPlugin<FatiguePlugin> {
         Bukkit.getScheduler().cancelTask(this.taskId);
     }
 
-    private void increaseFatigue() {
+    private void increaseRestness() {
         for (var player : Bukkit.getOnlinePlayers()) {
-            this.getUtil().changeFatigue(player, 1);
+            this.getUtil().changeRestness(player, 1);
         }
     }
 }

@@ -1,8 +1,7 @@
-package org.gronia.plugin.npc;
+package org.gronia.npc;
 
 import net.citizensnpcs.api.event.NPCRightClickEvent;
 import net.citizensnpcs.api.trait.Trait;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -12,12 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.repair.RepairPlugin;
-import xyz.janboerman.guilib.api.mask.Mask;
-import xyz.janboerman.guilib.api.mask.Pattern;
-import xyz.janboerman.guilib.api.mask.patterns.BorderPattern;
 import xyz.janboerman.guilib.api.menu.*;
-
-import java.util.Map;
 
 public class BlacksmithTrait extends Trait {
     private final MenuHolder<Gronia> menu;

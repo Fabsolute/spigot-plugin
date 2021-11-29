@@ -1,4 +1,4 @@
-package org.gronia.items;
+package org.gronia.items.upgrader;
 
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -7,6 +7,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.gronia.items.ItemNames;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.uei.CustomShapedRecipe;
 
@@ -45,7 +46,8 @@ public class ElytraUpgrader extends UpgraderBase {
 
     @Override
     public void fillRecipe(CustomShapedRecipe recipe) {
-        recipe.shape("CCC", "TOT", "CCC");
+        recipe.shape(" U ", "TOT", "CCC");
+        recipe.setIngredient('U', ItemNames.UPGRADE_CRYSTAL);
         recipe.setIngredient('C', ItemNames.ENCHANTED_OBSIDIAN);
         recipe.setIngredient('T', Material.TOTEM_OF_UNDYING);
         recipe.setIngredient('O', Material.NETHERITE_CHESTPLATE);

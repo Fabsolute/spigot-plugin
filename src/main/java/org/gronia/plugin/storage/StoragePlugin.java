@@ -29,6 +29,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.gronia.menu.iterator.StorageAllIterator;
 import org.gronia.plugin.*;
 import org.gronia.utils.GroniaMysqlConfiguration;
 import org.gronia.utils.Pair2;

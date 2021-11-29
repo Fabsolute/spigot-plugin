@@ -1,4 +1,4 @@
-package org.gronia.items;
+package org.gronia.items.upgrader;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -12,7 +12,7 @@ import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.uei.*;
 import org.gronia.utils.Pair;
-import org.gronia.utils.UpgraderMenu;
+import org.gronia.menu.UpgraderMenu;
 
 import java.util.List;
 

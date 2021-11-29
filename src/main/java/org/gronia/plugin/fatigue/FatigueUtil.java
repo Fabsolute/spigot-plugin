@@ -8,10 +8,10 @@ import org.gronia.plugin.Gronia;
 
 public class FatigueUtil {
     private static final int MAX_FATIGUE = 300;
-    private static final String FATIGUE_KEY = "gronia.fatigue";
+    private static final String RESTNESS_KEY = "gronia.restness";
     private static final String EXHAUSTED_KEY = "gronia.exhausted";
 
-    public void changeFatigue(Player player, int change) {
+    public void changeRestness(Player player, int change) {
         var fatigue = getFatigue(player);
         var oldFatigue = fatigue;
 
@@ -54,12 +54,12 @@ public class FatigueUtil {
 
         player.sendActionBar(new TextComponent(ChatColor.BLUE + "" + fatigue + " / " + MAX_FATIGUE));
 
-        player.setMetadata(FATIGUE_KEY, new FixedMetadataValue(Gronia.getInstance(), fatigue));
+        player.setMetadata(RESTNESS_KEY, new FixedMetadataValue(Gronia.getInstance(), fatigue));
     }
 
     public int getFatigue(Player player) {
-        if (player.hasMetadata(FATIGUE_KEY)) {
-            var l = player.getMetadata(FATIGUE_KEY);
+        if (player.hasMetadata(RESTNESS_KEY)) {
+            var l = player.getMetadata(RESTNESS_KEY);
             for (var ll : l) {
                 return ll.asInt();
             }

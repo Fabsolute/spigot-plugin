@@ -1,6 +1,7 @@
-package org.gronia.items;
+package org.gronia.items.ingredient;
 
 import org.bukkit.Material;
+import org.gronia.items.ItemNames;
 import org.gronia.plugin.uei.CraftableItem;
 import org.gronia.plugin.uei.CustomItem;
 import org.gronia.plugin.uei.CustomShapelessRecipe;

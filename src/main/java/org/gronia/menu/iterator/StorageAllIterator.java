@@ -1,4 +1,4 @@
-package org.gronia.plugin.storage;
+package org.gronia.menu.iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
+import org.gronia.plugin.storage.StoragePlugin;
 import xyz.janboerman.guilib.api.GuiInventoryHolder;
 import xyz.janboerman.guilib.api.menu.ItemButton;
 import xyz.janboerman.guilib.api.menu.MenuHolder;

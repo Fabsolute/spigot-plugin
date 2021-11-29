@@ -5,11 +5,14 @@ import net.citizensnpcs.api.trait.TraitInfo;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.gronia.items.ingredient.*;
+import org.gronia.items.upgrader.ElytraUpgrader;
+import org.gronia.items.upgrader.ShulkerSackUpgrader;
 import org.gronia.plugin.fatigue.FatiguePlugin;
 import org.gronia.plugin.griefing.GriefingPlugin;
 import org.gronia.items.*;
-import org.gronia.plugin.npc.BlacksmithTrait;
-import org.gronia.plugin.npc.StorageWorkerTrait;
+import org.gronia.npc.BlacksmithTrait;
+import org.gronia.npc.StorageWorkerTrait;
 import org.gronia.plugin.sack.SackPlugin;
 import org.gronia.plugin.ptp.PerfectTPPlugin;
 import org.gronia.plugin.repair.RepairPlugin;
@@ -51,13 +54,15 @@ public class Gronia extends JavaPlugin {
             addAll(Netherrack.getAll());
             addAll(SweetBerries.getAll());
             addAll(SweetPotion.getAll());
+            add(new UpgradeCrystal());
+
             add(new PiercerPickaxe());
             add(new SuperHoe());
             add(new HyperFurnace());
             add(new Teleporter());
             add(new SuperPickaxe());
             add(new ShulkerSack());
-            add(new ShulkerSack.Upgrader());
+            addAll(ShulkerSackUpgrader.getAll());
             add(new ElytraUpgrader());
         }
     };
