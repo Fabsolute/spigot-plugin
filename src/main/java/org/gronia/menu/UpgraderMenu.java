@@ -5,7 +5,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.gronia.plugin.Gronia;
-import org.gronia.items.UpgraderBase;
+import org.gronia.items.upgrader.UpgraderBase;
 import org.jetbrains.annotations.NotNull;
 import xyz.janboerman.guilib.api.mask.Mask;
 import xyz.janboerman.guilib.api.mask.Pattern;
