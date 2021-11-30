@@ -17,7 +17,8 @@ public abstract class CustomItem {
             ChatColor.GREEN,
             ChatColor.BLUE,
             ChatColor.LIGHT_PURPLE,
-            ChatColor.GOLD
+            ChatColor.GOLD,
+            ChatColor.AQUA
     );
 
     private final Material baseItem;

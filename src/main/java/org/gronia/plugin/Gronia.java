@@ -53,8 +53,9 @@ public class Gronia extends JavaPlugin {
             addAll(Obsidian.getAll());
             addAll(Netherrack.getAll());
             addAll(SweetBerries.getAll());
-            addAll(SweetPotion.getAll());
+            addAll(FireworkRocket.getAll());
             add(new UpgradeCrystal());
+            addAll(SweetPotion.getAll());
 
             add(new PiercerPickaxe());
             add(new SuperHoe());
@@ -64,6 +65,7 @@ public class Gronia extends JavaPlugin {
             add(new ShulkerSack());
             addAll(ShulkerSackUpgrader.getAll());
             add(new ElytraUpgrader());
+            add(new InfinityFireworkRocket());
         }
     };
 

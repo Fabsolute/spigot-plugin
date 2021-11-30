@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.fatigue.FatiguePlugin;
+import org.gronia.plugin.fatigue.FatigueUtil;
 import org.gronia.plugin.uei.*;
 import org.gronia.utils.Pair;
 
@@ -53,13 +54,14 @@ public abstract class SweetPotion extends CustomItem implements TierableItem, Cr
         ));
     }
 
-    private void onConsume(PlayerItemConsumeEvent event) {
+    protected boolean onConsume(PlayerItemConsumeEvent event) {
         var item = event.getItem();
         if (ItemRegistry.getCustomItem(item) != this) {
-            return;
+            return false;
         }
 
         Gronia.getInstance().getSubPlugin(FatiguePlugin.class).getUtil().changeRestness(event.getPlayer(), this.getFatigueRefresh());
+        return true;
     }
 
     @Override
@@ -78,7 +80,8 @@ public abstract class SweetPotion extends CustomItem implements TierableItem, Cr
                 new Enchanted(),
                 new ExtraEnchanted(),
                 new UltraEnchanted(),
-                new SuperEnchanted()
+                new SuperEnchanted(),
+                new Epic()
         );
     }
 
@@ -171,6 +174,39 @@ public abstract class SweetPotion extends CustomItem implements TierableItem, Cr
         @Override
         int getFatigueRefresh() {
             return 225;
+        }
+    }
+
+    public static class Epic extends SweetPotion {
+        public Epic() {
+            super(5, ItemNames.EPIC_ENCHANTED_SWEET_POTION, "Epic Enchanted Sweet Potion");
+        }
+
+        @Override
+        protected boolean onConsume(PlayerItemConsumeEvent event) {
+            if (!super.onConsume(event)) {
+                return false;
+            }
+
+            Gronia.getInstance().getSubPlugin(FatiguePlugin.class).getUtil().changeSteroid(event.getPlayer(), 7200);
+            return true;
+        }
+
+        @Override
+        public void fillRecipe(CustomShapedRecipe recipe) {
+            recipe.shape("S", "U");
+            recipe.setIngredient('S', ItemNames.SUPER_ENCHANTED_SWEET_POTION);
+            recipe.setIngredient('U', ItemNames.UPGRADE_CRYSTAL);
+        }
+
+        @Override
+        Color getColor() {
+            return Color.AQUA;
+        }
+
+        @Override
+        int getFatigueRefresh() {
+            return FatigueUtil.MAX_RESTNESS;
         }
     }
 }

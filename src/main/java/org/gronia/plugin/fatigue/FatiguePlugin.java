@@ -52,6 +52,7 @@ public class FatiguePlugin extends SubPlugin<FatiguePlugin> {
     private void increaseRestness() {
         for (var player : Bukkit.getOnlinePlayers()) {
             this.getUtil().changeRestness(player, 1);
+            this.getUtil().changeSteroid(player, -5);
         }
     }
 }

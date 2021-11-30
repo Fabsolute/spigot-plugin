@@ -7,6 +7,7 @@ public class ItemNames {
     public static final String ELYTRA_UPGRADER = "elytra_upgrader";
     public static final String HYPER_FURNACE = "hyper_furnace";
     public static final String TELEPORTER = "teleporter";
+    public static final String INFINITY_ROCKET = "infinity_rocket";
 
     public static final String SHULKER_SACK = "shulker_sack";
     public static final String SACK_EXPANDER = "sack_expander";
@@ -42,8 +43,10 @@ public class ItemNames {
     public static final String EXTRA_ENCHANTED_SWEET_POTION = "extra_enchanted_sweet_potion";
     public static final String ULTRA_ENCHANTED_SWEET_POTION = "ultra_enchanted_sweet_potion";
     public static final String SUPER_ENCHANTED_SWEET_POTION = "super_enchanted_sweet_potion";
+    public static final String EPIC_ENCHANTED_SWEET_POTION = "epic_enchanted_sweet_potion";
 
     public static final String ENCHANTED_BAKED_POTATO = "enchanted_baked_potato";
+    public static final String ENCHANTED_FIREWORK_ROCKET = "enchanted_firework_rocket";
 
     public static final String UPGRADE_CRYSTAL = "upgrade_crystal";
 }
