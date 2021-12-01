@@ -26,6 +26,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.gronia.items.ItemNames;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubCommandExecutor;
@@ -61,12 +62,7 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
             return false;
         }
 
-        if (command.equalsIgnoreCase("list")) {
-            this.getPlugin().showInventory(player);
-            return true;
-        }
-
-        if (!command.equalsIgnoreCase("open") && !command.equalsIgnoreCase("take")) {
+        if (!command.equalsIgnoreCase("open") && !command.equalsIgnoreCase("take") && !command.equalsIgnoreCase("list")) {
             return this.warnUser(player);
         }
 
@@ -75,6 +71,20 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
         }
 
         String materialName = args[2].toLowerCase();
+
+        if (command.equalsIgnoreCase("list")) {
+            var free = materialName.equalsIgnoreCase("free");
+            if (!free) {
+                // todo if has teleporter use it
+                Map<String, Integer> changes = new HashMap<>();
+                changes.put(ItemNames.TELEPORTER, -1);
+                this.getPlugin().applyStackable(player.getName(), changes);
+            }
+
+            this.getPlugin().showInventory(player);
+            return true;
+        }
+
         if (!(command.equalsIgnoreCase("open") && materialName.equalsIgnoreCase("deposit")) && !ItemRegistry.isValidMaterialName(materialName)) {
             return this.warnUser(player);
         }

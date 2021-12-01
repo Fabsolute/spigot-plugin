@@ -15,6 +15,7 @@ import org.gronia.items.ShulkerSack;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.sack.SackPlugin;
+import org.gronia.plugin.storage.StoragePlugin;
 import org.jetbrains.annotations.Nullable;
 import xyz.janboerman.guilib.api.ItemBuilder;
 import xyz.janboerman.guilib.api.menu.ItemButton;
@@ -96,7 +97,7 @@ public class SackMenu extends MenuHolder<Gronia> {
             }
         });
 
-        var shulkerSack = (ShulkerSack)ItemRegistry.getCustomItem(head);
+        var shulkerSack = (ShulkerSack) ItemRegistry.getCustomItem(head);
 
         if (this.hasEnderChest(shulkerSack)) {
             var enderChestItem = new ItemBuilder(Material.ENDER_CHEST).build();
@@ -111,6 +112,24 @@ public class SackMenu extends MenuHolder<Gronia> {
                             }
 
                             event.getWhoClicked().openInventory(event.getWhoClicked().getEnderChest());
+                        }
+                    }
+            );
+        }
+
+        if (this.hasStorage(shulkerSack)) {
+            var storageItem = new ItemBuilder(Material.BARREL).name("Storage").build();
+            this.setButton(
+                    35,
+                    new ItemButton<MenuHolder<Gronia>>(storageItem) {
+                        @Override
+                        public void onClick(MenuHolder<Gronia> holder, InventoryClickEvent event) {
+                            super.onClick(holder, event);
+                            if (editMode) {
+                                return;
+                            }
+
+                            Gronia.getInstance().getSubPlugin(StoragePlugin.class).executeListCommand(event.getWhoClicked(), false);
                         }
                     }
             );
@@ -198,6 +217,10 @@ public class SackMenu extends MenuHolder<Gronia> {
 
     private boolean hasEnderChest(ShulkerSack sack) {
         return this.head.getItemMeta().getPersistentDataContainer().has(sack.enderChestKey, PersistentDataType.INTEGER);
+    }
+
+    private boolean hasStorage(ShulkerSack sack) {
+        return this.head.getItemMeta().getPersistentDataContainer().has(sack.storageKey, PersistentDataType.INTEGER);
     }
 
     private List<String> getLore(int count) {

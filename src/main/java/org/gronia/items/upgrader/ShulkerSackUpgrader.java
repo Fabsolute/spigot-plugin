@@ -1,6 +1,7 @@
 package org.gronia.items.upgrader;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
@@ -23,7 +24,8 @@ public abstract class ShulkerSackUpgrader extends UpgraderBase {
         return List.of(
                 new Expander(),
                 new EnderChest(),
-                new CraftingTable()
+                new CraftingTable(),
+                new Storage()
         );
     }
 
@@ -39,7 +41,7 @@ public abstract class ShulkerSackUpgrader extends UpgraderBase {
 
     public static class Expander extends ShulkerSackUpgrader {
         public Expander() {
-            super(ItemNames.SACK_EXPANDER, "Sack Expander");
+            super(ItemNames.SACK_EXPAND_UPGRADE, "Sack Expand Upgrade");
         }
 
         public static int getSize(ItemStack stack) {
@@ -61,10 +63,11 @@ public abstract class ShulkerSackUpgrader extends UpgraderBase {
             int size = getSize(stack) + 1;
 
             var meta = stack.getItemMeta();
-            meta.setLore(List.of("",
-                    ChatColor.LIGHT_PURPLE + "Size: " + ChatColor.BLUE + size,
-                    "",
-                    ChatColor.AQUA + "Total: " + size * Gronia.getInstance().getSubPlugin(SackPlugin.class).PER_COUNT
+            meta.lore(List.of(
+                    Component.empty(),
+                    Component.text("Size: ", NamedTextColor.LIGHT_PURPLE).append(Component.text(size, NamedTextColor.BLUE)),
+                    Component.empty(),
+                    Component.text("Per Item: " + size * Gronia.getInstance().getSubPlugin(SackPlugin.class).PER_COUNT, NamedTextColor.AQUA)
             ));
             meta.getPersistentDataContainer().set(shulkerSack.sizeKey, PersistentDataType.INTEGER, size);
             stack.setItemMeta(meta);
@@ -73,15 +76,15 @@ public abstract class ShulkerSackUpgrader extends UpgraderBase {
 
         @Override
         public void fillRecipe(CustomShapedRecipe recipe) {
-            recipe.shape("C", "U", "C");
-            recipe.setIngredient('C', ItemNames.ENCHANTED_OBSIDIAN);
+            recipe.shape("CCC", "CUC", "CCC");
+            recipe.setIngredient('C', ItemNames.SUPER_ENCHANTED_COBBLESTONE);
             recipe.setIngredient('U', ItemNames.UPGRADE_CRYSTAL);
         }
     }
 
     public static class EnderChest extends ShulkerSackUpgrader {
         public EnderChest() {
-            super(ItemNames.SACK_ENDER_CHEST, "Sack Ender Chest");
+            super(ItemNames.SACK_ENDER_CHEST_UPGRADE, "Sack Ender Chest Upgrade");
         }
 
         @Override
@@ -100,7 +103,7 @@ public abstract class ShulkerSackUpgrader extends UpgraderBase {
 
         @Override
         public void fillRecipe(CustomShapedRecipe recipe) {
-            recipe.shape("C", "U", "C");
+            recipe.shape("CCC", "CUC", "CCC");
             recipe.setIngredient('C', Material.ENDER_CHEST);
             recipe.setIngredient('U', ItemNames.UPGRADE_CRYSTAL);
         }
@@ -108,7 +111,7 @@ public abstract class ShulkerSackUpgrader extends UpgraderBase {
 
     public static class CraftingTable extends ShulkerSackUpgrader {
         public CraftingTable() {
-            super(ItemNames.SACK_CRAFTING_TABLE, "Sack Crafting Table");
+            super(ItemNames.SACK_CRAFTING_TABLE_UPGRADE, "Sack Crafting Table Upgrade");
         }
 
         @Override
@@ -127,8 +130,35 @@ public abstract class ShulkerSackUpgrader extends UpgraderBase {
 
         @Override
         public void fillRecipe(CustomShapedRecipe recipe) {
-            recipe.shape("C", "U", "C");
+            recipe.shape("CCC", "CUC", "CCC");
             recipe.setIngredient('C', Material.CRAFTING_TABLE);
+            recipe.setIngredient('U', ItemNames.UPGRADE_CRYSTAL);
+        }
+    }
+
+    public static class Storage extends ShulkerSackUpgrader {
+        public Storage() {
+            super(ItemNames.SACK_STORAGE_UPGRADE, "Sack Storage Upgrade");
+        }
+
+        @Override
+        public boolean upgrade(ItemStack stack, ShulkerSack shulkerSack) {
+            var meta = stack.getItemMeta();
+            var container = meta.getPersistentDataContainer();
+            if (container.has(shulkerSack.storageKey, PersistentDataType.INTEGER)) {
+                return false;
+            }
+
+            container.set(shulkerSack.storageKey, PersistentDataType.INTEGER, 1);
+            stack.setItemMeta(meta);
+
+            return true;
+        }
+
+        @Override
+        public void fillRecipe(CustomShapedRecipe recipe) {
+            recipe.shape("TTT", "TUT", "TTT");
+            recipe.setIngredient('T', ItemNames.TELEPORTER);
             recipe.setIngredient('U', ItemNames.UPGRADE_CRYSTAL);
         }
     }

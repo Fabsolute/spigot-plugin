@@ -119,9 +119,12 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
     }
 
     public void executeListCommand(HumanEntity player) {
-        this.getServer().dispatchCommand(player, "storage list " + getPassword());
+        this.executeListCommand(player, true);
     }
 
+    public void executeListCommand(HumanEntity player, boolean isFree) {
+        this.getServer().dispatchCommand(player, "storage list " + getPassword() + (isFree ? " free" : " nope"));
+    }
 
     public Map<String, Integer> applyStackable(final String name, Map<String, Integer> changes) {
         return this.applyStackable(name, changes, new HashMap<>());

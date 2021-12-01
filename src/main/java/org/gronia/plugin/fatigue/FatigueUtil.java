@@ -4,6 +4,7 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
+import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -130,14 +131,14 @@ public class FatigueUtil extends SubUtil<FatiguePlugin> {
             this.bossBarMap.put(player.getName(), bossBar);
         }
 
-        bossBar.name(Component.text("Tireless " + this.formatTimer(steroid)));
+        bossBar.name(Component.text("Tireless " + this.formatTimer(steroid), NamedTextColor.RED));
         bossBar.progress(Math.min(1, steroid / 7200f));
 
         if (steroid == 0) {
             player.showTitle(Title.title(
                     Component.text("TIMES UP!", NamedTextColor.RED),
                     Component.text("You are not tireless anymore.", NamedTextColor.GOLD),
-                    Title.Times.of(Duration.ZERO, Duration.ofSeconds(1), Duration.ZERO)
+                    Title.Times.of(Duration.ZERO, Duration.ofSeconds(3), Duration.ZERO)
             ));
 
             player.hideBossBar(bossBar);

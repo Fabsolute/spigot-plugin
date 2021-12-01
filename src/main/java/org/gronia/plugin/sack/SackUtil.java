@@ -135,16 +135,16 @@ public class SackUtil extends SubUtil<SackPlugin> {
 
     private int pickItemToHead(ItemStack head, HumanEntity player, ItemStack stack, boolean drop) {
         var size = ShulkerSackUpgrader.Expander.getSize(head);
-        var MAX_COUNT = this.getPlugin().PER_COUNT * size;
+        var maxCount = this.getPlugin().PER_COUNT * size;
 
         ConfigurationSection configurationSection = this.getInventory(player);
         String name = stack.getType().name();
         int count = configurationSection.getInt(name, 0);
         count += stack.getAmount();
         int drops = 0;
-        if (count > MAX_COUNT) {
-            drops = count - MAX_COUNT;
-            count = MAX_COUNT;
+        if (count > maxCount) {
+            drops = count - maxCount;
+            count = maxCount;
         }
 
         configurationSection.set(name, count);

@@ -10,9 +10,10 @@ public class ItemNames {
     public static final String INFINITY_ROCKET = "infinity_rocket";
 
     public static final String SHULKER_SACK = "shulker_sack";
-    public static final String SACK_EXPANDER = "sack_expander";
-    public static final String SACK_ENDER_CHEST = "sack_ender_chest";
-    public static final String SACK_CRAFTING_TABLE = "sack_crafting_table";
+    public static final String SACK_EXPAND_UPGRADE = "sack_expand_upgrade";
+    public static final String SACK_ENDER_CHEST_UPGRADE = "sack_ender_chest_upgrade";
+    public static final String SACK_CRAFTING_TABLE_UPGRADE = "sack_crafting_table_upgrade";
+    public static final String SACK_STORAGE_UPGRADE = "sack_storage_upgrade";
 
     public static final String ENCHANTED_CARROT = "enchanted_carrot";
     public static final String EXTRA_ENCHANTED_CARROT = "extra_enchanted_carrot";

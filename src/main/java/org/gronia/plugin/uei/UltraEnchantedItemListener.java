@@ -50,7 +50,7 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
             CustomItem.setBroken(item);
         }
 
-        event.getPlayer().getInventory().addItem(item);
+        this.getPlugin().getSubPlugin(SackPlugin.class).getUtils().pickItemToPlayer(event.getPlayer(), item, true);
     }
 
     @EventHandler
