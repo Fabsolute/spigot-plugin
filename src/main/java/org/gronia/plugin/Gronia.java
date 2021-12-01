@@ -5,20 +5,20 @@ import net.citizensnpcs.api.trait.TraitInfo;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.gronia.items.*;
 import org.gronia.items.ingredient.*;
 import org.gronia.items.upgrader.ElytraUpgrader;
 import org.gronia.items.upgrader.ShulkerSackUpgrader;
-import org.gronia.plugin.fatigue.FatiguePlugin;
-import org.gronia.plugin.griefing.GriefingPlugin;
-import org.gronia.items.*;
 import org.gronia.npc.BlacksmithTrait;
 import org.gronia.npc.StorageWorkerTrait;
-import org.gronia.plugin.sack.SackPlugin;
+import org.gronia.plugin.fatigue.FatiguePlugin;
+import org.gronia.plugin.griefing.GriefingPlugin;
 import org.gronia.plugin.ptp.PerfectTPPlugin;
 import org.gronia.plugin.repair.RepairPlugin;
+import org.gronia.plugin.sack.SackPlugin;
 import org.gronia.plugin.storage.StoragePlugin;
-import org.gronia.plugin.uei.*;
 import org.gronia.plugin.ti.TeleportItemPlugin;
+import org.gronia.plugin.uei.*;
 import org.gronia.utils.GroniaMysqlConfiguration;
 
 import java.sql.DriverManager;
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Gronia extends JavaPlugin {
+
     private final Map<String, NamespacedKey> keys = new HashMap<>();
     private final Map<String, CustomShapedRecipe> shapedRecipeMap = new HashMap<>();
     private final Map<String, CustomShapelessRecipe> shapelessRecipeMap = new HashMap<>();
@@ -81,6 +82,7 @@ public class Gronia extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(BlacksmithTrait.class).withName("Blacksmith"));
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(StorageWorkerTrait.class).withName("StorageWorker"));
 

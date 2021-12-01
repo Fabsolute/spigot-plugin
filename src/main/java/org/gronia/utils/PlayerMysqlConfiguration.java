@@ -1,7 +1,7 @@
-package org.gronia.plugin.sack;
+package org.gronia.utils;
 
 import org.bukkit.configuration.MemoryConfiguration;
-import org.gronia.utils.GroniaMysqlConfiguration;
+import org.bukkit.configuration.MemorySection;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.PreparedStatement;
@@ -10,8 +10,60 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 
-public class SackConfiguration extends GroniaMysqlConfiguration {
+public class PlayerMysqlConfiguration extends GroniaMysqlConfiguration {
+    public static enum Type {
+        INTEGER("int(7)",
+                " DEFAULT 0",
+                r -> r.getInt("value"),
+                MemorySection::getInt,
+                (s, o) -> {
+                    s.setInt(3, (int) o);
+                    s.setInt(4, (int) o);
+                }),
+        STRING("varchar(256)",
+                "",
+                r -> r.getString("value"),
+                MemorySection::getString,
+                (s, o) -> {
+                    s.setString(3, (String) o);
+                    s.setString(4, (String) o);
+                });
+
+        private final String databaseType;
+        private final String databaseDefault;
+        private final SqlFunction<ResultSet, Object> readResult;
+        private final BiFunction<PlayerMemoryConfiguration, String, Object> readMemory;
+        private final SqlBiConsumer<PreparedStatement, Object> setStatement;
+
+        Type(String databaseType,
+             String databaseDefault,
+             SqlFunction<ResultSet, Object> readResult,
+             BiFunction<PlayerMemoryConfiguration, String, Object> readMemory,
+             SqlBiConsumer<PreparedStatement, Object> setStatement) {
+            this.databaseType = databaseType;
+            this.databaseDefault = databaseDefault;
+            this.readResult = readResult;
+            this.readMemory = readMemory;
+            this.setStatement = setStatement;
+        }
+    }
+
+    private final Type type;
+
+    public PlayerMysqlConfiguration() {
+        this(Type.INTEGER);
+    }
+
+    public PlayerMysqlConfiguration(Type type) {
+        this.type = type;
+    }
+
+    public Type getType() {
+        return this.type;
+    }
+
     @Override
     public String prepareUpsertQuery() {
         return "INSERT INTO " + name + " (`player`,`key`,`value`) VALUES(?,?,?) ON DUPLICATE KEY UPDATE `value` = ?";
@@ -19,7 +71,7 @@ public class SackConfiguration extends GroniaMysqlConfiguration {
 
     @Override
     public void serialize(PreparedStatement st, Map.Entry<String, Object> kv) throws SQLException {
-        var configuration = (SackMemoryConfiguration) kv.getValue();
+        var configuration = (PlayerMemoryConfiguration) kv.getValue();
 
         var player = kv.getKey();
         for (var key : configuration.getKeys(false)) {
@@ -27,11 +79,11 @@ public class SackConfiguration extends GroniaMysqlConfiguration {
                 continue;
             }
 
-            var value = configuration.getInt(key);
             st.setString(1, player);
             st.setString(2, key);
-            st.setInt(3, value);
-            st.setInt(4, value);
+            var val = type.readMemory.apply(configuration, key);
+            type.setStatement.accept(st, val);
+
             st.addBatch();
             st.clearParameters();
         }
@@ -43,7 +95,7 @@ public class SackConfiguration extends GroniaMysqlConfiguration {
         stmt.executeUpdate("CREATE TABLE IF NOT EXISTS `" + this.name + "` (\n" +
                 "  `player` varchar(256) NOT NULL,\n" +
                 "  `key` varchar(256) NOT NULL,\n" +
-                "  `value` int(7) NOT NULL DEFAULT 0,\n" +
+                "  `value` " + type.databaseType + " NOT NULL" + type.databaseDefault + ",\n" +
                 "  PRIMARY KEY (`player`, `key`)\n" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=latin1;");
     }
@@ -57,7 +109,7 @@ public class SackConfiguration extends GroniaMysqlConfiguration {
                 configuration = this.createConfiguration(player);
             }
 
-            configuration.set(rs.getString("key"), rs.getInt("value"));
+            configuration.set(rs.getString("key"), type.readResult.apply(rs));
         }
     }
 
@@ -73,7 +125,7 @@ public class SackConfiguration extends GroniaMysqlConfiguration {
             var st = prepareStatement("DELETE FROM " + name + " WHERE `player` = ? and `key` = ?");
             for (var kv : this.getValues(false).entrySet()) {
                 var player = kv.getKey();
-                var cf = (SackMemoryConfiguration) kv.getValue();
+                var cf = (PlayerMemoryConfiguration) kv.getValue();
                 for (var deleted : cf.deletedList) {
                     st.setString(1, player);
                     st.setString(2, deleted);
@@ -90,20 +142,20 @@ public class SackConfiguration extends GroniaMysqlConfiguration {
         }
     }
 
-    public SackMemoryConfiguration createConfiguration(String name) {
-        var config = new SackMemoryConfiguration();
+    public PlayerMemoryConfiguration createConfiguration(String name) {
+        var config = new PlayerMemoryConfiguration();
         this.set(name, config);
         return config;
     }
 
-    public class SackMemoryConfiguration extends MemoryConfiguration {
+    public class PlayerMemoryConfiguration extends MemoryConfiguration {
         private final Set<String> dirtyList = new HashSet<>();
         public final Set<String> deletedList = new HashSet<>();
 
         @Override
         public void set(@NotNull String path, Object value) {
             super.set(path, value);
-            SackConfiguration.this.setDirty();
+            PlayerMysqlConfiguration.this.setDirty();
             dirtyList.add(path);
             if (value == null) {
                 deletedList.add(path);

@@ -6,6 +6,7 @@ import org.gronia.plugin.SubListener;
 import org.gronia.plugin.SubTabCompleter;
 import org.gronia.plugin.SubUtilPlugin;
 import org.gronia.utils.GroniaMysqlConfiguration;
+import org.gronia.utils.PlayerMysqlConfiguration;
 
 public class SackPlugin extends SubUtilPlugin<SackPlugin, SackUtil> {
     public int PER_COUNT = 512;
@@ -50,13 +51,13 @@ public class SackPlugin extends SubUtilPlugin<SackPlugin, SackUtil> {
     @Override
     public GroniaMysqlConfiguration getConfig() {
         if (this.configuration == null) {
-            this.configuration = GroniaMysqlConfiguration.loadConfiguration(SackConfiguration.class, this.getName());
+            this.configuration = GroniaMysqlConfiguration.loadConfiguration(PlayerMysqlConfiguration.class, this.getName());
         }
 
         return this.configuration;
     }
 
-    public SackConfiguration.SackMemoryConfiguration createSackConfiguration(String name) {
-        return ((SackConfiguration) this.getConfig()).createConfiguration(name);
+    public PlayerMysqlConfiguration.PlayerMemoryConfiguration createSackConfiguration(String name) {
+        return ((PlayerMysqlConfiguration) this.getConfig()).createConfiguration(name);
     }
 }

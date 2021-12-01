@@ -12,6 +12,9 @@ commands:
   ptp:
     description: Perfect TP
     usage: /ptp
+  uei:
+    description: Dont execute this command
+    usage: /uei dont
   storage:
     description: Storage
     usage: /storage

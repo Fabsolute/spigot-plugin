@@ -1,5 +1,6 @@
 package org.gronia.plugin.repair;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -8,7 +9,11 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubCommandExecutor;
+import org.gronia.plugin.uei.CustomItem;
+
+import java.util.logging.Level;
 
 public class RepairCommand extends SubCommandExecutor<RepairPlugin> {
     public RepairCommand(RepairPlugin plugin) {
@@ -48,20 +53,23 @@ public class RepairCommand extends SubCommandExecutor<RepairPlugin> {
             if (type.getMaxDurability() > 0) {
                 ItemMeta meta = stack.getItemMeta();
                 if (meta instanceof Damageable damageable) {
-                    int multiplier = 8;
+                    int multiplier = 4;
                     if (!meta.hasEnchant(Enchantment.MENDING)) {
                         if (!unsafe) {
                             continue;
                         }
                     } else {
-                        multiplier = 2;
+                        multiplier = 1;
                     }
 
-                    int damage = damageable.getDamage() / 2;
-                    int xp = Math.min(this.getTotalExperience(player), damage * multiplier);
-
+                    int damage = damageable.getDamage();
+                    var exp = this.getTotalExperience(player);
+                    int xp = Math.min(exp, damage * multiplier);
                     player.giveExp(-xp);
-                    damageable.setDamage(damage - (xp * multiplier));
+                    damageable.setDamage(damage - (xp / multiplier));
+                    if (CustomItem.isBroken(stack)) {
+                        CustomItem.setRepaired(stack);
+                    }
 
                     stack.setItemMeta(damageable);
                 }

@@ -1,5 +1,7 @@
 package org.gronia.plugin.uei;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -9,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.gronia.plugin.Gronia;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class CustomItem {
@@ -104,6 +107,44 @@ public abstract class CustomItem {
         return stack;
     }
 
-    public void onEnable(){
+    public void onEnable() {
+    }
+
+    public static boolean isBroken(ItemStack item) {
+        return item.getItemMeta().getPersistentDataContainer().has(Gronia.getInstance().getKey("broken"), PersistentDataType.INTEGER);
+    }
+
+    public static void setBroken(ItemStack item) {
+        var meta = item.getItemMeta();
+        assert meta != null;
+
+        meta.getPersistentDataContainer().set(Gronia.getInstance().getKey("broken"), PersistentDataType.INTEGER, 1);
+        var ll = meta.lore();
+        if (ll == null) {
+            ll = new ArrayList<>();
+        }
+
+        var l = new ArrayList<>(ll);
+        l.add(0, Component.text("Broken", NamedTextColor.DARK_RED));
+        meta.lore(l);
+
+        item.setItemMeta(meta);
+    }
+
+    public static void setRepaired(ItemStack item) {
+        var meta = item.getItemMeta();
+        assert meta != null;
+
+        meta.getPersistentDataContainer().remove(Gronia.getInstance().getKey("broken"));
+        var ll = meta.lore();
+        if (ll == null) {
+            ll = new ArrayList<>();
+        }
+
+        var l = new ArrayList<>(ll);
+        l.remove(0);
+        meta.lore(l);
+
+        item.setItemMeta(meta);
     }
 }

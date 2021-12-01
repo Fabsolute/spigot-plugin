@@ -1,5 +1,7 @@
 package org.gronia.plugin.uei;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -10,6 +12,7 @@ import org.bukkit.event.inventory.FurnaceStartSmeltEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
@@ -33,6 +36,21 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
     public void onPlayerInteract(PlayerInteractEvent event) {
         ItemRegistry.fireEvent(event);
         onEnchantItem(event);
+    }
+
+    @EventHandler
+    public void onPlayerBreakItem(PlayerItemBreakEvent event) {
+        ItemRegistry.fireEvent(event);
+        var item = event.getBrokenItem();
+        if (ItemRegistry.getCustomItem(item) == null) {
+            return;
+        }
+
+        if (!CustomItem.isBroken(item)) {
+            CustomItem.setBroken(item);
+        }
+
+        event.getPlayer().getInventory().addItem(item);
     }
 
     @EventHandler
@@ -65,6 +83,14 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
 
     @EventHandler
     public void onBreakBlock(BlockBreakEvent event) {
+        var item = event.getPlayer().getInventory().getItemInMainHand();
+        if (ItemRegistry.getCustomItem(item) != null) {
+            if (CustomItem.isBroken(item)) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+
         ItemRegistry.fireEvent(event);
     }
 

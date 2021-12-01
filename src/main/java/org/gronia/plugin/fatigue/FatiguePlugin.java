@@ -6,11 +6,12 @@ import org.gronia.plugin.*;
 
 public class FatiguePlugin extends SubPlugin<FatiguePlugin> {
     private final FatigueUtil util;
-    private int taskId;
+    private int restTaskId;
+    private int steroidTaskId;
 
     public FatiguePlugin(JavaPlugin plugin) {
         super(plugin);
-        this.util = new FatigueUtil();
+        this.util = new FatigueUtil(this);
     }
 
     @Override
@@ -20,7 +21,7 @@ public class FatiguePlugin extends SubPlugin<FatiguePlugin> {
 
     @Override
     public SubListener<FatiguePlugin> getListener() {
-        return null;
+        return new FatigueListener(this);
     }
 
     @Override
@@ -40,19 +41,28 @@ public class FatiguePlugin extends SubPlugin<FatiguePlugin> {
     @Override
     public void onEnable() {
         super.onEnable();
-        this.taskId = Bukkit.getScheduler().scheduleAsyncRepeatingTask(Gronia.getInstance(), this::increaseRestness, 100L, 100L);
+        this.util.onEnable();
+        this.restTaskId = Bukkit.getScheduler().scheduleAsyncRepeatingTask(Gronia.getInstance(), this::increaseRestness, 100L, 100L);
+        this.steroidTaskId = Bukkit.getScheduler().scheduleAsyncRepeatingTask(Gronia.getInstance(), this::decreaseSteroid, 20L, 20L);
     }
 
     @Override
     public void onDisable() {
         super.onDisable();
-        Bukkit.getScheduler().cancelTask(this.taskId);
+        this.util.onDisable();
+        Bukkit.getScheduler().cancelTask(this.restTaskId);
+        Bukkit.getScheduler().cancelTask(this.steroidTaskId);
     }
 
     private void increaseRestness() {
         for (var player : Bukkit.getOnlinePlayers()) {
             this.getUtil().changeRestness(player, 1);
-            this.getUtil().changeSteroid(player, -5);
+        }
+    }
+
+    private void decreaseSteroid() {
+        for (var player : Bukkit.getOnlinePlayers()) {
+            this.getUtil().changeSteroid(player, -1);
         }
     }
 }

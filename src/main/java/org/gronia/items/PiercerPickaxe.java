@@ -25,6 +25,7 @@ import java.util.List;
 
 public class PiercerPickaxe extends CustomItem implements TierableItem, CraftableItem<CustomShapedRecipe>, EventListenerItem {
     private NamespacedKey piercerKey;
+    private final List<Block> blocks = new ArrayList<>();
 
     public PiercerPickaxe() {
         super(Material.NETHERITE_PICKAXE, ItemNames.PIERCER_PICKAXE, "Piercer Pickaxe");
@@ -104,7 +105,8 @@ public class PiercerPickaxe extends CustomItem implements TierableItem, Craftabl
             return;
         }
 
-        if (player.hasMetadata("pierce.breaking")) {
+        if (blocks.contains(event.getBlock())) {
+            blocks.remove(event.getBlock());
             return;
         }
 
@@ -154,12 +156,11 @@ public class PiercerPickaxe extends CustomItem implements TierableItem, Craftabl
         }
 
         fatigueUtil.changeRestness(player, -others.size());
+        blocks.addAll(others);
 
-        player.setMetadata("pierce.breaking", new FixedMetadataValue(Gronia.getInstance(), true));
         for (var b : others) {
             player.breakBlock(b);
         }
-        Bukkit.getScheduler().runTaskLater(Gronia.getInstance(), () -> player.removeMetadata("pierce.breaking", Gronia.getInstance()), 1L);
     }
 
     @Override
