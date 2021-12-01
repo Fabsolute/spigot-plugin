@@ -1,6 +1,5 @@
 package org.gronia.menu.iterator;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -13,14 +12,13 @@ import xyz.janboerman.guilib.api.menu.ItemButton;
 import xyz.janboerman.guilib.api.menu.MenuHolder;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class StorageAllIterator implements Iterator<GuiInventoryHolder<?>> {
+public class StorageIterator implements Iterator<GuiInventoryHolder<Gronia>> {
     private int page;
     private final int pageCount;
     private final List<Map.Entry<String, Integer>> items;
 
-    public StorageAllIterator(Map<String, Integer> items, List<String> filter) {
+    public StorageIterator(Map<String, Integer> items, List<String> filter) {
         var newItems = items.entrySet().stream().filter(i -> i.getValue() != 0);
         if (filter != null) {
             newItems = newItems.filter(i -> filter.stream().anyMatch(f -> {
@@ -39,7 +37,7 @@ public class StorageAllIterator implements Iterator<GuiInventoryHolder<?>> {
         this.pageCount = (int) (Math.ceil(this.items.size() / 45f));
     }
 
-    public StorageAllIterator(Map<String, Integer> items) {
+    public StorageIterator(Map<String, Integer> items) {
         this(items, null);
     }
 
@@ -49,10 +47,10 @@ public class StorageAllIterator implements Iterator<GuiInventoryHolder<?>> {
     }
 
     @Override
-    public GuiInventoryHolder<?> next() {
+    public GuiInventoryHolder<Gronia> next() {
         var menu = new MenuHolder<>(Gronia.getInstance(), 45, "Page " + page);
 
-        List<Map.Entry<String, Integer>> list = items.stream().skip(page * 45L).limit(45).collect(Collectors.toList());
+        List<Map.Entry<String, Integer>> list = items.stream().skip(page * 45L).limit(45).toList();
         int i = 0;
         for (Map.Entry<String, Integer> e : list) {
             ItemStack stack = ItemRegistry.createItem(e.getKey());

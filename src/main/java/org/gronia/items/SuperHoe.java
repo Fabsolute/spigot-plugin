@@ -104,7 +104,6 @@ public class SuperHoe extends CustomItem implements TierableItem, CraftableItem<
 
         var bottomBlock = block.getRelative(BlockFace.DOWN);
         if (bottomBlock.getType() != material) {
-            Bukkit.getLogger().log(Level.WARNING, "Bottom" + bottomBlock.getType());
             return false;
         }
 

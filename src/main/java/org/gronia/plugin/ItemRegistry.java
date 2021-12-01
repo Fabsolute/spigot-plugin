@@ -109,6 +109,10 @@ public class ItemRegistry {
     }
 
     public static String getInternalName(ItemStack stack) {
+        if (stack == null) {
+            return null;
+        }
+
         var name = stack.getType().name().toLowerCase();
         var meta = stack.getItemMeta();
         if (meta != null) {
@@ -128,6 +132,10 @@ public class ItemRegistry {
     }
 
     public static CustomItem getCustomItem(ItemStack stack) {
+        if (stack == null) {
+            return null;
+        }
+
         var internalName = getInternalName(stack);
         return customItems.get(internalName);
     }
