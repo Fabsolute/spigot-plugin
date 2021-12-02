@@ -58,6 +58,10 @@ public class SackMenu extends MenuHolder<Gronia> {
             return;
         }
 
+        if (item.getType().getMaxDurability() > 0) {
+            return;
+        }
+
         var meta = item.getItemMeta();
         if (meta == null) {
             return;
@@ -112,6 +116,30 @@ public class SackMenu extends MenuHolder<Gronia> {
                             }
 
                             event.getWhoClicked().openInventory(event.getWhoClicked().getEnderChest());
+                        }
+                    }
+            );
+        }
+
+        if (this.hasFlush(shulkerSack)) {
+            var flushItem = new ItemStack(Material.PLAYER_HEAD);
+            Bukkit.getUnsafe().modifyItemStack(
+                    flushItem,
+                    "{SkullOwner:{Id:[I;-1864701848,-334870135,-2029676573,613468765],Properties:{textures:[{Value:\"eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzI0MzE5MTFmNDE3OGI0ZDJiNDEzYWE3ZjVjNzhhZTQ0NDdmZTkyNDY5NDNjMzFkZjMxMTYzYzBlMDQzZTBkNiJ9fX0=\"}]}}}"
+            );
+
+            flushItem = new ItemBuilder(flushItem).name("Transfer to Storage").build();
+            this.setButton(
+                    26,
+                    new ItemButton<MenuHolder<Gronia>>(flushItem) {
+                        @Override
+                        public void onClick(MenuHolder<Gronia> holder, InventoryClickEvent event) {
+                            super.onClick(holder, event);
+                            if (editMode) {
+                                return;
+                            }
+
+                            Gronia.getInstance().getSubPlugin(SackPlugin.class).executeFlushCommand(event.getWhoClicked(), false);
                         }
                     }
             );
@@ -217,6 +245,10 @@ public class SackMenu extends MenuHolder<Gronia> {
 
     private boolean hasEnderChest(ShulkerSack sack) {
         return this.head.getItemMeta().getPersistentDataContainer().has(sack.enderChestKey, PersistentDataType.INTEGER);
+    }
+
+    private boolean hasFlush(ShulkerSack sack) {
+        return this.head.getItemMeta().getPersistentDataContainer().has(sack.flushKey, PersistentDataType.INTEGER);
     }
 
     private boolean hasStorage(ShulkerSack sack) {

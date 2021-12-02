@@ -75,9 +75,8 @@ public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
         if (command.equalsIgnoreCase("list")) {
             var free = materialName.equalsIgnoreCase("free");
             if (!free) {
-                // todo if has teleporter use it
                 Map<String, Integer> changes = new HashMap<>();
-                changes.put(ItemNames.TELEPORTER, -1);
+                changes.put(ItemNames.TELEPORTER, -2);
                 this.getPlugin().applyStackable(player.getName(), changes);
             }
 

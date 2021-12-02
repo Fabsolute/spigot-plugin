@@ -7,12 +7,14 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.gronia.items.ItemNames;
 import org.gronia.items.upgrader.ShulkerSackUpgrader;
 import org.gronia.menu.SackMenu;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubUtil;
 import org.gronia.items.ShulkerSack;
+import org.gronia.plugin.storage.StoragePlugin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -90,6 +92,28 @@ public class SackUtil extends SubUtil<SackPlugin> {
         this.getPlugin().getConfig().setDirty();
     }
 
+    public void flushSack(HumanEntity player, boolean isFree) {
+        var inventory = getInventory(player);
+        var changes = new HashMap<String, Integer>();
+        for (var key : inventory.getKeys(false)) {
+            changes.put(key.toLowerCase(), inventory.getInt(key));
+        }
+
+        if (changes.size() == 0) {
+            return;
+        }
+
+        if (!isFree) {
+            changes.put(ItemNames.TELEPORTER, -1);
+        }
+
+        this.getPlugin().getSubPlugin(StoragePlugin.class).applyStackable(player.getName(), changes);
+
+        for (var key : inventory.getKeys(false)) {
+            inventory.set(key, 0);
+        }
+    }
+
     public void tryRemoveItem(HumanEntity player, Material material) {
         var inventory = this.getInventory(player);
         var name = material.name();
@@ -100,16 +124,6 @@ public class SackUtil extends SubUtil<SackPlugin> {
         }
 
         inventory.set(name, null);
-    }
-
-    public void addDebt(String player, Material material, int count) {
-        count = -count;
-
-        var inventory = this.getInventory(player);
-        var name = material.name();
-        count += inventory.getInt(name, 0);
-        inventory.set(name, count);
-        this.getPlugin().getConfig().setDirty();
     }
 
     public void emptyPlayer(ItemStack head, HumanEntity player, Material material) {

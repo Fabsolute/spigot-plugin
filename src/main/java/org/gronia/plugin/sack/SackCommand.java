@@ -1,6 +1,5 @@
 package org.gronia.plugin.sack;
 
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,25 +16,17 @@ public class SackCommand extends SubCommandExecutor<SackPlugin> {
             return true;
         }
 
-        if (args.length != 4) {
+        String command = args[0];
+
+        if (!command.equalsIgnoreCase("flush")) {
             return false;
         }
 
-        String command = args[0];
-
-        if (command.equalsIgnoreCase("debt")) {
-            return this.handleDebt(args[1], args[2], args[3]);
+        if (!args[1].equalsIgnoreCase(this.getPlugin().getPassword())) {
+            return false;
         }
 
-        return true;
-    }
-
-    private boolean handleDebt(String playerName, String materialName, String rawCount) {
-        this.getPlugin().getUtils().addDebt(
-                playerName,
-                Material.valueOf(materialName.toUpperCase()),
-                Integer.parseInt(rawCount)
-        );
+        this.getPlugin().getUtils().flushSack(player, args[2].equalsIgnoreCase("free"));
         return true;
     }
 }

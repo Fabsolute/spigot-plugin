@@ -50,6 +50,7 @@ public class Gronia extends JavaPlugin {
         {
             addAll(BakedPotato.getAll());
             addAll(Carrot.getAll());
+            addAll(CoalBlock.getAll());
             addAll(Cobblestone.getAll());
             addAll(Obsidian.getAll());
             addAll(Netherrack.getAll());

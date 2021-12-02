@@ -22,6 +22,7 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
     public NamespacedKey enderChestKey;
     public NamespacedKey craftingTableKey;
     public NamespacedKey storageKey;
+    public NamespacedKey flushKey;
 
     public ShulkerSack() {
         super(Material.PLAYER_HEAD, ItemNames.SHULKER_SACK, "Shulker Sack");
@@ -34,6 +35,7 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
         enderChestKey = Gronia.getInstance().getKey("shulker_sack.ender_chest");
         craftingTableKey = Gronia.getInstance().getKey("shulker_sack.crafting_table");
         storageKey = Gronia.getInstance().getKey("shulker_sack.storage");
+        flushKey = Gronia.getInstance().getKey("shulker_sack.flush");
     }
 
     @Override

@@ -1,8 +1,8 @@
 package org.gronia.plugin.uei;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.TileState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -26,6 +26,7 @@ import org.gronia.plugin.sack.SackPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPlugin> {
     public UltraEnchantedItemListener(UltraEnchantedItemPlugin plugin) {
@@ -91,6 +92,17 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
             }
         }
 
+        var block = event.getBlock();
+        var state = block.getState();
+        if (state instanceof TileState tileState) {
+            var recipeName = tileState.getPersistentDataContainer().get(Gronia.getInstance().recipeKey, PersistentDataType.STRING);
+            if (recipeName != null) {
+                event.setDropItems(false);
+                Gronia.getInstance().getSubPlugin(SackPlugin.class).getUtils().pickItemToPlayer(event.getPlayer(), ItemRegistry.createItem(recipeName), true);
+                return;
+            }
+        }
+
         ItemRegistry.fireEvent(event);
     }
 
@@ -123,6 +135,19 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
         ItemRegistry.fireEvent(event);
 
         if (!isNotPlaceable(event.getItemInHand())) {
+            var customItem = ItemRegistry.getCustomItem(event.getItemInHand());
+            if (customItem != null) {
+                var block = event.getBlock();
+                var state = block.getState();
+
+                if (!(state instanceof TileState tileState)) {
+                    return;
+                }
+
+                var name = customItem.getInternalName();
+                tileState.getPersistentDataContainer().set(Gronia.getInstance().recipeKey, PersistentDataType.STRING, name);
+                tileState.update();
+            }
             return;
         }
 
@@ -183,11 +208,14 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
     private int getCount(PlayerInventory inventory, ItemStack stack) {
         int count = 0;
 
-        List<ItemStack> output = new ArrayList<>();
         var meta = stack.getItemMeta();
         assert meta != null;
         for (var s : inventory.getStorageContents()) {
             if (s == null) {
+                continue;
+            }
+
+            if (s == inventory.getItemInOffHand()) {
                 continue;
             }
 

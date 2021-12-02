@@ -31,7 +31,8 @@ public class CustomShapedRecipe extends ShapedRecipe implements CustomRecipe {
             for (var c : line.toCharArray()) {
                 var item = matrix[i * 3 + j];
                 if (this.ingredients.containsKey(c)) {
-                    if (!ItemRegistry.getInternalName(item).equalsIgnoreCase(this.ingredients.get(c))) {
+                    var name = ItemRegistry.getInternalName(item);
+                    if (name == null || !name.equalsIgnoreCase(this.ingredients.get(c))) {
                         return false;
                     }
                 }

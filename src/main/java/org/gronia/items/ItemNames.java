@@ -14,6 +14,7 @@ public class ItemNames {
     public static final String SACK_ENDER_CHEST_UPGRADE = "sack_ender_chest_upgrade";
     public static final String SACK_CRAFTING_TABLE_UPGRADE = "sack_crafting_table_upgrade";
     public static final String SACK_STORAGE_UPGRADE = "sack_storage_upgrade";
+    public static final String SACK_FLUSH_UPGRADE = "sack_flush_upgrade";
 
     public static final String ENCHANTED_CARROT = "enchanted_carrot";
     public static final String EXTRA_ENCHANTED_CARROT = "extra_enchanted_carrot";
@@ -29,6 +30,11 @@ public class ItemNames {
     public static final String EXTRA_ENCHANTED_COBBLESTONE = "extra_enchanted_cobblestone";
     public static final String ULTRA_ENCHANTED_COBBLESTONE = "ultra_enchanted_cobblestone";
     public static final String SUPER_ENCHANTED_COBBLESTONE = "super_enchanted_cobblestone";
+
+    public static final String ENCHANTED_COAL_BLOCK = "enchanted_coal_block";
+    public static final String EXTRA_ENCHANTED_COAL_BLOCK = "extra_enchanted_coal_block";
+    public static final String ULTRA_ENCHANTED_COAL_BLOCK = "ultra_enchanted_coal_block";
+    public static final String SUPER_ENCHANTED_COAL_BLOCK = "super_enchanted_coal_block";
 
     public static final String ENCHANTED_NETHERRACK = "enchanted_netherrack";
     public static final String EXTRA_ENCHANTED_NETHERRACK = "extra_enchanted_netherrack";

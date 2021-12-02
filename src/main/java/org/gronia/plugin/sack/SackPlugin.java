@@ -1,5 +1,6 @@
 package org.gronia.plugin.sack;
 
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.plugin.SubCommandExecutor;
 import org.gronia.plugin.SubListener;
@@ -59,5 +60,9 @@ public class SackPlugin extends SubUtilPlugin<SackPlugin, SackUtil> {
 
     public PlayerMysqlConfiguration.PlayerMemoryConfiguration createSackConfiguration(String name) {
         return ((PlayerMysqlConfiguration) this.getConfig()).createConfiguration(name);
+    }
+
+    public void executeFlushCommand(HumanEntity player, boolean isFree) {
+        this.getServer().dispatchCommand(player, "sack flush " + this.getPassword() + (isFree ? " free" : " nope"));
     }
 }
