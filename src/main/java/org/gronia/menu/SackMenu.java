@@ -140,6 +140,7 @@ public class SackMenu extends MenuHolder<Gronia> {
                             }
 
                             Gronia.getInstance().getSubPlugin(SackPlugin.class).executeFlushCommand(event.getWhoClicked(), false);
+                            event.getView().close();
                         }
                     }
             );

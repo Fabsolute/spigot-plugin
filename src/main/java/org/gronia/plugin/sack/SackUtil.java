@@ -96,7 +96,10 @@ public class SackUtil extends SubUtil<SackPlugin> {
         var inventory = getInventory(player);
         var changes = new HashMap<String, Integer>();
         for (var key : inventory.getKeys(false)) {
-            changes.put(key.toLowerCase(), inventory.getInt(key));
+            var count = inventory.getInt(key);
+            if (count > 0) {
+                changes.put(key.toLowerCase(), count);
+            }
         }
 
         if (changes.size() == 0) {
