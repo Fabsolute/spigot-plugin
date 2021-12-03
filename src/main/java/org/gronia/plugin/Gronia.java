@@ -19,6 +19,7 @@ import org.gronia.plugin.sack.SackPlugin;
 import org.gronia.plugin.storage.StoragePlugin;
 import org.gronia.plugin.ti.TeleportItemPlugin;
 import org.gronia.plugin.uei.*;
+import org.gronia.plugin.warmer.WarmerPlugin;
 import org.gronia.utils.GroniaMysqlConfiguration;
 
 import java.sql.DriverManager;
@@ -43,7 +44,8 @@ public class Gronia extends JavaPlugin {
             new StoragePlugin(this),
             new RepairPlugin(this),
             new GriefingPlugin(this),
-            new FatiguePlugin(this)
+            new FatiguePlugin(this),
+            new WarmerPlugin(this)
     };
 
     private final List<CustomItem> customItems = new ArrayList<>() {

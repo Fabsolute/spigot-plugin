@@ -149,39 +149,53 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
                 continue;
             }
 
-            int totalLength = stackableConfig.getInt(materialName, 0);
+            int totalCount = stackableConfig.getInt(materialName, 0);
 
-            int newCount = totalLength - count;
+            int newCount = totalCount - count;
             stackableConfig.set(materialName, newCount);
 
             if (oldCounts.containsKey(materialName)) {
                 count += oldCounts.get(materialName);
-                totalLength += oldCounts.get(materialName);
+                oldCounts.remove(materialName);
             }
 
             if (count == 0) {
                 continue;
             }
 
-            if (count > 0) {
-                if (totalLength < count) {
-                    if (totalLength <= 0) {
-                        messages.add(Pair2.of(ChatColor.DARK_PURPLE + "Storage " + ChatColor.RESET + name + " owed " + ChatColor.RED + "" + count + " " + materialName + ChatColor.WHITE + ". New count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".", true));
-                    } else {
-                        messages.add(Pair2.of(ChatColor.DARK_PURPLE + "Storage " + ChatColor.RESET + name + " took " + ChatColor.GREEN + "" + totalLength + " " + materialName + ChatColor.WHITE + " and owed " + ChatColor.RED + (count - totalLength) + ChatColor.WHITE + ". New count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".", true));
-                    }
-                } else {
-                    messages.add(Pair2.of(ChatColor.DARK_PURPLE + "Storage " + ChatColor.RESET + name + " took " + ChatColor.GREEN + "" + count + " " + materialName + ChatColor.WHITE + ". New count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".", true));
-                }
-            } else {
-                messages.add(Pair2.of(ChatColor.DARK_PURPLE + "Storage " + ChatColor.RESET + name + " stored " + ChatColor.GREEN + "" + -count + " " + materialName + ChatColor.WHITE + ". New count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".", false));
+            this.applyMessage(messages, name, materialName, count, newCount, totalCount);
+        }
+
+        for (var change : oldCounts.entrySet()) {
+            String materialName = change.getKey();
+            int count = -change.getValue();
+            if (serializableItemList.contains(materialName)) {
+                continue;
             }
+
+            this.applyMessage(messages, name, materialName, count, 0, 0);
         }
 
         this.sendMessages(messages, name);
         this.getStackableConfig().setDirty();
 
         return output;
+    }
+
+    private void applyMessage(List<Pair2<String, Boolean>> messages, String name, String materialName, int count, int newCount, int totalCount) {
+        if (count > 0) {
+            if (totalCount < count) {
+                if (totalCount <= 0) {
+                    messages.add(Pair2.of(ChatColor.DARK_PURPLE + "Storage " + ChatColor.RESET + name + " owed " + ChatColor.RED + "" + count + " " + materialName + ChatColor.WHITE + ". New count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".", true));
+                } else {
+                    messages.add(Pair2.of(ChatColor.DARK_PURPLE + "Storage " + ChatColor.RESET + name + " took " + ChatColor.GREEN + "" + totalCount + " " + materialName + ChatColor.WHITE + " and owed " + ChatColor.RED + (count - totalCount) + ChatColor.WHITE + ". New count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".", true));
+                }
+            } else {
+                messages.add(Pair2.of(ChatColor.DARK_PURPLE + "Storage " + ChatColor.RESET + name + " took " + ChatColor.GREEN + "" + count + " " + materialName + ChatColor.WHITE + ". New count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".", true));
+            }
+        } else {
+            messages.add(Pair2.of(ChatColor.DARK_PURPLE + "Storage " + ChatColor.RESET + name + " stored " + ChatColor.GREEN + "" + -count + " " + materialName + ChatColor.WHITE + ". New count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".", false));
+        }
     }
 
     public void sendMessages(List<Pair2<String, Boolean>> messages, String name) {

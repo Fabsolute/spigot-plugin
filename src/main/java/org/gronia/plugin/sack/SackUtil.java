@@ -47,7 +47,7 @@ public class SackUtil extends SubUtil<SackPlugin> {
     public HashMap<Integer, ItemStack> pickItemToPlayer(HumanEntity player, ItemStack stack, boolean drop) {
         PlayerInventory inventory = player.getInventory();
         ItemStack offhand = inventory.getItemInOffHand();
-        if (offhand.getType() == stack.getType()) {
+        if (stack.isSimilar(offhand)) {
             int amount = offhand.getAmount() + stack.getAmount();
             int maxAmount = offhand.getType().getMaxStackSize();
             if (amount > maxAmount) {

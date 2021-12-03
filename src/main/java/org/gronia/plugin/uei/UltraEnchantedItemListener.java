@@ -156,7 +156,10 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
 
     public String getUltraEnchantedRecipeName(ItemStack result) {
         var meta = result.getItemMeta();
-        assert meta != null;
+        if (meta == null) {
+            return null;
+        }
+
         return meta.getPersistentDataContainer().get(this.getPlugin().<Gronia>getPlugin().recipeKey, PersistentDataType.STRING);
     }
 
