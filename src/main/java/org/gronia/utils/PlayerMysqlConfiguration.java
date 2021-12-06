@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 
 public class PlayerMysqlConfiguration extends GroniaMysqlConfiguration {
-    public static enum Type {
+    public enum Type {
         INTEGER("int(7)",
                 " DEFAULT 0",
                 r -> r.getInt("value"),

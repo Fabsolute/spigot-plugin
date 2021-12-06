@@ -15,6 +15,10 @@ public class TeleportItemListener extends SubListener<TeleportItemPlugin> {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
         var xp = event.getExpToDrop();
         event.setExpToDrop(0);
         giveExp(event.getPlayer(), xp);

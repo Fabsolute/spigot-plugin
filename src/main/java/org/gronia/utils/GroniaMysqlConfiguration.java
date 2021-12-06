@@ -57,9 +57,9 @@ public abstract class GroniaMysqlConfiguration extends MemoryConfiguration {
         return getConnection().createStatement();
     }
 
-    public static <T extends GroniaMysqlConfiguration> GroniaMysqlConfiguration loadConfiguration(Class<T> type, String name, Object... args) {
+    public static <T extends GroniaMysqlConfiguration> T loadConfiguration(Class<T> type, String name, Object... args) {
         Validate.notNull(name, "Name cannot be null");
-        GroniaMysqlConfiguration config = null;
+        T config = null;
         try {
             config = type.getDeclaredConstructor(Arrays.stream(args).map(Object::getClass).toArray(Class<?>[]::new)).newInstance(args);
         } catch (Exception e) {

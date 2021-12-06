@@ -110,6 +110,9 @@ public abstract class CustomItem {
     public void onEnable() {
     }
 
+    public void onDisable() {
+    }
+
     public static boolean isBroken(ItemStack item) {
         return item.getItemMeta().getPersistentDataContainer().has(Gronia.getInstance().getKey("broken"), PersistentDataType.INTEGER);
     }

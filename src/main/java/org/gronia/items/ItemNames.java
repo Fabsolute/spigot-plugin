@@ -3,6 +3,7 @@ package org.gronia.items;
 public class ItemNames {
     public static final String PIERCER_PICKAXE = "piercer_pickaxe";
     public static final String SUPER_PICKAXE = "super_pickaxe";
+    public static final String END_CITY_DESTROYER = "end_city_destroyer";
     public static final String SUPER_HOE = "super_hoe";
     public static final String ELYTRA_UPGRADER = "elytra_upgrader";
     public static final String HYPER_FURNACE = "hyper_furnace";

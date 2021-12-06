@@ -53,25 +53,25 @@ public class RepairCommand extends SubCommandExecutor<RepairPlugin> {
             if (type.getMaxDurability() > 0) {
                 ItemMeta meta = stack.getItemMeta();
                 if (meta instanceof Damageable damageable) {
-                    int multiplier = 4;
+                    float multiplier = 4f;
                     if (!meta.hasEnchant(Enchantment.MENDING)) {
                         if (!unsafe) {
                             continue;
                         }
                     } else {
-                        multiplier = 1;
+                        multiplier = 0.5f;
                     }
 
                     int damage = damageable.getDamage();
                     var exp = this.getTotalExperience(player);
-                    int xp = Math.min(exp, damage * multiplier);
+                    int xp = Math.min(exp, (int)(damage * multiplier));
                     player.giveExp(-xp);
-                    damageable.setDamage(damage - (xp / multiplier));
+                    damageable.setDamage(damage - (int)(xp / multiplier));
+                    stack.setItemMeta(damageable);
+
                     if (CustomItem.isBroken(stack)) {
                         CustomItem.setRepaired(stack);
                     }
-
-                    stack.setItemMeta(damageable);
                 }
             }
         }

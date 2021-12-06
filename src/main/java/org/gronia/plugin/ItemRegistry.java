@@ -1,6 +1,5 @@
 package org.gronia.plugin;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Event;
@@ -10,7 +9,6 @@ import org.gronia.plugin.uei.*;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 
 public class ItemRegistry {
     private static final Map<String, CustomItem> customItems = new HashMap<>();
@@ -37,6 +35,12 @@ public class ItemRegistry {
         customItem.onEnable();
     }
 
+    public static void deregister(CustomItem customItem) {
+        customItems.remove(customItem.getInternalName());
+        // todo deregister recipe
+        customItem.onDisable();
+    }
+
     private static void registerRecipe(CustomItem item) {
         if (!(item instanceof CraftableItem craftableItem)) {
             return;
@@ -61,6 +65,10 @@ public class ItemRegistry {
     public static void deregisterAll() {
         for (var key : keyList) {
             Gronia.getInstance().getServer().removeRecipe(key);
+        }
+
+        for (var ci : customItems.values()) {
+            deregister(ci);
         }
 
         listeners.clear();

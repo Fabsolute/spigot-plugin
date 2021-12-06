@@ -37,9 +37,9 @@ public class Gronia extends JavaPlugin {
     public final NamespacedKey recipeKey = this.getKey("recipe_name");
 
     private final SubPlugin<?>[] plugins = new SubPlugin[]{
-            new TeleportItemPlugin(this),
             new SackPlugin(this),
             new UltraEnchantedItemPlugin(this),
+            new TeleportItemPlugin(this),
             new PerfectTPPlugin(this),
             new StoragePlugin(this),
             new RepairPlugin(this),
@@ -62,6 +62,7 @@ public class Gronia extends JavaPlugin {
             addAll(SweetPotion.getAll());
 
             add(new PiercerPickaxe());
+            add(new EndCityDestroyer());
             add(new SuperHoe());
             add(new HyperFurnace());
             add(new Teleporter());
