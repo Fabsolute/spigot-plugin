@@ -17,7 +17,7 @@ import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.fatigue.FatiguePlugin;
 import org.gronia.plugin.uei.*;
 import org.gronia.utils.ItemUtil;
-import org.gronia.utils.Pair;
+import org.gronia.utils.pair.Pair;
 
 import java.util.ArrayList;
 import java.util.List;

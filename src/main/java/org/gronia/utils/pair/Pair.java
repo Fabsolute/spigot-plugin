@@ -1,4 +1,4 @@
-package org.gronia.utils;
+package org.gronia.utils.pair;
 
 import java.util.function.Consumer;
 

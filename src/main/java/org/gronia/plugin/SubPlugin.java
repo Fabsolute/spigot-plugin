@@ -6,14 +6,15 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.gronia.utils.GroniaMysqlConfiguration;
+import org.gronia.utils.configuration.MysqlConfiguration;
+import org.gronia.utils.configuration.YAMLMysqlConfiguration;
 
 import java.sql.SQLException;
 import java.util.Random;
 import java.util.logging.Logger;
 
 public abstract class SubPlugin<T extends SubPlugin<T>> {
-    private GroniaMysqlConfiguration configuration;
+    private MysqlConfiguration configuration;
 
     public abstract String getName();
 
@@ -31,9 +32,9 @@ public abstract class SubPlugin<T extends SubPlugin<T>> {
         password = randomString(16);
     }
 
-    public GroniaMysqlConfiguration getConfig() {
+    public MysqlConfiguration getConfig() {
         if (this.configuration == null) {
-            this.configuration = GroniaMysqlConfiguration.loadConfiguration(GroniaMysqlConfiguration.YAML.class, this.getName());
+            this.configuration = MysqlConfiguration.loadConfiguration(YAMLMysqlConfiguration.class, this.getName());
         }
 
         return this.configuration;

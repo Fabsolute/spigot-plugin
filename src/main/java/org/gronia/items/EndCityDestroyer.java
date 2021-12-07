@@ -16,7 +16,7 @@ import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.uei.*;
 import org.gronia.utils.ItemUtil;
-import org.gronia.utils.Pair;
+import org.gronia.utils.pair.Pair;
 
 import java.util.*;
 
@@ -144,22 +144,31 @@ public class EndCityDestroyer extends CustomItem implements TierableItem, Crafta
         return false;
     }
 
-    private void addNearBlocks(Queue<Block> others, Block block) {
-        var up = block.getRelative(BlockFace.UP);
-        var down = block.getRelative(BlockFace.DOWN);
-        var north = block.getRelative(BlockFace.NORTH);
-        var south = block.getRelative(BlockFace.SOUTH);
-        var east = block.getRelative(BlockFace.EAST);
-        var west = block.getRelative(BlockFace.WEST);
-        checkItem(others, up, down, north, south, east, west);
+    private void addNearBlocks(Queue<Block> others, Block startBlock) {
+        Queue<Block> checkQueue = new LinkedList<>() {
+            {
+                add(startBlock);
+            }
+        };
+
+        while (checkQueue.size() > 0) {
+            var block = checkQueue.remove();
+            var up = block.getRelative(BlockFace.UP);
+            var down = block.getRelative(BlockFace.DOWN);
+            var north = block.getRelative(BlockFace.NORTH);
+            var south = block.getRelative(BlockFace.SOUTH);
+            var east = block.getRelative(BlockFace.EAST);
+            var west = block.getRelative(BlockFace.WEST);
+            checkItem(others, checkQueue, up, down, north, south, east, west);
+        }
     }
 
-    private void checkItem(Queue<Block> others, Block... blocks) {
+    private void checkItem(Queue<Block> others, Queue<Block> checkQueue, Block... blocks) {
         for (var block : blocks) {
-            if (ItemUtil.isSafeToBreak(block) && block.getType() != Material.END_STONE && block.getType() != Material.OBSIDIAN) {
+            if (block.getType() == Material.END_ROD || (ItemUtil.isSafeToBreak(block) && block.getType() != Material.END_STONE && block.getType() != Material.OBSIDIAN)) {
                 if (!others.contains(block)) {
                     others.add(block);
-                    addNearBlocks(others, block);
+                    checkQueue.add(block);
                 }
             }
         }

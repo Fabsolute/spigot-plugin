@@ -15,11 +15,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.uei.*;
-import org.gronia.utils.Pair;
+import org.gronia.utils.pair.Pair;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 public class SuperHoe extends CustomItem implements TierableItem, CraftableItem<CustomShapedRecipe>, EventListenerItem {
     private final Map<Material, Material> cropList = Map.of(

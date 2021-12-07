@@ -1,18 +1,17 @@
-package org.gronia.utils;
+package org.gronia.utils.configuration;
 
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.MemorySection;
+import org.gronia.utils.SqlBiConsumer;
+import org.gronia.utils.SqlFunction;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiFunction;
 
-public class PlayerMysqlConfiguration extends GroniaMysqlConfiguration {
+public class PlayerMysqlConfiguration extends MysqlConfiguration {
     public enum Type {
         INTEGER("int(7)",
                 " DEFAULT 0",
@@ -143,32 +142,8 @@ public class PlayerMysqlConfiguration extends GroniaMysqlConfiguration {
     }
 
     public PlayerMemoryConfiguration createConfiguration(String name) {
-        var config = new PlayerMemoryConfiguration();
+        var config = new PlayerMemoryConfiguration(this);
         this.set(name, config);
         return config;
-    }
-
-    public class PlayerMemoryConfiguration extends MemoryConfiguration {
-        private final Set<String> dirtyList = new HashSet<>();
-        public final Set<String> deletedList = new HashSet<>();
-
-        @Override
-        public void set(@NotNull String path, Object value) {
-            super.set(path, value);
-            PlayerMysqlConfiguration.this.setDirty();
-            dirtyList.add(path);
-            if (value == null) {
-                deletedList.add(path);
-            }
-        }
-
-        boolean isDirty(String path) {
-            return this.dirtyList.contains(path);
-        }
-
-        void onSaveCompleted() {
-            this.dirtyList.clear();
-            this.deletedList.clear();
-        }
     }
 }

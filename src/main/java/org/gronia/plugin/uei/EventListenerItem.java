@@ -1,7 +1,7 @@
 package org.gronia.plugin.uei;
 
 import org.bukkit.event.Event;
-import org.gronia.utils.Pair;
+import org.gronia.utils.pair.Pair;
 
 import java.util.List;
 

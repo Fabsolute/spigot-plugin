@@ -13,7 +13,7 @@ import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.sack.SackPlugin;
 import org.gronia.plugin.uei.*;
-import org.gronia.utils.Pair;
+import org.gronia.utils.pair.Pair;
 
 import java.util.List;
 

@@ -9,9 +9,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubListener;
-import org.gronia.utils.GroniaMysqlConfiguration;
+import org.gronia.utils.configuration.MysqlConfiguration;
 import org.gronia.utils.NumberMap;
-import org.gronia.utils.Pair2;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,7 +59,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
 
         List<String> serializableList = this.getPlugin().getSerializableItemList();
         if (serializableList.contains(title)) {
-            GroniaMysqlConfiguration config = this.getPlugin().getSerializableConfig();
+            MysqlConfiguration config = this.getPlugin().getSerializableConfig();
             List<ItemStack> items = (List<ItemStack>) config.get(title, null);
             if (items == null) {
                 return;
@@ -80,7 +79,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
             config.set(title, remain);
             config.setDirty();
         } else {
-            GroniaMysqlConfiguration config = this.getPlugin().getStackableConfig();
+            MysqlConfiguration config = this.getPlugin().getStackableConfig();
             int oldCount = config.getInt(title, 0);
             if (oldCount > 0) {
                 int count = oldCount;
@@ -132,7 +131,7 @@ public class StorageListener extends SubListener<StoragePlugin> {
             return;
         }
 
-        GroniaMysqlConfiguration serializableConfig = this.getPlugin().getSerializableConfig();
+        MysqlConfiguration serializableConfig = this.getPlugin().getSerializableConfig();
         var newCounts = new NumberMap<String>();
         for (ItemStack stack : contents) {
             if (stack == null) {

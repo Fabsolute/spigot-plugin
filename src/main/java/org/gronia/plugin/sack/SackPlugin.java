@@ -6,13 +6,14 @@ import org.gronia.plugin.SubCommandExecutor;
 import org.gronia.plugin.SubListener;
 import org.gronia.plugin.SubTabCompleter;
 import org.gronia.plugin.SubUtilPlugin;
-import org.gronia.utils.GroniaMysqlConfiguration;
-import org.gronia.utils.PlayerMysqlConfiguration;
+import org.gronia.utils.configuration.MysqlConfiguration;
+import org.gronia.utils.configuration.PlayerMemoryConfiguration;
+import org.gronia.utils.configuration.PlayerMysqlConfiguration;
 
 public class SackPlugin extends SubUtilPlugin<SackPlugin, SackUtil> {
     public int PER_COUNT = 512;
 
-    private GroniaMysqlConfiguration configuration;
+    private PlayerMysqlConfiguration configuration;
 
     public SackPlugin(JavaPlugin plugin) {
         super(plugin);
@@ -50,16 +51,16 @@ public class SackPlugin extends SubUtilPlugin<SackPlugin, SackUtil> {
     }
 
     @Override
-    public GroniaMysqlConfiguration getConfig() {
+    public PlayerMysqlConfiguration getConfig() {
         if (this.configuration == null) {
-            this.configuration = GroniaMysqlConfiguration.loadConfiguration(PlayerMysqlConfiguration.class, this.getName());
+            this.configuration = MysqlConfiguration.loadConfiguration(PlayerMysqlConfiguration.class, this.getName());
         }
 
         return this.configuration;
     }
 
-    public PlayerMysqlConfiguration.PlayerMemoryConfiguration createSackConfiguration(String name) {
-        return ((PlayerMysqlConfiguration) this.getConfig()).createConfiguration(name);
+    public PlayerMemoryConfiguration createSackConfiguration(String name) {
+        return this.getConfig().createConfiguration(name);
     }
 
     public void executeFlushCommand(HumanEntity player, boolean isFree) {

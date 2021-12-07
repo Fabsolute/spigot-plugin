@@ -1,4 +1,4 @@
-package org.gronia.utils;
+package org.gronia.utils.configuration;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeletableYAMLConfiguration extends GroniaMysqlConfiguration.YAML {
+public class DeletableYAMLMysqlConfiguration extends YAMLMysqlConfiguration {
     private final List<String> deletedList = new ArrayList<>();
 
     @Override

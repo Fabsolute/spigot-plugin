@@ -5,11 +5,11 @@ import org.gronia.plugin.SubCommandExecutor;
 import org.gronia.plugin.SubListener;
 import org.gronia.plugin.SubPlugin;
 import org.gronia.plugin.SubTabCompleter;
-import org.gronia.utils.DeletableYAMLConfiguration;
-import org.gronia.utils.GroniaMysqlConfiguration;
+import org.gronia.utils.configuration.DeletableYAMLMysqlConfiguration;
+import org.gronia.utils.configuration.MysqlConfiguration;
 
 public class PerfectTPPlugin extends SubPlugin<PerfectTPPlugin> {
-    private DeletableYAMLConfiguration configuration;
+    private DeletableYAMLMysqlConfiguration configuration;
 
     public PerfectTPPlugin(JavaPlugin plugin) {
         super(plugin);
@@ -36,9 +36,9 @@ public class PerfectTPPlugin extends SubPlugin<PerfectTPPlugin> {
     }
 
     @Override
-    public DeletableYAMLConfiguration getConfig() {
+    public DeletableYAMLMysqlConfiguration getConfig() {
         if (this.configuration == null) {
-            this.configuration = GroniaMysqlConfiguration.loadConfiguration(DeletableYAMLConfiguration.class, this.getName());
+            this.configuration = MysqlConfiguration.loadConfiguration(DeletableYAMLMysqlConfiguration.class, this.getName());
         }
 
         return this.configuration;

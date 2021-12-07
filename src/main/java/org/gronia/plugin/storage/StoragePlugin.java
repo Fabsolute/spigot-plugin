@@ -2,8 +2,6 @@ package org.gronia.plugin.storage;
 
 import com.comphenix.packetwrapper.WrapperPlayClientUpdateSign;
 import com.comphenix.packetwrapper.WrapperPlayServerBlockChange;
-import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEditor;
-import com.comphenix.packetwrapper.WrapperPlayServerTileEntityData;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -11,8 +9,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.WrappedBlockData;
-import com.comphenix.protocol.wrappers.nbt.NbtCompound;
-import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
@@ -21,21 +17,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.gronia.menu.StorageMenu;
-import org.gronia.menu.iterator.StorageIterator;
 import org.gronia.plugin.*;
-import org.gronia.utils.GroniaMysqlConfiguration;
-import org.gronia.utils.Pair2;
-import xyz.janboerman.guilib.api.ItemBuilder;
-import xyz.janboerman.guilib.api.menu.*;
+import org.gronia.utils.configuration.IntegerMysqlConfiguration;
+import org.gronia.utils.configuration.MysqlConfiguration;
+import org.gronia.utils.pair.Pair2;
+import org.gronia.utils.configuration.YAMLMysqlConfiguration;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -43,8 +34,8 @@ import java.util.logging.Level;
 
 public class StoragePlugin extends SubPlugin<StoragePlugin> {
     private final Map<UUID, Location> mSignGUILocationMap = new HashMap<>();
-    private GroniaMysqlConfiguration storageStackable;
-    private GroniaMysqlConfiguration storageSerializable;
+    private MysqlConfiguration storageStackable;
+    private MysqlConfiguration storageSerializable;
 
     public StoragePlugin(JavaPlugin plugin) {
         super(plugin);
@@ -74,17 +65,17 @@ public class StoragePlugin extends SubPlugin<StoragePlugin> {
         return mSignGUILocationMap;
     }
 
-    public GroniaMysqlConfiguration getStackableConfig() {
+    public MysqlConfiguration getStackableConfig() {
         if (storageStackable == null) {
-            this.storageStackable = GroniaMysqlConfiguration.loadConfiguration(GroniaMysqlConfiguration.Integer.class, "storage_stackable");
+            this.storageStackable = MysqlConfiguration.loadConfiguration(IntegerMysqlConfiguration.class, "storage_stackable");
         }
 
         return this.storageStackable;
     }
 
-    public GroniaMysqlConfiguration getSerializableConfig() {
+    public MysqlConfiguration getSerializableConfig() {
         if (storageSerializable == null) {
-            this.storageSerializable = GroniaMysqlConfiguration.loadConfiguration(GroniaMysqlConfiguration.YAML.class, "storage_serializable");
+            this.storageSerializable = MysqlConfiguration.loadConfiguration(YAMLMysqlConfiguration.class, "storage_serializable");
         }
 
         return this.storageSerializable;

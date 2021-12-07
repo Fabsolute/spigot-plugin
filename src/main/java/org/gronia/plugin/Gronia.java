@@ -20,7 +20,7 @@ import org.gronia.plugin.storage.StoragePlugin;
 import org.gronia.plugin.ti.TeleportItemPlugin;
 import org.gronia.plugin.uei.*;
 import org.gronia.plugin.warmer.WarmerPlugin;
-import org.gronia.utils.GroniaMysqlConfiguration;
+import org.gronia.utils.configuration.MysqlConfiguration;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -93,7 +93,7 @@ public class Gronia extends JavaPlugin {
         var config = this.getConfig();
         var url = config.getString("mysql_connection");
         assert url != null;
-        GroniaMysqlConfiguration.initialize(() -> {
+        MysqlConfiguration.initialize(() -> {
             try {
                 return DriverManager.getConnection(url);
             } catch (SQLException e) {
