@@ -1,6 +1,5 @@
 package org.gronia.utils.configuration;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -52,7 +51,6 @@ public abstract class MysqlConfiguration extends MemoryConfiguration {
     }
 
     public static <T extends MysqlConfiguration> T loadConfiguration(Class<T> type, String name, Object... args) {
-        Validate.notNull(name, "Name cannot be null");
         T config = null;
         try {
             config = type.getDeclaredConstructor(Arrays.stream(args).map(Object::getClass).toArray(Class<?>[]::new)).newInstance(args);

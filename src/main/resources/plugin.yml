@@ -1,10 +1,10 @@
 name: gronia
-version: 0.1
+version: 0.1.1
 main: org.gronia.plugin.Gronia
 website: https://gronia.org
-depend: [ProtocolLib,Citizens,GuiLib]
+depend: [Citizens,GuiLib]
 
-api-version: 1.17
+api-version: 1.19
 commands:
   sack:
     description: Sack

@@ -21,6 +21,14 @@ public class PlayerMysqlConfiguration extends MysqlConfiguration {
                     s.setInt(3, (int) o);
                     s.setInt(4, (int) o);
                 }),
+        BOOLEAN("boolean",
+                " DEFAULT false",
+                r -> r.getBoolean("value"),
+                MemorySection::getBoolean,
+                (s, o) -> {
+                    s.setBoolean(3, (boolean) o);
+                    s.setBoolean(4, (boolean) o);
+                }),
         STRING("varchar(256)",
                 "",
                 r -> r.getString("value"),

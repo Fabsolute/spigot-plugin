@@ -16,6 +16,7 @@ public class ItemNames {
     public static final String SACK_CRAFTING_TABLE_UPGRADE = "sack_crafting_table_upgrade";
     public static final String SACK_STORAGE_UPGRADE = "sack_storage_upgrade";
     public static final String SACK_FLUSH_UPGRADE = "sack_flush_upgrade";
+    public static final String SACK_LOCK_UPGRADE = "sack_lock_upgrade";
 
     public static final String ENCHANTED_CARROT = "enchanted_carrot";
     public static final String EXTRA_ENCHANTED_CARROT = "extra_enchanted_carrot";

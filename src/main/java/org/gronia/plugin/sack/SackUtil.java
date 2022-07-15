@@ -74,30 +74,39 @@ public class SackUtil extends SubUtil<SackPlugin> {
         player.openInventory(menu.getInventory());
     }
 
-    public void fillPlayer(HumanEntity player, Material material) {
+    public void fillPlayer(HumanEntity player, Material material, boolean stack) {
         var inventory = this.getInventory(player);
         var name = material.name();
-        int count = inventory.getInt(name, 0);
+        int totalCount = inventory.getInt(name, 0);
+        int count = totalCount;
+        if (stack) {
+            count = Math.min(count, material.getMaxStackSize());
+        }
+
         if (count <= 0) {
             return;
         }
 
         var drops = this.pickItemToPlayer(player, new ItemStack(material, count), false);
-        count = 0;
         for (ItemStack item : drops.values()) {
-            count += item.getAmount();
+            count -= item.getAmount();
         }
 
-        inventory.set(name, count);
+        inventory.set(name, totalCount - count);
         this.getPlugin().getConfig().setDirty();
     }
 
     public void flushSack(HumanEntity player, boolean isFree) {
+        var config = this.getPlugin().getLockConfig();
         var inventory = getInventory(player);
         var changes = new HashMap<String, Integer>();
         for (var key : inventory.getKeys(false)) {
             var count = inventory.getInt(key);
             if (count > 0) {
+                if (config.isBoolean(key) && config.getBoolean(key)) {
+                    continue;
+                }
+
                 changes.put(key.toLowerCase(), count);
             }
         }
@@ -113,6 +122,10 @@ public class SackUtil extends SubUtil<SackPlugin> {
         this.getPlugin().getSubPlugin(StoragePlugin.class).applyStackable(player.getName(), changes);
 
         for (var key : inventory.getKeys(false)) {
+            if (config.isBoolean(key) && config.getBoolean(key)) {
+                continue;
+            }
+
             inventory.set(key, 0);
         }
     }

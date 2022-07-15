@@ -4,7 +4,7 @@
 
     <groupId>org.gronia</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 
     <name>Gronia</name>
 
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.17.1-R0.1-SNAPSHOT</version>
+            <version>1.19-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

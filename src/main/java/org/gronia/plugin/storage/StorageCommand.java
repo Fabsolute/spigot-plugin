@@ -1,40 +1,23 @@
 package org.gronia.plugin.storage;
 
-import com.comphenix.packetwrapper.WrapperPlayServerBlockChange;
-import com.comphenix.packetwrapper.WrapperPlayServerOpenSignEditor;
-import com.comphenix.packetwrapper.WrapperPlayServerTileEntityData;
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.WrappedBlockData;
-import com.comphenix.protocol.wrappers.nbt.NbtCompound;
-import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
 import org.gronia.items.ItemNames;
-import org.gronia.plugin.Gronia;
 import org.gronia.plugin.ItemRegistry;
 import org.gronia.plugin.SubCommandExecutor;
 import org.gronia.plugin.sack.SackPlugin;
-import xyz.janboerman.guilib.api.ItemBuilder;
-import xyz.janboerman.guilib.api.menu.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class StorageCommand extends SubCommandExecutor<StoragePlugin> {
     public StorageCommand(StoragePlugin plugin) {

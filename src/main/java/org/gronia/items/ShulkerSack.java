@@ -23,6 +23,7 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
     public NamespacedKey craftingTableKey;
     public NamespacedKey storageKey;
     public NamespacedKey flushKey;
+    public NamespacedKey lockKey;
 
     public ShulkerSack() {
         super(Material.PLAYER_HEAD, ItemNames.SHULKER_SACK, "Shulker Sack");
@@ -36,6 +37,7 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
         craftingTableKey = Gronia.getInstance().getKey("shulker_sack.crafting_table");
         storageKey = Gronia.getInstance().getKey("shulker_sack.storage");
         flushKey = Gronia.getInstance().getKey("shulker_sack.flush");
+        lockKey = Gronia.getInstance().getKey("shulker_sack.lock");
     }
 
     @Override
@@ -92,12 +94,33 @@ public class ShulkerSack extends CustomItem implements CraftableItem<CustomShape
     }
 
     private void checkSackClicked(ItemStack stack, Player player, Cancellable event) {
-        if (ItemRegistry.getCustomItem(stack) != this) {
+        var customItem = ItemRegistry.getCustomItem(stack);
+//        if (customItem == null) {
+//            checkRestock(stack, player);
+//            return;
+//        }
+
+        if (customItem != this) {
             return;
         }
 
         event.setCancelled(true);
 
         Gronia.getInstance().getSubPlugin(SackPlugin.class).getUtils().openSack(player, stack);
+    }
+
+    private void checkRestock(ItemStack stack, Player player) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Gronia.getInstance(), () -> {
+            var newHandItem = player.getInventory().getItemInMainHand();
+            if (newHandItem != null && newHandItem.getType() != Material.AIR) {
+                return;
+            }
+
+            restock(stack, player);
+        }, 1L);
+    }
+
+    private void restock(ItemStack stack, Player player) {
+       // todo restock
     }
 }

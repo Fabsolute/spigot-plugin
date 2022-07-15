@@ -10,10 +10,13 @@ import org.gronia.utils.configuration.MysqlConfiguration;
 import org.gronia.utils.configuration.PlayerMemoryConfiguration;
 import org.gronia.utils.configuration.PlayerMysqlConfiguration;
 
+import java.sql.SQLException;
+
 public class SackPlugin extends SubUtilPlugin<SackPlugin, SackUtil> {
     public int PER_COUNT = 512;
 
     private PlayerMysqlConfiguration configuration;
+    private PlayerMysqlConfiguration lockConfiguration;
 
     public SackPlugin(JavaPlugin plugin) {
         super(plugin);
@@ -59,11 +62,30 @@ public class SackPlugin extends SubUtilPlugin<SackPlugin, SackUtil> {
         return this.configuration;
     }
 
+    public PlayerMysqlConfiguration getLockConfig() {
+        if (this.lockConfiguration == null) {
+            this.lockConfiguration = MysqlConfiguration.loadConfiguration(PlayerMysqlConfiguration.class, this.getName() + "_lock", PlayerMysqlConfiguration.Type.BOOLEAN);
+        }
+
+        return this.lockConfiguration;
+    }
+
     public PlayerMemoryConfiguration createSackConfiguration(String name) {
         return this.getConfig().createConfiguration(name);
     }
 
     public void executeFlushCommand(HumanEntity player, boolean isFree) {
         this.getServer().dispatchCommand(player, "sack flush " + this.getPassword() + (isFree ? " free" : " nope"));
+    }
+
+    @Override
+    public void saveConfig() {
+        super.saveConfig();
+        if (this.lockConfiguration != null) {
+            try {
+                this.getLockConfig().save();
+            } catch (SQLException ignored) {
+            }
+        }
     }
 }

@@ -26,7 +26,8 @@ public abstract class ShulkerSackUpgrader extends UpgraderBase {
                 new EnderChest(),
                 new CraftingTable(),
                 new Storage(),
-                new Flush()
+                new Flush(),
+                new Lock()
         );
     }
 
@@ -187,6 +188,34 @@ public abstract class ShulkerSackUpgrader extends UpgraderBase {
         public void fillRecipe(CustomShapedRecipe recipe) {
             recipe.shape("CCC", "CUC", "CCC");
             recipe.setIngredient('C', ItemNames.SUPER_ENCHANTED_COAL_BLOCK);
+            recipe.setIngredient('U', ItemNames.UPGRADE_CRYSTAL);
+        }
+    }
+
+    public static class Lock extends ShulkerSackUpgrader {
+        public Lock() {
+            super(ItemNames.SACK_LOCK_UPGRADE, "Sack Lock Upgrade");
+        }
+
+        @Override
+        public boolean upgrade(ItemStack stack, ShulkerSack shulkerSack) {
+            var meta = stack.getItemMeta();
+            var container = meta.getPersistentDataContainer();
+            if (container.has(shulkerSack.lockKey, PersistentDataType.INTEGER)) {
+                return false;
+            }
+
+            container.set(shulkerSack.lockKey, PersistentDataType.INTEGER, 1);
+            stack.setItemMeta(meta);
+
+            return true;
+        }
+
+        @Override
+        public void fillRecipe(CustomShapedRecipe recipe) {
+            recipe.shape("BBB", "BUC", "CCC");
+            recipe.setIngredient('B', ItemNames.SUPER_ENCHANTED_COAL_BLOCK);
+            recipe.setIngredient('C', ItemNames.SUPER_ENCHANTED_CARROT);
             recipe.setIngredient('U', ItemNames.UPGRADE_CRYSTAL);
         }
     }
