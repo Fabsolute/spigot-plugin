@@ -6,13 +6,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PlayerMemoryConfiguration extends MemoryConfiguration {
+public class DetailedMemoryConfiguration extends MemoryConfiguration {
     private final Set<String> dirtyList = new HashSet<>();
     public final Set<String> deletedList = new HashSet<>();
 
-    private final PlayerMysqlConfiguration parent;
+    private final DetailedMysqlConfiguration parent;
 
-    public PlayerMemoryConfiguration(PlayerMysqlConfiguration parent) {
+    public DetailedMemoryConfiguration(DetailedMysqlConfiguration parent) {
         this.parent = parent;
     }
 

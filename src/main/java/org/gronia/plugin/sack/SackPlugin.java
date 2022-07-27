@@ -7,16 +7,16 @@ import org.gronia.plugin.SubListener;
 import org.gronia.plugin.SubTabCompleter;
 import org.gronia.plugin.SubUtilPlugin;
 import org.gronia.utils.configuration.MysqlConfiguration;
-import org.gronia.utils.configuration.PlayerMemoryConfiguration;
-import org.gronia.utils.configuration.PlayerMysqlConfiguration;
+import org.gronia.utils.configuration.DetailedMemoryConfiguration;
+import org.gronia.utils.configuration.DetailedMysqlConfiguration;
 
 import java.sql.SQLException;
 
 public class SackPlugin extends SubUtilPlugin<SackPlugin, SackUtil> {
     public int PER_COUNT = 512;
 
-    private PlayerMysqlConfiguration configuration;
-    private PlayerMysqlConfiguration lockConfiguration;
+    private DetailedMysqlConfiguration configuration;
+    private DetailedMysqlConfiguration lockConfiguration;
 
     public SackPlugin(JavaPlugin plugin) {
         super(plugin);
@@ -54,23 +54,23 @@ public class SackPlugin extends SubUtilPlugin<SackPlugin, SackUtil> {
     }
 
     @Override
-    public PlayerMysqlConfiguration getConfig() {
+    public DetailedMysqlConfiguration getConfig() {
         if (this.configuration == null) {
-            this.configuration = MysqlConfiguration.loadConfiguration(PlayerMysqlConfiguration.class, this.getName());
+            this.configuration = MysqlConfiguration.loadConfiguration(DetailedMysqlConfiguration.class, this.getName());
         }
 
         return this.configuration;
     }
 
-    public PlayerMysqlConfiguration getLockConfig() {
+    public DetailedMysqlConfiguration getLockConfig() {
         if (this.lockConfiguration == null) {
-            this.lockConfiguration = MysqlConfiguration.loadConfiguration(PlayerMysqlConfiguration.class, this.getName() + "_lock", PlayerMysqlConfiguration.Type.BOOLEAN);
+            this.lockConfiguration = MysqlConfiguration.loadConfiguration(DetailedMysqlConfiguration.class, this.getName() + "_lock", DetailedMysqlConfiguration.Type.BOOLEAN);
         }
 
         return this.lockConfiguration;
     }
 
-    public PlayerMemoryConfiguration createSackConfiguration(String name) {
+    public DetailedMemoryConfiguration createSackConfiguration(String name) {
         return this.getConfig().createConfiguration(name);
     }
 

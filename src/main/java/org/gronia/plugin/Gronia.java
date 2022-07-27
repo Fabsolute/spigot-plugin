@@ -19,7 +19,7 @@ import org.gronia.plugin.sack.SackPlugin;
 import org.gronia.plugin.storage.StoragePlugin;
 import org.gronia.plugin.ti.TeleportItemPlugin;
 import org.gronia.plugin.uei.*;
-import org.gronia.plugin.warmer.WarmerPlugin;
+import org.gronia.plugin.warehouse.WareHousePlugin;
 import org.gronia.utils.configuration.MysqlConfiguration;
 
 import java.sql.DriverManager;
@@ -45,7 +45,7 @@ public class Gronia extends JavaPlugin {
             new RepairPlugin(this),
             new GriefingPlugin(this),
             new FatiguePlugin(this),
-            new WarmerPlugin(this)
+            new WareHousePlugin(this)
     };
 
     private final List<CustomItem> customItems = new ArrayList<>() {
@@ -62,7 +62,7 @@ public class Gronia extends JavaPlugin {
             addAll(SweetPotion.getAll());
 
             add(new PiercerPickaxe());
-            add(new EndCityDestroyer());
+//            add(new EndCityDestroyer());
             add(new SuperHoe());
             add(new HyperFurnace());
             add(new Teleporter());
@@ -160,8 +160,10 @@ public class Gronia extends JavaPlugin {
 
     public CustomShapelessRecipe getCustomShapelessRecipe(String name) {
         for (var recipeEntry : this.shapelessRecipeMap.entrySet()) {
-            if (recipeEntry.getValue().getIngredient().equalsIgnoreCase(name)) {
-                return recipeEntry.getValue();
+            for (var value : recipeEntry.getValue().getAlteredIngredients()) {
+                if (value.equalsIgnoreCase(name)) {
+                    return recipeEntry.getValue();
+                }
             }
         }
 

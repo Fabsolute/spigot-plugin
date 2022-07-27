@@ -27,3 +27,6 @@ commands:
   ge:
     description: GE
     usage: /ge
+  warehouse:
+    description: WareHouse
+    usage: /warehouse

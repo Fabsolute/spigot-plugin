@@ -25,7 +25,7 @@ public abstract class SubPlugin<T extends SubPlugin<T>> {
     public abstract SubTabCompleter<T> getTabCompleter();
 
     private final JavaPlugin plugin;
-    private final String password;
+    private String password;
 
     public SubPlugin(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -91,6 +91,10 @@ public abstract class SubPlugin<T extends SubPlugin<T>> {
 
     public String getPassword() {
         return this.password;
+    }
+
+    public void setPassword(String password){
+        this.password = password;
     }
 
     private String randomString(int length) {

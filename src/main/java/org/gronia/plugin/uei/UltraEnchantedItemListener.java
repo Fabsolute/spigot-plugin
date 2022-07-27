@@ -185,11 +185,20 @@ public class UltraEnchantedItemListener extends SubListener<UltraEnchantedItemPl
 
         int count = recipe.getCount();
         var all = event.getPlayer().isSneaking();
-        var required = ItemRegistry.createItem(recipe.getIngredient());
-        var inventory = event.getPlayer().getInventory();
-        var inventoryCount = getCount(inventory, required);
+        ItemStack required = null;
+        int inventoryCount = 0;
+        for (var ingredient : recipe.getAlteredIngredients()) {
+            var required2 = ItemRegistry.createItem(ingredient);
+            var inventory = event.getPlayer().getInventory();
+            inventoryCount = getCount(inventory, required2);
 
-        if (inventoryCount < count) {
+            if (inventoryCount >= count) {
+                required = required2;
+                break;
+            }
+        }
+
+        if(required == null){
             return;
         }
 

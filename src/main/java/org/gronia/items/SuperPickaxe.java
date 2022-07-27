@@ -47,6 +47,7 @@ public class SuperPickaxe extends CustomItem implements TierableItem, CraftableI
         super.onMetaCreate(meta);
         meta.addEnchant(Enchantment.DURABILITY, 4, true);
         meta.addEnchant(Enchantment.LOOT_BONUS_BLOCKS, 4, true);
+        meta.addEnchant(Enchantment.DIG_SPEED, 5, true);
         meta.setLore(this.getLore(false));
     }
 

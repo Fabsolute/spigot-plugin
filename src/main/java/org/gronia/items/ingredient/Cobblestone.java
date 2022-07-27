@@ -45,7 +45,7 @@ public class Cobblestone extends CustomItem implements TierableItem {
 
         @Override
         public void fillRecipe(CustomShapelessRecipe recipe) {
-            recipe.addIngredient(4, Material.COBBLESTONE);
+            recipe.addIngredient(4, Material.COBBLESTONE, Material.COBBLED_DEEPSLATE);
         }
     }
 

@@ -57,6 +57,8 @@ public class PiercerPickaxe extends CustomItem implements TierableItem, Craftabl
     public void onMetaCreate(ItemMeta meta) {
         super.onMetaCreate(meta);
         meta.addEnchant(Enchantment.DURABILITY, 4, true);
+        meta.addEnchant(Enchantment.MENDING, 1, true);
+
         if (piercerKey != null) {
             meta.getPersistentDataContainer().set(piercerKey, PersistentDataType.INTEGER, 0);
         }
