@@ -108,7 +108,7 @@ public class WareHouseListener extends SubListener<WareHousePlugin> {
             inv.remove(stack);
         }
 
-        this.getPlugin().applyStackable(pair.p1(), changes, this.getDiff(contents, oldItems));
+        this.getPlugin().applyStackable(e.getPlayer().getName(), pair.p1(), changes, this.getDiff(contents, oldItems));
         this.getPlugin().inventoryMap.remove(inv);
     }
 

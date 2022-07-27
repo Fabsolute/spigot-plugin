@@ -11,6 +11,7 @@ import org.gronia.items.upgrader.ElytraUpgrader;
 import org.gronia.items.upgrader.ShulkerSackUpgrader;
 import org.gronia.npc.BlacksmithTrait;
 import org.gronia.npc.StorageWorkerTrait;
+import org.gronia.npc.WareHouseWorkerTrait;
 import org.gronia.plugin.fatigue.FatiguePlugin;
 import org.gronia.plugin.griefing.GriefingPlugin;
 import org.gronia.plugin.ptp.PerfectTPPlugin;
@@ -86,9 +87,9 @@ public class Gronia extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(BlacksmithTrait.class).withName("Blacksmith"));
         CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(StorageWorkerTrait.class).withName("StorageWorker"));
+        CitizensAPI.getTraitFactory().registerTrait(TraitInfo.create(WareHouseWorkerTrait.class).withName("WareHouseWorker"));
 
         var config = this.getConfig();
         var url = config.getString("mysql_connection");

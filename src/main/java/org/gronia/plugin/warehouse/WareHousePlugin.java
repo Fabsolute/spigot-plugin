@@ -7,14 +7,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConstructor;
 import org.bukkit.configuration.file.YamlRepresenter;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.gronia.menu.WareHouseMenu;
 import org.gronia.plugin.*;
 import org.gronia.plugin.sack.SackPlugin;
-import org.gronia.utils.NumberMap;
-import org.gronia.utils.configuration.CaseMemoryConfiguration;
 import org.gronia.utils.configuration.InventoryMysqlConfiguration;
 import org.gronia.utils.configuration.MysqlConfiguration;
 import org.gronia.utils.pair.Pair2;
@@ -33,8 +33,9 @@ import java.util.Map;
 import java.util.logging.Level;
 
 public class WareHousePlugin extends SubPlugin<WareHousePlugin> {
-
     public static final Yaml yaml;
+
+    public static final String COMMON_CASE_NAME = "common";
 
     static {
         var loaderOptions = new LoaderOptions();
@@ -79,6 +80,12 @@ public class WareHousePlugin extends SubPlugin<WareHousePlugin> {
         this.getServer().getScheduler().runTaskTimerAsynchronously(this.getPlugin(), this::saveConfig, 1200, 1200);
     }
 
+    @Override
+    public void onDisable() {
+        this.saveConfig();
+        super.onDisable();
+    }
+
     public InventoryMysqlConfiguration getWareHouseTally() {
         if (wareHouseTally == null) {
             this.wareHouseTally = MysqlConfiguration.loadConfiguration(InventoryMysqlConfiguration.class, "warehouse_tally");
@@ -87,22 +94,20 @@ public class WareHousePlugin extends SubPlugin<WareHousePlugin> {
         return this.wareHouseTally;
     }
 
-    public void takeItem(final Player player, String materialName, int count) {
+    public void takeItem(final Player player, String caseName, String materialName, int count) {
         var stack = ItemRegistry.createItem(materialName);
         stack.setAmount(count);
 
         this.getSubPlugin(SackPlugin.class).getUtils().pickItemToPlayer(player, stack, true);
 
         Map<ItemStack, Integer> changes = new HashMap<>(1);
+        Map<String, Integer> diffs = new HashMap<>(1);
         changes.put(stack, -count);
-        this.applyStackable(player.getName(), changes);
+        diffs.put(materialName, -count);
+        this.applyStackable(player.getName(), caseName, changes, diffs);
     }
 
-    public void applyStackable(final String name, Map<ItemStack, Integer> changes) {
-        this.applyStackable(name, changes, new HashMap<>());
-    }
-
-    public void applyStackable(final String name, Map<ItemStack, Integer> changes, Map<String, Integer> diffs) {
+    public void applyStackable(final String name, final String caseName, Map<ItemStack, Integer> changes, Map<String, Integer> diffs) {
         InventoryMysqlConfiguration config = this.getWareHouseTally();
 
         for (var change : changes.entrySet()) {
@@ -110,7 +115,7 @@ public class WareHousePlugin extends SubPlugin<WareHousePlugin> {
             String hash = createHash(change.getKey());
             int count = -change.getValue();
 
-            var hashConfig = config.getConfig(name, materialName, hash);
+            var hashConfig = config.getConfig(caseName, materialName, hash);
 
             var totalCount = hashConfig.getInt("count", 0);
             int newCount = totalCount - count;
@@ -134,9 +139,10 @@ public class WareHousePlugin extends SubPlugin<WareHousePlugin> {
             }
 
             var materialName = diffEntry.getKey();
-            var newCount = this.getCount(name, materialName);
-
-            messages.add(Pair2.of(ChatColor.DARK_PURPLE + "WareHouse " + ChatColor.RESET + name + " " + (diff > 0 ? "stored" : "took") + " " + ChatColor.GREEN + "" + Math.abs(diff) + " " + materialName + ChatColor.WHITE + ". New count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".", diff <= 0));
+            var newCount = this.getCount(caseName, materialName);
+            if (caseName.equals(COMMON_CASE_NAME)) {
+                messages.add(Pair2.of(ChatColor.DARK_PURPLE + "WareHouse " + ChatColor.RESET + name + " " + (diff > 0 ? "stored" : "took") + " " + ChatColor.GREEN + "" + Math.abs(diff) + " " + materialName + ChatColor.WHITE + ". New count is " + ChatColor.GOLD + newCount + ChatColor.WHITE + ".", diff <= 0));
+            }
         }
 
         this.sendMessages(messages, name);
@@ -195,6 +201,50 @@ public class WareHousePlugin extends SubPlugin<WareHousePlugin> {
         }
 
         return output;
+    }
+
+    public Map<String, Integer> getItems(String caseName) {
+        Map<String, Integer> items = new HashMap<>();
+
+        var config = this.getWareHouseTally();
+        var caseConfig = config.getConfig(caseName);
+
+        for (var itemName : caseConfig.getKeys(false)) {
+            items.put(itemName, this.getCount(caseName, itemName));
+        }
+
+        if (items.size() == 0) {
+            return null;
+        }
+
+        return items;
+    }
+
+    public void showInventory(final HumanEntity ent) {
+        var inventory = getInventory(ent.getName());
+        if (inventory == null) {
+            return;
+        }
+
+        ent.openInventory(inventory);
+    }
+
+    public Inventory getInventory(String caseName) {
+        var items = this.getItems(caseName);
+        if (items == null) {
+            return null;
+        }
+
+        var pageMenu = WareHouseMenu.create(this, caseName, items);
+        return pageMenu.getInventory();
+    }
+
+    public void executeOpenCommand(HumanEntity player, String caseName, String itemName) {
+        this.getServer().dispatchCommand(player, "warehouse " + getPassword() + " open " + caseName + " " + itemName);
+    }
+
+    public void executeListCommand(HumanEntity player) {
+        this.getServer().dispatchCommand(player, "warehouse " + getPassword() + " list free");
     }
 
     @Override
