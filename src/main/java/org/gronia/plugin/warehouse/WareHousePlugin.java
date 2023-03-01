@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.gronia.menu.WareHouseCaseMenu;
 import org.gronia.menu.WareHouseMenu;
 import org.gronia.plugin.*;
 import org.gronia.plugin.sack.SackPlugin;
@@ -221,7 +222,7 @@ public class WareHousePlugin extends SubPlugin<WareHousePlugin> {
     }
 
     public void showInventory(final HumanEntity ent) {
-        var inventory = getInventory(ent.getName());
+        var inventory = getInventory();
         if (inventory == null) {
             return;
         }
@@ -229,7 +230,21 @@ public class WareHousePlugin extends SubPlugin<WareHousePlugin> {
         ent.openInventory(inventory);
     }
 
-    public Inventory getInventory(String caseName) {
+    public void showCaseInventory(final HumanEntity ent,String caseName) {
+        var inventory = getCaseInventory(caseName);
+        if (inventory == null) {
+            return;
+        }
+
+        ent.openInventory(inventory);
+    }
+
+    public Inventory getInventory() {
+        var menu = new WareHouseCaseMenu(this);
+        return menu.getInventory();
+    }
+
+    public Inventory getCaseInventory(String caseName) {
         var items = this.getItems(caseName);
         if (items == null) {
             return null;
@@ -245,6 +260,10 @@ public class WareHousePlugin extends SubPlugin<WareHousePlugin> {
 
     public void executeListCommand(HumanEntity player) {
         this.getServer().dispatchCommand(player, "warehouse " + getPassword() + " list free");
+    }
+
+    public void executeListCaseCommand(HumanEntity player, String caseName) {
+        this.getServer().dispatchCommand(player, "warehouse " + getPassword() + " list-case " + caseName);
     }
 
     @Override

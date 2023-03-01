@@ -39,7 +39,7 @@ public class WareHouseCommand extends SubCommandExecutor<WareHousePlugin> {
 
         String command = args[1];
 
-        if (args.length < 3 || (!command.equalsIgnoreCase("open") && !command.equalsIgnoreCase("take") && !command.equalsIgnoreCase("list"))) {
+        if (args.length < 3 || (!command.equalsIgnoreCase("open") && !command.equalsIgnoreCase("take") && !command.equalsIgnoreCase("list") && !command.equalsIgnoreCase("list-case"))) {
             return this.warnUser(player);
         }
 
@@ -50,6 +50,14 @@ public class WareHouseCommand extends SubCommandExecutor<WareHousePlugin> {
             }
 
             return this.handleListCommand(player, name.equalsIgnoreCase("free"));
+        }
+
+        if (command.equalsIgnoreCase("list-case")) {
+            if (args.length != 3) {
+                return this.warnUser(player);
+            }
+
+            return this.handleListCaseCommand(player, name);
         }
 
         if (command.equalsIgnoreCase("open")) {
@@ -83,6 +91,11 @@ public class WareHouseCommand extends SubCommandExecutor<WareHousePlugin> {
         }
 
         return this.warnUser(player);
+    }
+
+    public boolean handleListCaseCommand(Player player, String caseName) {
+        this.getPlugin().showCaseInventory(player, caseName);
+        return true;
     }
 
     public boolean handleListCommand(Player player, boolean isFree) {
